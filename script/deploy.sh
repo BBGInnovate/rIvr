@@ -8,6 +8,7 @@ then
   exit 2
 fi
 
+version=$branch
 application='ivr'
 
 # staging host
@@ -24,7 +25,21 @@ shared=$root/shared
 name=`date '+%Y%m%d%H%M%S'`
 dest=$root/shared/releases/$name
 tarfile=${application}.tar
+
+tarfile=${name}_${application}.tar 
+branchcode=`git ls-remote git@ivr_git:/home/git/dashboard.git $branch`
+branchcode=(`echo $branchcode | tr ' ' ' '`)
+branch=${branchcode[0]}
+
+mkdir -p /tmp
+cd /tmp
+rm -rf dashboard
+
+git clone git@ivr_git:/home/git/dashboard.git
+cd dashboard
+git checkout -f $branch
 tar cvf $tarfile --exclude '*.tar' --exclude 'tmp' --exclude '*.git' *
+
 scp -i ${keyfile} $tarfile ${user}@${host}:/tmp/.
 ssh -i ${keyfile} -t ${host} -l ${user} \
    "sudo chown -R ${user}:${user} /data; \
@@ -40,6 +55,7 @@ ssh -i ${keyfile} -t ${host} -l ${user} \
    ln -s $dest current; \
    mkdir -p $shared/log; \
    rm -f current/config/database.yml; \
+   echo $version >> $shared/versions.txt; \
    ln -s $shared/config/database.yml current/config/database.yml; \
    ln -s $shared/log current/log; \
    ln -s $shared/tmp current/tmp; \
