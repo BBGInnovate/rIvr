@@ -1,0 +1,22 @@
+development:
+  public_dir: https://dl.dropboxusercontent.com/u/11357483
+  consumer_key: 0pk3wj3qyq7be7q
+  consumer_secret: v6ujmd2ywlcgtq7
+test:
+  public_dir: https://dl.dropboxusercontent.com/u/11357483
+  consumer_key: 0pk3wj3qyq7be7q
+  consumer_secret: v6ujmd2ywlcgtq7
+staging:
+  public_dir: https://dl.dropboxusercontent.com/u/11357483
+  consumer_key: 0pk3wj3qyq7be7q
+  consumer_secret: v6ujmd2ywlcgtq7
+qa:
+  public_dir: https://dl.dropboxusercontent.com/u/11357483
+  consumer_key: 0pk3wj3qyq7be7q
+  consumer_secret: v6ujmd2ywlcgtq7
+production:
+  public_dir: https://dl.dropboxusercontent.com/u/11357483
+  consumer_key: 0pk3wj3qyq7be7q
+  consumer_secret: v6ujmd2ywlcgtq7
+  
+    
