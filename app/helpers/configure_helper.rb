@@ -9,10 +9,12 @@ module ConfigureHelper
     end
   end
   # override active_scaffold/helpers/view_helpers.rb
+  # this is to get the branch_id for delete Configure item
+  # Since there the id parameter means nothing
   def render_action_link(link, record = nil, options = {})
     if !!options[:for]
       record = options[:for] if !record
-      link.parameters[:branch] = record.branch if !!record.respond_to?(:branch)
+      link.parameters[:branch_id] = record.branch if !!record.respond_to?(:branch)
     end
     super
   end

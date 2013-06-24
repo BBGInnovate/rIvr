@@ -86,7 +86,9 @@ class ConfigureController < ApplicationController
   end
 
   def do_destroy
-    Configure.where("branch='#{params[:branch]}'").all.each do |record|
+    # params[:branch_id] is set in def render_action_link
+    # of configure_helper.rb
+    Configure.where("branch='#{params[:branch_id]}'").all.each do |record|
       begin
         self.successful = record.destroy
       rescue Exception => ex
