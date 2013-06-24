@@ -2,7 +2,7 @@ module ApplicationHelper
   def branch_form_column(record, input_name)
     if !record.kind_of? Branch
       id = record.id
-      options = Branch.where("is_active=1").map{|b| [b.name, b.id]}
+      options = Branch.where("is_active=1").map{|b| [b.name, b.name]}
       select_tag 'record[branch]', options_for_select(options, id), :style=>''
     else
         super

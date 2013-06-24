@@ -12,7 +12,7 @@ module ConfigureHelper
   # this is to get the branch_id for delete Configure item
   # Since there the id parameter means nothing
   def render_action_link(link, record = nil, options = {})
-    if !!options[:for]
+    if record.kind_of?(Configure) && !!options[:for]
       record = options[:for] if !record
       link.parameters[:branch_id] = record.branch if !!record.respond_to?(:branch)
     end

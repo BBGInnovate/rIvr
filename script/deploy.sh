@@ -45,6 +45,7 @@ ssh -i ${keyfile} -t ${host} -l ${user} \
    "sudo chown -R ${user}:${user} /data; \
    mkdir -p $dest; \
    mkdir -p $shared/config; \
+   mkdir -p $shared/prompt; \
    mkdir -p $shared/tmp;  \
    mv /tmp/$tarfile $dest; \
    cd $dest; \
@@ -59,6 +60,7 @@ ssh -i ${keyfile} -t ${host} -l ${user} \
    ln -s $shared/config/database.yml current/config/database.yml; \
    ln -s $shared/log current/log; \
    ln -s $shared/tmp current/tmp; \
+   rm -rf current/public/prompt; \
    ln -s $shared/prompt current/public/prompt; \
    cd current; \
    touch tmp/restart.txt;\
