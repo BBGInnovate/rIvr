@@ -26,4 +26,10 @@ class BranchesController < ApplicationController
           :page => true,
           :inline => false
   end
+  def before_create_save(record)
+     record.country_id = params[:record][:country_id]
+  end
+  def before_update_save(record)
+     record.country_id = params[:record][:country_id]
+  end
 end
