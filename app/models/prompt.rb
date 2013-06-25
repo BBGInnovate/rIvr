@@ -5,6 +5,9 @@ class Prompt < ActiveRecord::Base
   validates :name, :presence => true, :length => { :maximum => 255 }
   validates :sound_file, :presence => true,:length => { :maximum => 255 }
     
+  def to_label
+    "Voice Forum"
+  end
   def upload_file=(file_field)
     if !file_field
       self.errors[:sound_file] << "You must select a file"

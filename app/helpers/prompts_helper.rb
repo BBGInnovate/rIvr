@@ -1,6 +1,6 @@
 module PromptsHelper
   def url_column(record, input_name)
-    "<a href='#{record.url}'>#{record.url}</a>".html_safe
+    "<a href='#{record.url}'>#{File.basename(record.url)}</a>".html_safe
   end
    
   def name_form_column(record, input_name)

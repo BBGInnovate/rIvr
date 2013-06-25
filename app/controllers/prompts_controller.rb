@@ -7,6 +7,7 @@ class PromptsController < ApplicationController
     config.create.refresh_list = true
     config.update.refresh_list = true
     config.delete.refresh_list = true
+    config.label = 'Voice Forum'
 #    config.actions.exclude :show
     config.columns = [:branch,:name, :sound_file, :content_type, :url, :description, :is_active]
 #    config.columns[:dropbox].description = "Upload sound file to Dropbox"
