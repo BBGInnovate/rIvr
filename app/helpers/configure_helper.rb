@@ -1,7 +1,7 @@
 module ConfigureHelper
   def feed_source_form_column(record, input_name)
     if record.kind_of? Configure
-      id = record.id
+      id = record.class.find_me(record.branch, "feed_source").value
       options = [['dropbox','dropbox'],['static_rss','static_rss']]
       select_tag 'record[feed_source]', options_for_select(options, id), :style=>''
     else
