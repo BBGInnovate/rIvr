@@ -3,9 +3,13 @@ class Prompt < ActiveRecord::Base
   file_column :sound_file
   validates :branch, :presence => true, :length => { :maximum => 50 }
   validates :name, :presence => true, :length => { :maximum => 255 }
-  validates :sound_file, :presence => true, :length => { :maximum => 255 }
+  validates :sound_file, :presence => true,:length => { :maximum => 255 }
     
   def upload_file=(file_field)
+    if !file_field
+      self.errors[:sound_file] << "You must select a file"
+      return
+    end
     file = file_field.original_filename
     self.content_type = file_field.content_type.chomp
     ds = DropboxSession.last

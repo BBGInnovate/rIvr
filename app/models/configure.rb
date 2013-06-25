@@ -6,7 +6,7 @@ class Configure < ActiveRecord::Base
   validates :branch, :presence => true, :length => { :maximum => 50 }
   validates :name, :presence => true, :length => { :maximum => 40 }
   validates :value, :presence => true, :length => { :maximum => 255 }
-  validates :description, :presence => false, :length => { :maximum => 255 }
+  validates :description, :length => { :maximum => 255 }
     
   def to_label
     "Configure"

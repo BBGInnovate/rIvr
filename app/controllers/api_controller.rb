@@ -51,6 +51,7 @@ class ApiController < ApplicationController
       else
         @entries = parse_feed(options.feed_url, feed_limit)
       end
+      # @entries = @entries.select{|e| url_available?(e.public_url) }
       respond_to do |format|
         format.rss { render :layout => false } # feed.rss.builder
       end

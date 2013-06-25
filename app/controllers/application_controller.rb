@@ -21,4 +21,15 @@ class ApplicationController < ActionController::Base
       redirect_to dropbox_session.authorize_url(:oauth_callback => url_for(:action => 'authorize'))
     end
   end
+  
+  def url_available?(url_str)
+    begin
+      url = URI.parse(url_str)
+      Net::HTTP.start(url.host, url.port) do |http|
+      return http.head(url.request_uri).code == "200"
+    end
+    rescue
+      return false
+    end
+  end
 end

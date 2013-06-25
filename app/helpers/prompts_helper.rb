@@ -5,7 +5,7 @@ module PromptsHelper
    
   def name_form_column(record, input_name)
     if record.kind_of? Prompt
-      id = record.id 
+      id = record.name
       options = Message.all.map{|a| [a.name, a.name]}
       select_tag 'record[name]', options_for_select(options, id), :id=>'message-name'
    else
