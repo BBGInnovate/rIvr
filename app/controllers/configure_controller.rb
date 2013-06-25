@@ -21,6 +21,14 @@ class ConfigureController < ApplicationController
       :action=>"index",
       :page => true,
       :inline => false
+      
+    config.action_links.add 'prompts',
+              :label => 'Voice Forum',
+              :type => :collection,
+              :controller=>"/prompts",
+              :action=>"index",
+              :page => true,
+              :inline => false
   end
   #  def action_links_order
   #      links = active_scaffold_config.action_links
