@@ -17,7 +17,7 @@ class PromptsController < ApplicationController
     config.columns[:description].description = "<span id='desc-limit'></span> characters left".html_safe
     config.columns[:url].options = {}
     config.columns[:is_active].description = "Uncheck to disable this message"
-    config.list.columns.exclude [:content_type, :description]
+    config.list.columns.exclude [:content_type, :is_active, :description]
     config.create.columns.exclude [:content_type, :url]
     config.action_links.add 'messages',
           :label => 'Message',
