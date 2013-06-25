@@ -29,13 +29,13 @@ class EntriesController < ApplicationController
                    :action=>"index",
                    :page => true,
                    :inline => false
-#    config.action_links.add 'events',
-#           :label => 'Events',
-#           :type => :collection,
-#           :controller=>"/events",
-#           :action=>"index",
-#           :page => true,
-#           :inline => false
+    config.action_links.add 'events',
+           :label => 'Events',
+           :type => :collection,
+           :controller=>"/events",
+           :action=>"index",
+           :page => true,
+           :inline => false
   end
 
   def play
