@@ -44,7 +44,9 @@ class ApiController < ApplicationController
       feed_limit = options.feed_limit
      
       if options.feed_source == 'dropbox'
-         @entries = Entry.where("branch='#{branch}' AND is_private=0 AND (phone_number is null OR phone_number!='#{caller_id}')").all(:select => "public_url", :order => "id DESC", :limit => feed_limit )
+        # since each IVR solution has http://localhost/Uploads service
+        # provide the audio file locally
+         @entries = Entry.where("branch='#{branch}' AND is_private=0 AND (phone_number is null OR phone_number!='#{caller_id}')").all(:select => 'CONCAT("http://localhost/Uploads/", dropbox_file) AS public_url', :order => "id DESC", :limit => feed_limit )
          if @entries.size == 0
             @entries = parse_feed(options.feed_url, feed_limit)
          end
