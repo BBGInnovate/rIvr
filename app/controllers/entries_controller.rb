@@ -8,14 +8,16 @@ class EntriesController < ApplicationController
     config.create.refresh_list = true
     config.update.refresh_list = true
     config.delete.refresh_list = true
-    config.label = 'Entry'
+    config.label = 'Moderation'
 #    config.actions.exclude :create
     config.list.sorting = {:id => 'DESC'}
     config.columns = [:branch, :public_url, :dropbox_file, :length, :dropbox_dir, :phone_number, :is_private, :created_at, :updated_at]
-    config.search.text_search = :start
-    config.search.columns = [:branch, :dropbox_file]
+#    config.search.text_search = :start
+#    config.search.columns = [:branch, :dropbox_file]
+    config.actions.exclude :create, :search
+    
     config.list.columns.exclude [:created_at, :dropbox_dir]
-    config.action_links.add 'options',
+    config.action_links.add 'configure',
                :label => 'Configure',
                :type => :collection,
                :controller=>"/configure",
@@ -36,6 +38,13 @@ class EntriesController < ApplicationController
            :action=>"index",
            :page => true,
            :inline => false
+#    config.action_links.add 'health',
+#               :label => 'Health',
+#               :type => :collection,
+#               :controller=>"/health",
+#               :action=>"index",
+#               :page => true,
+#               :inline => false
   end
 
   def play

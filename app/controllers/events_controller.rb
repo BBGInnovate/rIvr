@@ -17,13 +17,13 @@ class EventsController < ApplicationController
     config.actions.exclude :update
     config.actions.exclude :create
         
-#    config.action_links.add 'entries',
-#       :label => 'Entries',
-#       :type => :collection,
-#       :controller=>"/entries",
-#       :action=>"index",
-#       :page => true,
-#       :inline => false
+    config.action_links.add 'Entries',
+                         :label => 'Moderation',
+                         :type => :collection,
+                         :controller=>"/entries",
+                         :action=>"index",
+                         :page => true,
+                         :inline => false
 #    config.action_links.add 'options',
 #           :label => 'Options',
 #           :type => :collection,

@@ -17,14 +17,36 @@ class BranchesController < ApplicationController
     # config.search.columns = [:name]
     config.actions.exclude :search
     config.list.columns.exclude [:id, :description]
-    # config.actions.exclude :show
+    config.actions.exclude :show
     config.action_links.add 'configure',
-          :label => 'Configure',
-          :type => :collection,
-          :controller=>"/configure",
-          :action=>"index",
-          :page => true,
-          :inline => false
+                   :label => 'Configure',
+                   :type => :collection,
+                   :controller=>"/configure",
+                   :action=>"index",
+                   :page => true,
+                   :inline => false
+        config.action_links.add 'events',
+               :label => 'Events',
+               :type => :collection,
+               :controller=>"/events",
+               :action=>"index",
+               :page => true,
+               :inline => false
+               
+#        config.action_links.add 'healthes',
+#                   :label => 'Health',
+#                   :type => :collection,
+#                   :controller=>"/health",
+#                   :action=>"index",
+#                   :page => true,
+#                   :inline => false
+         config.action_links.add 'Entries',
+                         :label => 'Moderation',
+                         :type => :collection,
+                         :controller=>"/entries",
+                         :action=>"index",
+                         :page => true,
+                         :inline => false
   end
   def before_create_save(record)
      record.country_id = params[:record][:country_id]

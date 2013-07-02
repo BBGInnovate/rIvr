@@ -1,7 +1,7 @@
 TestIvr::Application.routes.draw do
   use_doorkeeper
 
-  root :to => "entries#index"
+  root :to => "home#index"
   resources :api do
     collection do
       post :feed
@@ -23,6 +23,10 @@ TestIvr::Application.routes.draw do
   match 'signup' => 'users#new', :as => :signup
   match 'activate/:activation_code' => 'users#activate', :as => :activate, :activation_code => nil
 
+  resources :home do
+     get :index
+  end
+    
   resources :actions do
       as_routes
   end
@@ -31,6 +35,9 @@ TestIvr::Application.routes.draw do
   end
   resources :configure do
       as_routes
+  end
+  resources :health do
+    as_routes
   end 
   resources :messages do
       as_routes

@@ -33,3 +33,19 @@ input[type=text], select, textarea {
 input[type=text], select {
   height: 25px;
 }
+
+/* home page */
+#home {
+  width: 600px;
+  min-height: 500px;
+  margin: 30px auto;
+}
+section .equal {
+  float: left;
+  width: 300px;
+  height: auto;
+}
+.equal img {
+  width: 290px;
+  margin-bottom: 20px;
+}

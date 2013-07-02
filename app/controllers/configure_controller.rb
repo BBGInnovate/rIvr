@@ -8,20 +8,41 @@ class ConfigureController < ApplicationController
     config.update.refresh_list = true
     config.delete.refresh_list = true
     config.actions.exclude :show
+    config.actions.exclude :search
     config.columns = [:branch,:feed_limit, :feed_url,
       :feed_source]
     config.columns[:feed_source].form_ui = :select
     config.columns[:feed_limit].description = "feed limit"
     config.columns[:feed_source].description = "dropbox or static_rss"
-  
+
     config.action_links.add 'branches',
-      :label => 'Branch',
-      :type => :collection,
-      :controller=>"/branches",
-      :action=>"index",
-      :page => true,
-      :inline => false
-      
+                       :label => 'Branch',
+                       :type => :collection,
+                       :controller=>"/branches",
+                       :action=>"index",
+                       :page => true,
+                       :inline => false
+    config.action_links.add 'events',
+               :label => 'Events',
+               :type => :collection,
+               :controller=>"/events",
+               :action=>"index",
+               :page => true,
+               :inline => false
+#    config.action_links.add 'health',
+#                   :label => 'Health',
+#                   :type => :collection,
+#                   :controller=>"/health",
+#                   :action=>"index",
+#                   :page => true,
+#                   :inline => false
+    config.action_links.add 'Entries',
+                         :label => 'Moderation',
+                         :type => :collection,
+                         :controller=>"/entries",
+                         :action=>"index",
+                         :page => true,
+                         :inline => false
     config.action_links.add 'prompts',
               :label => 'Voice Forum',
               :type => :collection,
