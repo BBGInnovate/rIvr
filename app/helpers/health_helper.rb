@@ -1,5 +1,9 @@
 module HealthHelper
-  def phone_carrier_form_column(record, input_name)
+    def no_activity_form_column(record, input_name)
+      "<input type='text' name='record[no_activity]' value='#{record.no_activity}' />".html_safe
+    end
+    
+    def phone_carrier_form_column(record, input_name)
        options = SMSFu.carriers.sort.collect{ |carrier| [carrier[1]["name"], carrier[0]] }
        id = record.phone_carrier
        select_tag 'record[phone_carrier]', options_for_select(options, id), :style=>''    
@@ -27,7 +31,7 @@ module HealthHelper
       ""
     end
   end
-
+    
   def event_column(record, column=nil)
     if record.last_event
       record.event

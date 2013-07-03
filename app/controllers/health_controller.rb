@@ -8,7 +8,7 @@ class HealthController < ApplicationController
       config.create.refresh_list = true
       config.update.refresh_list = true
       config.delete.refresh_list = true
-      config.label = 'Branch Health'
+      config.label = 'Health Monitor'
       # config.actions.exclude :create
       config.list.sorting = {:branch => 'ASC'}
       config.columns = [:branch, :last_event, :event, :send_alarm, :no_activity, :deliver_method, :email, :cell_phone, :phone_carrier]

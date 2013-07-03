@@ -5,7 +5,7 @@ class CreateHealthes < ActiveRecord::Migration
           t.integer :event_id
           t.datetime :last_event
           t.string :event
-          t.integer :no_activity, :default=> 6*3600
+          t.integer :no_activity, :default=> 6
           t.string :deliver_method, :limit=>20
           t.string :email, :limit => 50
           t.string :cell_phone, :limit => 20
