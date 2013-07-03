@@ -1,17 +1,38 @@
-var loadMessage = {
+var monitor = {
 	init : function() {
-		jQuery("body").on('change',"#message-name", function(e) {
+		var v = jQuery("#record_deliver_method").val();
+		monitor.update(v);
+		jQuery("body").on('change',"#record_deliver_method", function(e) {
 			var v = jQuery(this).val();
-			jQuery.post('/api/prompt', {
-				"msg[name]" : v,
-				_method : 'post'
-			}, loadMessage.updated, 'text');
-			return false;
+			monitor.update(v);
 		});
 	},
-	updated : function(data) {
-		jQuery("#record_description_,.description-input").val(data);
+	update : function(value) {
+		if (value == 'email') {
+			document.getElementById("record_cell_phone").disabled = true;
+			document.getElementById("record_phone_carrier").disabled = true;
+			document.getElementById("record_email").disabled = false;
+		} else {
+			document.getElementById("record_cell_phone").disabled = false;
+			document.getElementById("record_phone_carrier").disabled = false;
+			document.getElementById("record_email").disabled = true;
+		}
 	}
+}
+var loadMessage = {
+		init : function() {
+			jQuery("body").on('change',"#message-name", function(e) {
+				var v = jQuery(this).val();
+				jQuery.post('/api/prompt', {
+					"msg[name]" : v,
+					_method : 'post'
+				}, loadMessage.updated, 'text');
+				return false;
+			});
+		},
+		updated : function(data) {
+			jQuery("#record_description_,.description-input").val(data);
+		}
 }
 function dump() {	
 }
