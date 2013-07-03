@@ -38,6 +38,9 @@ TestIvr::Application.routes.draw do
   end
   resources :health do
     as_routes
+    collection do
+      get :alarm
+    end
   end 
   resources :messages do
       as_routes

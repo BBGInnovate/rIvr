@@ -11,11 +11,11 @@ class HealthController < ApplicationController
       config.label = 'Health Monitor'
       # config.actions.exclude :create
       config.list.sorting = {:branch => 'ASC'}
-      config.columns = [:branch, :last_event, :event, :send_alarm, :no_activity, :deliver_method, :email, :cell_phone, :phone_carrier]
+      config.columns = [:status, :branch, :last_event, :event, :send_alarm, :no_activity, :deliver_method, :email, :cell_phone, :phone_carrier]
       config.list.columns.exclude [:no_activity, :deliver_method, :email, :cell_phone, :phone_carrier]
-      config.update.columns.exclude [:branch, :last_event, :event]
-      config.create.columns.exclude [:last_event, :event]
-      config.columns[:send_alarm].label = 'Notify'
+      config.update.columns.exclude [:branch, :last_event, :event, :status]
+      config.create.columns.exclude [:last_event, :event, :status]
+      config.columns[:send_alarm].label = 'Alarm Enabled'
 #      config.list.columns.exclude :send_alarm
       config.columns[:no_activity].description = 'In hours to trigger notification'
       config.columns[:cell_phone].description = 'Number only'
@@ -46,6 +46,12 @@ class HealthController < ApplicationController
                      :action=>"index",
                      :page => true,
                      :inline => false
+                     
+      config.action_links << ActiveScaffold::DataStructures::ActionLink.new('alarm', :label => 'Send Alarm',:type => :member, :inline => false, :position => true)
+    end
+    
+    def alarm
+      Health.send_notification
     end
     
     def populate
@@ -62,4 +68,9 @@ class HealthController < ApplicationController
         end
       end
     end
+    
+    protected
+     def sendlarm
+       
+     end
 end

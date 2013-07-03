@@ -1,5 +1,5 @@
 class Health< ActiveRecord::Base
-  
+  attr_accessor :status
   self.table_name = "healthes"
   def to_label
     "Health"
@@ -27,6 +27,12 @@ class Health< ActiveRecord::Base
         end
       end
     end
+  end
+  
+  def authorized_for_alarm?
+     mail = (self.deliver_method == 'email' && self.email)
+     text = (self.deliver_method == 'text' && self.cell_phone && self.phone_carrier)
+     self.send_alarm && (mail || text)
   end
   
   def self.truncate
