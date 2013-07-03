@@ -6,7 +6,7 @@ class Health< ActiveRecord::Base
   end
   
   # # this command will run at 12:05, 1:05, etc.
-  # 5 * * * * export RAILS_ENV=staging && cd /data/ivr/curtrent && rails runner  "Health.send_notification" >/dev/null 2>&1
+  # 5 * * * * export RAILS_ENV=staging && cd /data/ivr/current && rails runner  "Health.send_notification" >/dev/null 2>&1
   def self.send_notification
     sms_fu = SMSFu::Client.configure(:delivery => :action_mailer)
     Health.all.each do |h|

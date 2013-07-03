@@ -34,6 +34,13 @@ var loadMessage = {
 			jQuery("#record_description_,.description-input").val(data);
 		}
 }
+function blinkeffect(selector) {
+  $(selector).fadeOut('slow', function() {
+    $(this).fadeIn('slow', function() {
+       blinkeffect(this);
+    });
+ });
+}
 function dump() {	
 }
 (function($){ 

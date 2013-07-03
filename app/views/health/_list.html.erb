@@ -34,20 +34,8 @@
 </table>
 <%= render :partial => 'list_pagination' %>
 <script>
-   function blinkeffect(selector) {
-     $(selector).fadeOut('slow', function() {
-       $(this).fadeIn('slow', function() {
-          blinkeffect(this);
-       });
-    });
-  }
   $(document).ready( function() {
     blinkeffect('img.red-light');
-   /* setInterval(
-    function(){
-        $('.status-column img').toggleClass('on');
-    },500
-   ); 
-   */
+    jQuery('[class=alarm]').attr('title', 'Click to manually send alarm');
   });
 </script>
