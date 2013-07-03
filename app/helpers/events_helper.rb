@@ -4,8 +4,12 @@ module EventsHelper
      p.name if p 
   end
   def action_column(record, column=nil)
-    p = Action.find_by_id(record.action_id)
-    p.name if p
+    if record.kind_of? Event
+      p = Action.find_by_id(record.action_id)
+      p.name if p
+    else
+
+    end
   end
   def identifier_column(record, column=nil)
     if record.identifier =~ /^http|https/

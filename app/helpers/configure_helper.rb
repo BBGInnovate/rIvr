@@ -8,6 +8,7 @@ module ConfigureHelper
       super
     end
   end
+  
   # override active_scaffold/helpers/view_helpers.rb
   # this is to get the branch_id for delete Configure item
   # Since there the id parameter means nothing

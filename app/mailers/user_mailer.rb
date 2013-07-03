@@ -1,10 +1,10 @@
 class UserMailer < ActionMailer::Base
   default :from => "doug@bbg.gov"  
-  # UserMailer.welcome_email(user).deliver worked
-  def alarm_email(user, branch)
-      @user = user
-      @url  = 'http://ivr.bbg.gov'
-      mail(to: @user.email, subject: "No Activity in Branch #{branch} For 6 Hours!")
+  # UserMailer.alarm_email(health, message).deliver worked
+  def alarm_email(health, message)
+      @health = health
+      @message = message
+      mail(to: @health.email, subject: @message)
   end
 
   def signup_notification(user)
