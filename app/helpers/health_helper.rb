@@ -21,7 +21,8 @@ module HealthHelper
     
   def last_event_column(record, column=nil)
     if record.last_event
-      record.last_event.strftime("%Y/%m/%d %H:%M:%S")
+      t = record.last_event.strftime("%Y/%m/%d %H:%M:%S")
+      "<a href='#{list_event_path(record.event_id)}'>#{t}</a>".html_safe
     else
       ""
     end
