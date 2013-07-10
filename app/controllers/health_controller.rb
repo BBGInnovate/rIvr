@@ -47,7 +47,7 @@ class HealthController < ApplicationController
                      :page => true,
                      :inline => false
                      
-      config.action_links << ActiveScaffold::DataStructures::ActionLink.new('alarm', :label => 'Send Alarm',:type => :member, :inline => false, :position => true)
+     # config.action_links << ActiveScaffold::DataStructures::ActionLink.new('alarm', :label => 'Send Alarm',:type => :member, :inline => false, :position => true)
     end
     
     def alarm
@@ -61,9 +61,9 @@ class HealthController < ApplicationController
       events.each_entry do |e|
         act = actions.select{|a| a.id==e[2]}[0]
         b = Health.find_by_branch e[1]
-        if b
+        if b && act
           b.update_attributes :event_id=>e[0], :last_event=>e[3], :event=>act.name
-        else
+        elsif act
           Health.create :branch=>e[1], :event_id=>e[0], :last_event=>e[3], :event=>act.name
         end
       end
