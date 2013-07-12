@@ -25,9 +25,7 @@ class Prompt < ActiveRecord::Base
 #        content = client.upload(from, to)
         FileUtils.cp(file_field.tempfile.path, '/tmp/' + file_field.original_filename)
         file_field.tempfile.unlink
-        client.upload '/tmp/' + file_field.original_filename, 'Public/oddi/'
-              
-                
+        client.upload '/tmp/' + file_field.original_filename, "Public/#{self.branch}/"      
       rescue Exception => msg
         if msg.kind_of? Dropbox::FileNotFoundError
           self.url = nil

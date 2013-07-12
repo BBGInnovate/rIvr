@@ -23,8 +23,8 @@ class ApiController < ApplicationController
   end
 
   def message
-    params[:message] = {:branch=>'oddi'} if !params[:message]
-    feed = params[:message]
+    params[:feed] = {:branch=>'oddi'} if !params[:feed]
+    feed = params[:feed]
     if feed
        branch = feed[:branch].downcase
        @messages = Prompt.where("branch='#{branch}' AND is_active=1").all
@@ -47,12 +47,13 @@ class ApiController < ApplicationController
         # since each IVR solution has http://localhost/Uploads service
         # provide the audio file locally
         # @entries = Entry.where("branch='#{branch}' AND is_private=0 AND (phone_number is null OR phone_number!='#{caller_id}')").all(:select => 'CONCAT("http://localhost/Uploads/", dropbox_file) AS public_url', :order => "id DESC", :limit => feed_limit )
-        @entries = Entry.where("branch='#{branch}' AND is_private=0 AND (phone_number is null OR phone_number!='#{caller_id}')").all(:select => "public_url", :order => "id DESC", :limit => feed_limit )              
+        # @entries = Entry.where("branch='#{branch}' AND is_private=0 AND (phone_number is null OR phone_number!='#{caller_id}')").all(:select => "public_url", :order => "id DESC", :limit => feed_limit )
+        @entries = Entry.where("branch='#{branch}' AND is_private=0").all(:select => "public_url", :order => "id DESC", :limit => feed_limit )              
          if @entries.size == 0
             @entries = parse_feed(options.feed_url, feed_limit)
          end
       else
-        @entries = parse_feed(options.feed_url, feed_limit)
+         @entries = parse_feed(options.feed_url, feed_limit)
       end
       # @entries = @entries.select{|e| url_available?(e.public_url) }
       respond_to do |format|
@@ -74,12 +75,16 @@ class ApiController < ApplicationController
 
   def parse_feed(url, limit=10)
     # url = "http://www.lavoixdelamerique.com/podcast/"
-    doc = Nokogiri::XML(open(url))
     entries = []
-    @links = doc.xpath('//item/enclosure/@url')[0..(limit-1)].each do |i|
-       entry = OpenStruct.new
-       entry.public_url = i.text
-       entries << entry
+    begin
+      doc = Nokogiri::XML(open(url))
+      @links = doc.xpath('//item/enclosure/@url')[0..(limit-1)].each do |i|
+         entry = OpenStruct.new
+         entry.public_url = i.text
+         entries << entry
+      end
+    rescue
+      logger.warn "parse_feed: #{$!}"
     end
     entries
   end
