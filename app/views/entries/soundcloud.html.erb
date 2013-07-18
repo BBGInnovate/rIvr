@@ -1,0 +1,76 @@
+<style>
+body {
+  font-family: Arial,sans serif;
+}
+h2 {
+    color: #149AEF;
+    font-size: 18px;
+    font-weight: normal;
+    margin: 0;
+    padding: 0 0 25px 100px;
+   /* text-transform: lowercase; */
+}
+div {
+  color: #5D5D5D;
+}
+#soundcloud-upload p {
+  clear: both;
+  height: 25px;
+  line-height: 21px;
+}
+#soundcloud-upload label {
+    float: left;
+    margin-left: 0;
+    width: 100px;
+}
+#soundcloud-upload input, #soundcloud-upload textarea {
+  float: left;
+  margin-left: 10px;
+  width: 310px;
+}
+#soundcloud-upload textarea {
+  height: 112px;
+}
+#soundcloud-upload input.btnAction {
+    float: none;
+    height: 31px;
+    margin-top: 20px;
+    width: 100px;
+    font-family: Arial,sans serif;
+    font-size: 14px;
+}
+</style>
+<div id="soundcloud-upload">
+  <h2>Upload Dropbox Public File to Soundcloud</h2>
+  <div id="result">
+    <% if @result =~ /https/ %>
+      Soundcloud link: <%= @result %>
+    <% elsif !!@result %>
+      Error: <%= @result %>
+    <% end %>
+  </div>
+<%= form_tag soundcloud_entry_path, :class => "uploadForm" do %>
+    
+    <input id="soundcloud_id" name="soundcloud[id]" type="hidden" value="<%= @entry.id %>" />
+    <p>
+    <label class="subtle-label" for="soundcloud_url">Url</label>
+    <input id="soundcloud_url" name="soundcloud[url]" type="text" value="<%= @entry.public_url %>" /> 
+    </p>
+    <p>
+    <label class="subtle-label" for="soundcloud_id">Title</label>
+    <input id="soundcloud_title" name="soundcloud[title]" type="text" value="<%= @entry.title %>" />
+    </p>
+    <p>
+    <label class="subtle-label" for="soundcloud_description">Description</label>
+    <textarea id="soundcloud_description" name="soundcloud[description]" value=""></textarea>
+    </p>
+    <p>
+    <label class="subtle-label"> &nbsp;</label>
+    <input type="submit" class="btnAction" value="Submit" />
+    <input type="submit" class="btnAction" value="Cancel" name="cancel" />
+    </p>
+<% end %> 
+</div>
+
+
+

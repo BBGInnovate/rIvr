@@ -11,12 +11,12 @@ class EntriesController < ApplicationController
     config.label = 'Moderation'
 #    config.actions.exclude :create
     config.list.sorting = {:id => 'DESC'}
-    config.columns = [:branch, :public_url, :dropbox_file, :length, :dropbox_dir, :phone_number, :is_private, :created_at, :updated_at]
+    config.columns = [:branch, :public_url, :dropbox_file, :length, :soundcloud_url, :dropbox_dir, :phone_number, :is_private, :created_at, :updated_at]
 #    config.search.text_search = :start
 #    config.search.columns = [:branch, :dropbox_file]
     config.actions.exclude :create, :search
-    
-    config.list.columns.exclude [:created_at, :dropbox_dir]
+    config.columns[:phone_number].label = 'Phone'
+    config.list.columns.exclude [:created_at, :dropbox_dir, :phone_number]
     config.action_links.add 'configure',
                :label => 'Configure',
                :type => :collection,
@@ -38,6 +38,14 @@ class EntriesController < ApplicationController
            :action=>"index",
            :page => true,
            :inline => false
+           
+    config.action_links.add 'soundcloud',
+           :label => "Upload to<br/>SoundCloud".html_safe,
+           :type => :member,
+           :inline => false,
+           :page => true,
+           :security_method=> :display?
+                   
 #    config.action_links.add 'health',
 #               :label => 'Health',
 #               :type => :collection,
@@ -45,8 +53,30 @@ class EntriesController < ApplicationController
 #               :action=>"index",
 #               :page => true,
 #               :inline => false
+    
   end
-
+  def display?(record=nil)
+    if record
+      !!record.public_url
+    else
+      true
+    end
+  end
+  
+  def soundcloud
+    if params[:cancel]
+      redirect_to "/entries" and return
+    end
+    id = params[:id]
+    @result = nil
+    if request.post?
+      @entry = Entry.find_by_id id
+      @result = @entry.copy_to_soundcloud params
+    else
+      @entry = Entry.find_by_id id
+    end
+  end
+  
   def play
     ds = DropboxSession.last
     if !!ds

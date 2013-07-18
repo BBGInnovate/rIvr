@@ -13,7 +13,7 @@ class Configure < ActiveRecord::Base
   end
   
   def self.find_me(branch, name)
-    o = self.where("branch = '#{branch}' AND name='#{name}'").limit(1)
+    o = self.where("branch = '#{branch}' AND name='#{name}'").order("id DESC").limit(1)
     if o.size>0
       o[0]
     else
@@ -30,7 +30,7 @@ class Configure < ActiveRecord::Base
   end
 
   def self.feed_limit(branch)
-    o = self.where("branch = '#{branch}' AND name='feed_limit'").limit(1)
+    o = self.where("branch = '#{branch}' AND name='feed_limit'").order("id DESC").limit(1)
     if o.size>0
       o[0].value.to_i
     else
@@ -40,7 +40,7 @@ class Configure < ActiveRecord::Base
   end
   
   def self.feed_source(branch)
-    o = self.where("branch = '#{branch}' AND name='feed_source'").limit(1)
+    o = self.where("branch = '#{branch}' AND name='feed_source'").order("id DESC").limit(1)
     if o.size>0
       o[0].value
     else
@@ -49,7 +49,7 @@ class Configure < ActiveRecord::Base
     end
   end
   def self.feed_url(branch)
-    o = self.where("branch = '#{branch}' AND name='feed_url'").limit(1)
+    o = self.where("branch = '#{branch}' AND name='feed_url'").order("id DESC").limit(1)
     if o.size>0
       o[0].value
     else
@@ -59,7 +59,7 @@ class Configure < ActiveRecord::Base
   end
   
   def feed_limit
-    o = Configure.where("branch = '#{branch}' AND name='feed_limit'").limit(1)
+    o = Configure.where("branch = '#{branch}' AND name='feed_limit'").order("id DESC").limit(1)
     if o.size>0
       o[0].value.to_i
     else
@@ -68,7 +68,7 @@ class Configure < ActiveRecord::Base
     end
   end
   def feed_source
-    o = Configure.where("branch = '#{branch}' AND name='feed_source'").limit(1)
+    o = Configure.where("branch = '#{branch}' AND name='feed_source'").order("id DESC").limit(1)
     if o.size>0
       o[0].value
     else
@@ -77,7 +77,7 @@ class Configure < ActiveRecord::Base
     end
   end
   def feed_url
-    o = Configure.where("branch = '#{branch}' AND name='feed_url'").limit(1)
+    o = Configure.where("branch = '#{branch}' AND name='feed_url'").order("id DESC").limit(1)
     if o.size>0
       o[0].value
     else

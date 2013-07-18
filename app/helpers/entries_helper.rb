@@ -25,6 +25,15 @@ module EntriesHelper
     end
    end
     
+  def soundcloud_url_column(record, column=nil)
+    if !!record.soundcloud_url
+      f = record.soundcloud_url.split("/").last
+      link_to f, record.soundcloud_url, :target => '_blank'
+    else
+      nil
+    end
+  end
+  
   def is_private_column(record, column=nil)
     !!record.is_private ? "Yes" : "No"
   end

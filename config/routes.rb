@@ -68,6 +68,8 @@ TestIvr::Application.routes.draw do
       put :unsuspend
       delete :purge
       get :play
+      get :soundcloud
+      post :soundcloud
     end
     collection do
       get :authorize

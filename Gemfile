@@ -9,9 +9,12 @@ gem 'mysql2'
 gem 'json'
 gem 'rubyist-aasm', :require => 'aasm' #, :git=>'http://gems.github.com' 
 gem 'active_scaffold', '~> 3.3.0'
-# gem "dropbox-api"
+
 # gem 'dropbox', :git => 'git://github.com/tonywok/dropbox.git', :branch => 'v1'
 gem 'dropbox', :path => '/mnt/dropbox'
+gem 'soundcloud'
+# gem 'youtube_it'
+# gem 'velir_kaltura-ruby', :path=>'/Users/lliu/Downloads/BBG/kaltura-ruby'
 
 gem 'rake'
 gem 'doorkeeper', '~> 0.6.7'

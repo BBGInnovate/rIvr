@@ -21,7 +21,7 @@ class Prompt < ActiveRecord::Base
       to = "/Public/#{self.branch}/"
       from = file_field.tempfile
       begin
-        self.url = DROPBOX[:public_dir] + "/#{self.branch}/#{file}"
+        self.url = DROPBOX.public_dir + "/#{self.branch}/#{file}"
 #        content = client.upload(from, to)
         FileUtils.cp(file_field.tempfile.path, '/tmp/' + file_field.original_filename)
         file_field.tempfile.unlink
@@ -45,7 +45,7 @@ class Prompt < ActiveRecord::Base
   def get_dropbox_session
       ds = DropboxSession.last
       if !!ds
-        dropbox_session = Dropbox::Session.new(DROPBOX[:consumer_key], DROPBOX[:consumer_secret])
+        dropbox_session = Dropbox::Session.new(DROPBOX.consumer_key, DROPBOX.consumer_secret)
         dropbox_session.set_access_token ds.token, ds.secret
         dropbox_session.mode = :dropbox
       else

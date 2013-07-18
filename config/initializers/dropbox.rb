@@ -1,28 +1,23 @@
-#Dropbox::API::Config.app_key='0pk3wj3qyq7be7q'
-#Dropbox::API::Config.app_secret='v6ujmd2ywlcgtq7'
-#Dropbox::API::Config.mode= "dropbox"
-# https://github.com/kenpratt/dropbox-client-ruby
-def symbolize_keys(hash)
-    hash.inject({}){|res, (key, val)|
-      nkey = case key
-        when String
-        key.to_sym
-      else
-        key
-      end
-      nval = case val
-        when Hash, Array
-        symbolize_keys(val)
-      else
-        val
-      end
-      res[nkey] = nval
-      res
-    }
+require 'ostruct'
+def hashes2ostruct(object)
+  return case object
+  when Hash
+    object = object.clone
+    object.each do |key, value|
+      object[key] = hashes2ostruct(value)
+    end
+    OpenStruct.new(object)
+  when Array
+    object = object.clone
+    object.map! { |i| hashes2ostruct(i) }
+  else
+    object
+  end
 end
+res = YAML.load_file("#{::Rails.root}/config/dropbox.yml")
+DROPBOX = hashes2ostruct res.delete(Rails.env)
+res = YAML.load_file("#{::Rails.root}/config/soundcloud.yml")
+SOUNDCLOUD = hashes2ostruct res.delete(Rails.env)
+res = YAML.load_file("#{::Rails.root}/config/youtube.yml")
+YOUTUBE = hashes2ostruct res.delete(Rails.env)
 
-conf = "#{::Rails.root}/config/dropbox.yml"
-res = YAML.load_file(conf)
-DROPBOX = symbolize_keys res.delete(Rails.env)
-
-    

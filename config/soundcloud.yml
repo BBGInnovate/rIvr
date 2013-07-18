@@ -1,0 +1,58 @@
+development:
+  client_id: 6691b64f50b95655fab93e0b9bb5dba1
+  client_secret: 31749231dbf136af037d19f5b33ac110
+  access_token: 1-45851-51237388-03f7514b54222cf
+staging:
+  client_id: 6691b64f50b95655fab93e0b9bb5dba1
+  client_secret: 31749231dbf136af037d19f5b33ac110
+  access_token: 1-45851-51237388-03f7514b54222cf
+production:
+  client_id: 6691b64f50b95655fab93e0b9bb5dba1
+  client_secret: 31749231dbf136af037d19f5b33ac110
+  access_token: 1-45851-51237388-0ad22fdabd5e605
+  
+#require 'soundcloud'
+#
+## create client object with app credentials
+# dev get non expire token
+#https://soundcloud.com/connect?scope=non-expiring&response_type=code_and_token&client_id=9f521e2ff3c22c7f772c08ada34ac817&redirect_uri=http://ivr.bbg.gov/&
+## staging get non expire token
+#https://soundcloud.com/connect?scope=non-expiring&response_type=code_and_token&client_id=6691b64f50b95655fab93e0b9bb5dba1&redirect_uri=http://ivr.bbg.gov/&
+#
+#
+#client_id='6691b64f50b95655fab93e0b9bb5dba1'
+#client_secret='31749231dbf136af037d19f5b33ac110'
+#client = Soundcloud.new(:client_id => client_id,
+#                        :client_secret => client_secret,
+#                        :scope=>'non-expiring',
+#                        :redirect_uri => 'http://ivr.bbg.gov/')
+## redirect user to authorize URL
+##puts client.authorize_url()
+#
+#access_token="1-45836-51237388-777c29c32616ec0" # non-expire dev
+#access_token="1-45851-51237388-03f7514b54222cf" # non-expire - staging
+#client = Soundcloud.new(:access_token => access_token)
+#current_user = client.get('/me')
+#puts current_user.username
+##
+#f='/Users/lliu/Dropbox/bbg/Nouakchott/1373640172177.wav'
+#f='https://dl.dropboxusercontent.com/u/193053939/1369403232982.wav'
+#begin
+#track = client.post('/tracks', :track=>{
+#  :title => 'a new track',
+#  :description=>"my description",
+#  :duration=>12345,
+#  :downloadable => true,
+#  :sharing=>'public',
+#  :track_type=>'bbg',
+#  :types=>"bbg",
+#  :genre=>"oddi",
+#  :tag_list=>"oddi",
+#  :permalink=>"nouakchott-munching-at-tiannas-house",
+#  :asset_data   => open(f)
+#})
+#rescue
+#  puts "AAAA #{$!.message}"
+#end 
+#track.id #=> 101323605
+#track = client.get('/tracks/101323605')

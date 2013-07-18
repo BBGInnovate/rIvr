@@ -1,4 +1,5 @@
 require 'dropbox'
+require 'open-uri'
 class Entry< ActiveRecord::Base
   before_save :add_properties
   after_destroy :delete_from_dropbox
@@ -50,7 +51,7 @@ class Entry< ActiveRecord::Base
       from = file_path
       begin
         if !self.is_private
-          self.public_url = DROPBOX[:public_dir] + "/#{self.branch}/#{self.dropbox_file}"
+          self.public_url = DROPBOX.public_dir + "/#{self.branch}/#{self.dropbox_file}"
           content = client.copy(from, to)
           # self.save
         elsif self.public_url
@@ -66,6 +67,33 @@ class Entry< ActiveRecord::Base
         # do nothing
       end
     end
+  end
+  def copy_to_soundcloud(params)
+    return if !self.public_url
+    client = Soundcloud.new(:access_token => SOUNDCLOUD.access_token)
+    s = params[:soundcloud]
+    self.title = s[:title] || self.dropbox_file
+    begin
+      track = client.post('/tracks', :track=>{
+        :title => self.title,
+        :description=>s[:description],
+        :duration=>self.length*1000,
+        :downloadable => true,
+        :sharing=>'public',
+        :track_type=>'bbg',
+        :types=>"bbg",
+        :genre=>self.branch,
+        :tag_list=>self.dropbox_dir.sub("/",' '),
+        :asset_data   => open(self.public_url)
+      })
+      self.soundcloud_url = track.permalink_url
+      self.save
+      return self.soundcloud_url
+    rescue
+       logger.warn "Entry#copy_to_soundcloud #{$!.message}"
+       return "#{$!.message}"
+    end
+    
   end
   
   def add_properties
@@ -94,7 +122,7 @@ class Entry< ActiveRecord::Base
   def get_dropbox_session
     ds = DropboxSession.last
     if !!ds
-      dropbox_session = Dropbox::Session.new(DROPBOX[:consumer_key], DROPBOX[:consumer_secret])
+      dropbox_session = Dropbox::Session.new(DROPBOX.consumer_key, DROPBOX.consumer_secret)
       dropbox_session.set_access_token ds.token, ds.secret
       dropbox_session.mode = :dropbox
     else
