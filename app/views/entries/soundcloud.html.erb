@@ -3,7 +3,7 @@ body {
   font-family: Arial,sans serif;
 }
 h2 {
-    color: #149AEF;
+    color: #004276;
     font-size: 18px;
     font-weight: normal;
     margin: 0;
@@ -15,7 +15,7 @@ div {
 }
 </style>
 <div id="soundcloud-upload">
-  <h2>Upload Dropbox Public File to Soundcloud</h2>
+  <h2>Upload Dropbox Public File to SoundCloud</h2>
   <div id="result">
     <% if @result =~ /^http/ %>
       Soundcloud link: <%= @result %>
@@ -28,7 +28,7 @@ div {
     <input id="soundcloud_id" name="soundcloud[id]" type="hidden" value="<%= @entry.id %>" />
     <p>
     <label class="subtle-label" for="soundcloud_url">Url</label>
-    <input id="soundcloud_url" name="soundcloud[url]" type="text" value="<%= @entry.public_url %>" /> 
+    <input readonly="readonly" id="soundcloud_url" name="soundcloud[url]" type="text" value="<%= @entry.public_url %>" /> 
     </p>
     <p>
     <label class="subtle-label" for="soundcloud_id">Title</label>

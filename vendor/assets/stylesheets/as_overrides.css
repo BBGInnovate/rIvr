@@ -82,3 +82,14 @@ section .equal {
     font-family: Arial,sans serif;
     font-size: 14px;
 }
+input.btnAction:hover {
+  background-color:#004276;
+  cursor: pointer; 
+  color: #FFF;
+}
+
+/*
+a.soundcloud:hover {
+  background-color:yellow;
+} */
+

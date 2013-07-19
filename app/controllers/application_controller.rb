@@ -4,6 +4,7 @@ class ApplicationController < ActionController::Base
     conf.list.per_page = 40
   end
   def authorize
+    # comment next line if you want to re-authenticate user
     return if DropboxSession.last
     if params[:oauth_token] then
       dropbox_session = Dropbox::Session.deserialize(session[:dropbox_session])

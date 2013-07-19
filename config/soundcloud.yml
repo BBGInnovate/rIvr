@@ -12,7 +12,35 @@ production:
   access_token: 1-45851-51237388-0ad22fdabd5e605
   
 #require 'soundcloud'
-#
+#begin
+#client = Soundcloud.new(:access_token => SOUNDCLOUD.access_token)
+# fetch track to stream
+#track = client.get('/tracks/293')
+#track.permalink_url
+#find track id:
+#https://api.soundcloud.com/resolve.json?url=http://soundcloud.com/forss/flickermood&client_id=6691b64f50b95655fab93e0b9bb5dba1
+#https://api.soundcloud.com/tracks/293/download?client_id=6691b64f50b95655fab93e0b9bb5dba1
+## below is the sound stream file:
+#https://api.soundcloud.com/tracks/293/stream?client_id=6691b64f50b95655fab93e0b9bb5dba1
+
+# get the tracks streaming URL
+#stream_url = client.get(track.stream_url, :allow_redirects=>false)
+## print the tracks stream URL
+#puts stream_url.location
+
+
+## 51237388 == user broadcastingivr
+#tracks= client.get('/users/51237388/tracks')
+#tracks.each do | a |
+#   if a.label_name == "1371826301045.wav"
+#    # do something
+#   end
+#end 
+#rescue
+#puts "#{$!.message}"
+#end
+
+# http://api.soundcloud.com/apps/6691b64f50b95655fab93e0b9bb5dba1/tracks
 ## create client object with app credentials
 # dev get non expire token
 #https://soundcloud.com/connect?scope=non-expiring&response_type=code_and_token&client_id=9f521e2ff3c22c7f772c08ada34ac817&redirect_uri=http://ivr.bbg.gov/&

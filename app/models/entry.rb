@@ -82,7 +82,8 @@ class Entry< ActiveRecord::Base
         :sharing=>'public',
         :track_type=>'bbg',
         :types=>"bbg",
-        :genre=>self.branch,
+        :label_name=>self.dropbox_file,
+        :genre=>self.dropbox_dir.sub("/",'-'),
         :tag_list=>self.dropbox_dir.sub("/",' '),
         :asset_data   => open(self.public_url)
       })

@@ -40,7 +40,7 @@ class EntriesController < ApplicationController
            :inline => false
            
     config.action_links.add 'soundcloud',
-           :label => "Upload to<br/>SoundCloud".html_safe,
+           :label => "<span title='Upload to SoundCloud'>SoundCloud</span>".html_safe,
            :type => :member,
            :inline => false,
            :page => true,
