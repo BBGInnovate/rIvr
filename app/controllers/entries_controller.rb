@@ -72,6 +72,7 @@ class EntriesController < ApplicationController
     if request.post?
       @entry = Entry.find_by_id id
       @result = @entry.copy_to_soundcloud params
+      # redirect_to "/entries"
     else
       @entry = Entry.find_by_id id
     end
@@ -80,7 +81,7 @@ class EntriesController < ApplicationController
   def play
     ds = DropboxSession.last
     if !!ds
-      dropbox_session = Dropbox::Session.new('0pk3wj3qyq7be7q', 'v6ujmd2ywlcgtq7')
+      dropbox_session = Dropbox::Session.new(DROPBOX.consumer_key, DROPBOX.consumer_secret)
       dropbox_session.set_access_token ds.token, ds.secret
       dropbox_session.mode = :dropbox
       e = Entry.find_by_id params[:id]

@@ -56,3 +56,29 @@ section .equal {
 }
 .status-column img.off{background-position: -352px 0;}
 .status-column img.on{background-position: -352px -73px; background-color: #FF0000;}
+#soundcloud-upload p {
+  clear: both;
+  height: 25px;
+  line-height: 21px;
+}
+#soundcloud-upload label {
+    float: left;
+    margin-left: 0;
+    width: 100px;
+}
+#soundcloud-upload input, #soundcloud-upload textarea {
+  float: left;
+  margin-left: 10px;
+  width: 310px;
+}
+#soundcloud-upload textarea {
+  height: 112px;
+}
+#soundcloud-upload input.btnAction {
+    float: none;
+    height: 31px;
+    margin-top: 20px;
+    width: 100px;
+    font-family: Arial,sans serif;
+    font-size: 14px;
+}

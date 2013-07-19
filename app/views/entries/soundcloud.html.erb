@@ -13,37 +13,11 @@ h2 {
 div {
   color: #5D5D5D;
 }
-#soundcloud-upload p {
-  clear: both;
-  height: 25px;
-  line-height: 21px;
-}
-#soundcloud-upload label {
-    float: left;
-    margin-left: 0;
-    width: 100px;
-}
-#soundcloud-upload input, #soundcloud-upload textarea {
-  float: left;
-  margin-left: 10px;
-  width: 310px;
-}
-#soundcloud-upload textarea {
-  height: 112px;
-}
-#soundcloud-upload input.btnAction {
-    float: none;
-    height: 31px;
-    margin-top: 20px;
-    width: 100px;
-    font-family: Arial,sans serif;
-    font-size: 14px;
-}
 </style>
 <div id="soundcloud-upload">
   <h2>Upload Dropbox Public File to Soundcloud</h2>
   <div id="result">
-    <% if @result =~ /https/ %>
+    <% if @result =~ /^http/ %>
       Soundcloud link: <%= @result %>
     <% elsif !!@result %>
       Error: <%= @result %>
@@ -67,7 +41,7 @@ div {
     <p>
     <label class="subtle-label"> &nbsp;</label>
     <input type="submit" class="btnAction" value="Submit" />
-    <input type="submit" class="btnAction" value="Cancel" name="cancel" />
+    <input type="submit" class="btnAction" value="Back" name="cancel" />
     </p>
 <% end %> 
 </div>
