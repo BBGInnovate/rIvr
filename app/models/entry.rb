@@ -4,6 +4,7 @@ class Entry< ActiveRecord::Base
   before_save :add_properties
   after_destroy :delete_from_dropbox
   before_save :copy_to_public
+  has_one :soundkloud, :dependent => :destroy, :foreign_key=>"entry_id"
   
   HUMANIZED_COLUMNS = {:size=>"Size (bytes)"}
 
@@ -68,28 +69,29 @@ class Entry< ActiveRecord::Base
       end
     end
   end
-  def copy_to_soundcloud(params)
+  def copy_to_soundcloud(soundcloud)
     return if !self.public_url
     client = Soundcloud.new(:access_token => SOUNDCLOUD.access_token)
-    s = params[:soundcloud]
-    self.title = s[:title] || self.dropbox_file
     begin
       track = client.post('/tracks', :track=>{
-        :title => self.title,
-        :description=>s[:description],
+        :title => soundcloud.title,
+        :description=>soundcloud.description,
         :duration=>self.length*1000,
         :downloadable => true,
         :sharing=>'public',
         :track_type=>'bbg',
         :types=>"bbg",
         :label_name=>self.dropbox_file,
-        :genre=>s[:genre],
+        :genre=>soundcloud.genre,
         :tag_list=>self.dropbox_dir.sub("/",' '),
         :asset_data   => open(self.public_url)
       })
-      self.soundcloud_url = track.permalink_url
-      self.save
-      return self.soundcloud_url
+      delete_from_soundcloud #delete old one first
+      soundcloud.track_id = track.id
+      soundcloud.url = track.permalink_url
+      soundcloud.entry_id = self.id
+      soundcloud.save
+      return self.soundkloud.url
     rescue
        logger.warn "Entry#copy_to_soundcloud #{$!.message}"
        return "#{$!.message}"
@@ -108,16 +110,16 @@ class Entry< ActiveRecord::Base
     rescue Exception => msg
       logger.debug "#{msg}"
     end
-    if self.soundcloud_url
+    delete_from_soundcloud
+  end
+  def delete_from_soundcloud
+    if self.soundkloud.id
       begin
-        client = Soundcloud.new(:client_id =>SOUNDCLOUD.client_id)
-        track = client.get('/resolve',:url=>self.soundcloud_url)
         client = Soundcloud.new(:access_token => SOUNDCLOUD.access_token)
-        client.delete "/tracks/#{track.id}"
+        client.delete "/tracks/#{self.soundkcloud.track_id}"
       rescue Exception => msg
-        logger.debug "ERROR: resolve #{self.soundcloud_url} #{msg}"
+        logger.debug "ERROR: resolve #{self.soundkloud.url} #{msg}"
       end
-    end
   end
   
   def dropbox_dir

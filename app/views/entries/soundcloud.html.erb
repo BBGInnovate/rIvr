@@ -20,7 +20,9 @@ div {
     <% if @result =~ /^http/ %>
       <span class="success">Soundcloud link: <%= @result %></scan>
     <% elsif !!@result %>
-      <span class="error">Error: <%= @result %></span>
+      <span class="error">
+        <%= @result %>
+      </span>
     <% end %>
   </div>
 <%= form_tag soundcloud_entry_path, :class => "uploadForm" do %>
@@ -32,15 +34,15 @@ div {
     </p>
     <p>
     <label class="subtle-label" for="soundcloud_title">Title*</label>
-    <input id="soundcloud_title" name="soundcloud[title]" type="text" value="<%= @entry.title %>" />
+    <input id="soundcloud_title" name="soundcloud[title]" type="text" value="<%= @soundcloud.title %>" />
     </p>
     <p>
-    <label class="subtle-genre" for="soundcloud_id">Genre</label>
-    <input id="soundcloud_genre" name="soundcloud[genre]" type="text" value="<%= @entry.dropbox_dir.sub("/",'-') %>" />
+    <label class="subtle-genre" for="soundcloud_genre" title="Used as search filter">Genre</label>
+    <input id="soundcloud_genre" name="soundcloud[genre]" type="text" value="<%= @soundcloud.genre || @entry.dropbox_dir.sub("/",'-') %>" />
     </p>
     <p>
     <label class="subtle-label" for="soundcloud_description">Description</label>
-    <textarea id="soundcloud_description" name="soundcloud[description]" value=""></textarea>
+    <textarea id="soundcloud_description" name="soundcloud[description]"><%= @soundcloud.description %></textarea>
     </p>
     <p>
     <label class="subtle-label"> &nbsp;</label>

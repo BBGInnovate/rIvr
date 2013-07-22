@@ -26,9 +26,9 @@ module EntriesHelper
    end
     
   def soundcloud_url_column(record, column=nil)
-    if !!record.soundcloud_url
-      f = record.soundcloud_url.split("/").last
-      link_to f, record.soundcloud_url, :target => '_blank'
+    if !!record.soundkloud
+      f = record.soundkloud.url.split("/").last
+      link_to f, record.soundkloud.url, :target => '_blank'
     else
       nil
     end

@@ -39,12 +39,12 @@ class EntriesController < ApplicationController
            :page => true,
            :inline => false
            
-    config.action_links.add 'soundcloud',
-           :label => "<span title='Upload to SoundCloud'>SoundCloud</span>".html_safe,
-           :type => :member,
-           :inline => false,
-           :page => true,
-           :security_method=> :display?
+#    config.action_links.add 'soundcloud',
+#           :label => "<span title='Upload to SoundCloud'>SoundCloud</span>".html_safe,
+#           :type => :member,
+#           :inline => false,
+#           :page => true,
+#           :security_method=> :display?
                    
 #    config.action_links.add 'health',
 #               :label => 'Health',
@@ -68,13 +68,24 @@ class EntriesController < ApplicationController
       redirect_to "/entries" and return
     end
     id = params[:id]
+    @entry = Entry.find_by_id id
+    if @entry.soundkloud
+      @soundcloud = @entry.soundkloud
+    else
+      @soundcloud = Soundkloud.new
+    end
+    
     @result = nil
     if request.post?
-      @entry = Entry.find_by_id id
-      @result = @entry.copy_to_soundcloud params
-      # redirect_to "/entries"
-    else
-      @entry = Entry.find_by_id id
+      s = params[:soundcloud]
+      @soundcloud.title = s[:title]
+      @soundcloud.genre = s[:genre]
+      @soundcloud.description=s[:description]
+      if @soundcloud.valid?
+        @result = @entry.copy_to_soundcloud @soundcloud
+      else   
+        @result = @soundcloud.errors.full_messages
+      end
     end
   end
   
