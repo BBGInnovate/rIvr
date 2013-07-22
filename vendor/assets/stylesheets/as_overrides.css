@@ -87,7 +87,12 @@ input.btnAction:hover {
   cursor: pointer; 
   color: #FFF;
 }
-
+.error {
+  color: red;
+}
+.success {
+  color: green;
+}
 /*
 a.soundcloud:hover {
   background-color:yellow;

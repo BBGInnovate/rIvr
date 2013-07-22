@@ -83,7 +83,7 @@ class Entry< ActiveRecord::Base
         :track_type=>'bbg',
         :types=>"bbg",
         :label_name=>self.dropbox_file,
-        :genre=>self.dropbox_dir.sub("/",'-'),
+        :genre=>s[:genre],
         :tag_list=>self.dropbox_dir.sub("/",' '),
         :asset_data   => open(self.public_url)
       })
@@ -108,8 +108,18 @@ class Entry< ActiveRecord::Base
     rescue Exception => msg
       logger.debug "#{msg}"
     end
+    if self.soundcloud_url
+      begin
+        client = Soundcloud.new(:client_id =>SOUNDCLOUD.client_id)
+        track = client.get('/resolve',:url=>self.soundcloud_url)
+        client = Soundcloud.new(:access_token => SOUNDCLOUD.access_token)
+        client.delete "/tracks/#{track.id}"
+      rescue Exception => msg
+        logger.debug "ERROR: resolve #{self.soundcloud_url} #{msg}"
+      end
+    end
   end
-
+  
   def dropbox_dir
      read_attribute(:dropbox_dir) || "bbg/#{self.branch}"
   end

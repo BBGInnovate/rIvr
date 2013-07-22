@@ -18,9 +18,9 @@ div {
   <h2>Upload Dropbox Public File to SoundCloud</h2>
   <div id="result">
     <% if @result =~ /^http/ %>
-      Soundcloud link: <%= @result %>
+      <span class="success">Soundcloud link: <%= @result %></scan>
     <% elsif !!@result %>
-      Error: <%= @result %>
+      <span class="error">Error: <%= @result %></span>
     <% end %>
   </div>
 <%= form_tag soundcloud_entry_path, :class => "uploadForm" do %>
@@ -31,8 +31,12 @@ div {
     <input readonly="readonly" id="soundcloud_url" name="soundcloud[url]" type="text" value="<%= @entry.public_url %>" /> 
     </p>
     <p>
-    <label class="subtle-label" for="soundcloud_id">Title</label>
+    <label class="subtle-label" for="soundcloud_title">Title*</label>
     <input id="soundcloud_title" name="soundcloud[title]" type="text" value="<%= @entry.title %>" />
+    </p>
+    <p>
+    <label class="subtle-genre" for="soundcloud_id">Genre</label>
+    <input id="soundcloud_genre" name="soundcloud[genre]" type="text" value="<%= @entry.dropbox_dir.sub("/",'-') %>" />
     </p>
     <p>
     <label class="subtle-label" for="soundcloud_description">Description</label>
@@ -40,11 +44,16 @@ div {
     </p>
     <p>
     <label class="subtle-label"> &nbsp;</label>
-    <input type="submit" class="btnAction" value="Submit" />
+    <input type="submit" class="btnAction" id="submit" value="Submit" />
     <input type="submit" class="btnAction" value="Back" name="cancel" />
     </p>
 <% end %> 
 </div>
+<script>
+$(document).ready(function() {
+  required.init();
+});
+</script>
 
 
 

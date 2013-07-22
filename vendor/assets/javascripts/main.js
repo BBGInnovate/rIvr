@@ -34,6 +34,19 @@ var loadMessage = {
 			jQuery("#record_description_,.description-input").val(data);
 		}
 }
+var required = {
+		init : function() {
+			jQuery("#submit").click( function(e) {
+				var v = jQuery("#soundcloud_title").val();
+				if (v) {
+				  // jQuery('#uploadForm').submit();
+				} else {
+					jQuery('#result').html("<span class='error'>Error: Title is required</span>");
+					return false;
+				}
+			});
+		}
+}
 function blinkeffect(selector) {
   $(selector).fadeOut('slow', function() {
     $(this).fadeIn('slow', function() {
