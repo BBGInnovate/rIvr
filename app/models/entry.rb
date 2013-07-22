@@ -120,6 +120,7 @@ class Entry< ActiveRecord::Base
       rescue Exception => msg
         logger.debug "ERROR: resolve #{self.soundkloud.url} #{msg}"
       end
+    end
   end
   
   def dropbox_dir
@@ -128,6 +129,59 @@ class Entry< ActiveRecord::Base
 
   def branch=(value)
     write_attribute :branch, value.downcase
+  end
+  def self.sync_dropbox
+    client = Entry.new.send "get_dropbox_session"
+    self.all.each do | e |
+      begin
+        client.metadata e.file_path
+      rescue
+       # e.destroy
+        puts "#{e.file_path} not in Dropbox, deleting"
+      end
+    end
+  end
+  
+  def self.populate
+    client = Entry.new.get_dropbox_session
+    client.list('bbg').each do |d|
+      if d.is_dir
+        # path="/bbg/Addis" 
+        client.list(d.path).each do | s |
+          self.add_entry(s)
+        end  
+      end
+    end
+  end
+  def self.add_entry(s)
+    if !s.is_dir
+      arr = s.path.split('/')
+      d_br = arr[2].to_s
+      d_file = arr.last
+      d_dir = arr[1..2].join('/')
+      begin
+        meta = client.metadata "Public/" + arr[2..3].join('/')
+        meta = true if !!meta
+      rescue
+        meta = nil
+      end
+      e = Entry.find_by_dropbox_file d_file
+      if !e
+        Entry.create :branch=>'aaa',
+           :dropbox_file => d_file,
+           :dropbox_dir=>d_dir,
+           :mime_type=>s.mime_type,
+           :phone_number=>'unknown',
+           :is_private=>!meta
+      else
+        e.is_private = !meta
+        e.save
+      end  
+    end
+  end
+  
+  def self.truncate
+    connection.execute "truncate table #{table_name}"
   end
   
   protected
@@ -141,10 +195,6 @@ class Entry< ActiveRecord::Base
     else
       nil
     end
-    # token = dropbox_session.access_token
-    # res = token.post "https://api.dropbox.com/1/shares/dropbox/bbg/oddi/Desert.jpg"
-    # json = JSON.parse res.body
-    # shared_link = json['url']
     dropbox_session
   end
 end

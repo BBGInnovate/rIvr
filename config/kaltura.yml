@@ -1,0 +1,21 @@
+email: lliu@metrostarsystems.com
+password: Changsha6!
+partner_id: 1175831
+sub_partner_id: 117583100
+admin_secret: 15adcfc9bdc5962caf963d1338b0f738
+user_secret: a638b2f8fe746852de31344252a31a7e
+#
+#
+#gem install kaltura
+#
+#gem install velir_kaltura-ruby
+#
+#"rails" from railties conflicts with installed executable from rails
+#
+#cd /Users/lliu/Downloads/BBG/
+#git clone git@github.com:/Velir/kaltura-ruby.git
+#cd kaltura-ruby
+#gem build velir_kaltura-ruby.gemspec
+#Gemfile:
+#gem 'velir_kaltura-ruby', :path=>'/Users/lliu/Downloads/BBG/kaltura-ruby'
+

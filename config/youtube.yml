@@ -1,0 +1,66 @@
+projectNumber: 458450266734
+projectID: broadcastingbbg
+server:
+  API key: AIzaSyCV9RHwmQvNTaEkpeVAZhg5hwDmd7x6Ed8
+  clientID: 458450266734.apps.googleusercontent.com
+  email: 458450266734@developer.gserviceaccount.com
+  publickey: 39fd05e9b28934007a0eb6083d8b4752562c24d8
+development:
+  username: broadcastingivr
+  password: bbgIVR$#
+  developer_key: AI39si65z8HmeUVHRRWE9fCLq_eJu2yVAs8ekCQ2EpgtrEF2zcg2bMqvgvEzb0496j61NOsXHEMAN4T8Femx3eLTzlrRTEf6Bg
+  serverapi_key: AIzaSyCV9RHwmQvNTaEkpeVAZhg5hwDmd7x6Ed8
+  client_id: 458450266734-mpgrbiopsa7pdl2hmded2efr1r4tm9lh.apps.googleusercontent.com
+  email: 458450266734-mpgrbiopsa7pdl2hmded2efr1r4tm9lh@developer.gserviceaccount.com
+  client_secret:  WGO3QRPEL_G8VM5AOjU76emQ
+  redirect_url:  http://localhost/
+
+#require 'youtube_it'
+#client = YouTubeIt::Client.new(:username => YOUTUBE.username, :password =>YOUTUBE.password, :dev_key => YOUTUBE.developer_key)
+#client.my_videos
+#v=client.video_upload(File.open("/Users/lliu/vidcon/public/samples/bonjour.mp4"), 
+#  :title => "Children of the World",
+#  :description => 'A plea from the children of the world for leadership, compassion, and protection.', 
+#  :category => 'People',:keywords => %w[children world],
+#  :comment => 'denied', 
+#  :private => true)
+#v=client.my_video("qjdWNwb2Vxk")
+#v.unique_id #=> qjdWNwb2Vxk
+#client.video_delete("qjdWNwb2Vxk")
+#
+#opts = {:title => 'title',:description => 'desc',:category => 'People',:keywords => ['test']}
+#client.upload_token(opts)
+#
+#client = YouTubeIt::OAuth2Client.new(client_access_token: "access_token", client_refresh_token: "refresh_token", client_id: YOUTUBE.client_id, client_secret: YOUTUBE.client_secret, dev_key: YOUTUBE.developer_key", expires_at: "expiration time")
+#
+
+# Initialize the client & Google+ API
+
+#require 'google/api_client'
+#require 'json'
+#client = Google::APIClient.new
+#youtube = client.discovered_api('youtube', 'v3')
+#client.authorization = nil
+#result = client.execute :key => YOUTUBE.serverAPIkey, :api_method => youtube.videos.list, :parameters => {:part => 'snippet'}
+#result = JSON.parse(result.data.to_json)
+#
+#
+#plus = client.discovered_api('plus')
+#youtube = client.discovered_api('youtube', 'v3')
+## Initialize OAuth 2.0 client    
+#client.authorization.client_id = YOUTUBE.web.clientID
+#client.authorization.client_secret = YOUTUBE.web.clientSecret
+#client.authorization.redirect_uri = YOUTUBE.web.redirectURI
+#client.authorization.scope = 'https://www.googleapis.com/auth/plus.me'
+## Request authorization
+#redirect_uri = client.authorization.authorization_uri
+## Wait for authorization code then exchange for token
+#client.authorization.code = '....'
+#client.authorization.fetch_access_token!
+## Make an API call
+#result = client.execute(
+#   :api_method => plus.activities.list,
+#   :parameters => {'collection' => 'public', 'userId' => 'me'}
+#)
+#puts result.data
+
