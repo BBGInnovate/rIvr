@@ -39,12 +39,12 @@ class EntriesController < ApplicationController
            :page => true,
            :inline => false
            
-#    config.action_links.add 'soundcloud',
-#           :label => "<span title='Upload to SoundCloud'>SoundCloud</span>".html_safe,
-#           :type => :member,
-#           :inline => false,
-#           :page => true,
-#           :security_method=> :display?
+    config.action_links.add 'soundcloud',
+           :label => "<span title='Upload to SoundCloud'>SoundCloud</span>".html_safe,
+           :type => :member,
+           :inline => false,
+           :page => true,
+           :security_method=> :display?
                    
 #    config.action_links.add 'health',
 #               :label => 'Health',

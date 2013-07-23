@@ -33,7 +33,7 @@ class Entry< ActiveRecord::Base
     "Entry"
   end
   def soundcloud_url
-    self.soundkloud.url
+    self.soundkloud ? self.soundkloud.url : ""
   end
   
   def shared_link
@@ -120,7 +120,7 @@ class Entry< ActiveRecord::Base
     delete_from_soundcloud
   end
   def delete_from_soundcloud
-    if self.soundkloud.id
+    if self.soundkloud
       begin
         client = Soundcloud.new(:access_token => SOUNDCLOUD.access_token)
         client.delete "/tracks/#{self.soundkcloud.track_id}"
@@ -143,14 +143,14 @@ class Entry< ActiveRecord::Base
       begin
         client.metadata e.file_path
       rescue
-       # e.destroy
-        puts "#{e.file_path} not in Dropbox, deleting"
+        # e.destroy
+        puts "#{e.file_path} not in Dropbox, should be deleting"
       end
     end
   end
   
   def self.populate
-    client = Entry.new.get_dropbox_session
+    client = Entry.new.send "get_dropbox_session"
     client.list('bbg').each do |d|
       if d.is_dir
         # path="/bbg/Addis" 
@@ -174,7 +174,7 @@ class Entry< ActiveRecord::Base
       end
       e = Entry.find_by_dropbox_file d_file
       if !e
-        Entry.create :branch=>'aaa',
+        Entry.create :branch=>d_br,
            :dropbox_file => d_file,
            :dropbox_dir=>d_dir,
            :mime_type=>s.mime_type,
@@ -182,6 +182,7 @@ class Entry< ActiveRecord::Base
            :is_private=>!meta
       else
         e.is_private = !meta
+        e.branch = d_br 
         e.save
       end  
     end
