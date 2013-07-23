@@ -63,6 +63,7 @@ ssh -i ${keyfile} -t ${host} -l ${user} \
    rm -rf current/public/prompt; \
    ln -s $shared/prompt current/public/prompt; \
    cd current; \
+   sudo chmod -R 777 *; \
    touch tmp/restart.txt;\
    sudo chown -R ${app_user}:${app_user} /data/ivr; "
 

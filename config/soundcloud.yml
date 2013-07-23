@@ -2,14 +2,17 @@ development:
   client_id: 6691b64f50b95655fab93e0b9bb5dba1
   client_secret: 31749231dbf136af037d19f5b33ac110
   access_token: 1-45851-51237388-03f7514b54222cf
+  upload_by: BroadcastingIVR
 staging:
   client_id: 6691b64f50b95655fab93e0b9bb5dba1
   client_secret: 31749231dbf136af037d19f5b33ac110
   access_token: 1-45851-51237388-03f7514b54222cf
+  upload_by: BroadcastingIVR
 production:
   client_id: 6691b64f50b95655fab93e0b9bb5dba1
   client_secret: 31749231dbf136af037d19f5b33ac110
   access_token: 1-45851-51237388-0ad22fdabd5e605
+  upload_by: BroadcastingIVR
   
 #require 'soundcloud'
 #begin

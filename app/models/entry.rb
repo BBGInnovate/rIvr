@@ -85,7 +85,7 @@ class Entry< ActiveRecord::Base
         :sharing=>'public',
         :track_type=>'bbg',
         :types=>"bbg",
-        :label_name=>self.dropbox_file,
+        :label_name=>SOUNDCLOUD.upload_by,
         :genre=>soundcloud.genre,
         :tag_list=>self.dropbox_dir.sub("/",' '),
         :asset_data   => open(self.public_url)
