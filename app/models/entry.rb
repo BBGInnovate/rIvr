@@ -35,6 +35,13 @@ class Entry< ActiveRecord::Base
   def soundcloud_url
     self.soundkloud ? self.soundkloud.url : ""
   end
+  def soundcloud_url=(url)
+    if self.soundkloud 
+      self.soundkloud.url = url
+    else
+      Soundkloud.create :url=>url, :entry_id=>self.id
+    end
+  end
   
   def shared_link
     if !self.is_private && !self.public_url

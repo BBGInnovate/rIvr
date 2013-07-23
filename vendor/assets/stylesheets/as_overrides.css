@@ -87,8 +87,8 @@ input.btnAction:hover {
   cursor: pointer; 
   color: #FFF;
 }
-.error, a.error {
-  color: red;
+.error, a.error:link {
+  color: red !important;
 }
 .success {
   color: green;
