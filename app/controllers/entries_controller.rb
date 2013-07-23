@@ -141,6 +141,11 @@ class EntriesController < ApplicationController
     end
   end
 
+  def after_update_save(record)
+     @href = "/entries/#{record.id}/play"
+     flash[:error] = "#{record.errors.messages[:base][0]}" if record.errors.messages[:base]
+  end
+    
   protected
 
   def contenttype(file)
@@ -152,27 +157,27 @@ class EntriesController < ApplicationController
     end
   end
 
-  def dropbox_session
-    return if DropboxSession.last
-    if !params[:oauth_token]
-      consumer = Dropbox::API::OAuth.consumer(:authorize)
-      request_token = consumer.get_request_token
-      session[:token] = request_token.token
-      session[:token_secret] = request_token.secret
-      redirect_to request_token.authorize_url(:oauth_callback => root_url)
-      return
-    else
-      oauth_token=params[:oauth_token]
-      hash = {:oauth_token=>session[:token],:oauth_token_secret=>session[:token_secret]}
-      consumer = Dropbox::API::OAuth.consumer(:authorize)
-      request_token  = OAuth::RequestToken.from_hash(consumer, hash)
-      result = request_token.get_access_token(:oauth_verifier => oauth_token)
-      session[:a_token] = result.token
-      session[:a_secret] = result.secret
-      dropbox = DropboxSession.new
-      dropbox.token=session[:a_token]
-      dropbox.secret=session[:a_secret]
-      dropbox.save
-    end
-  end
+#  def dropbox_session
+#    return if DropboxSession.last
+#    if !params[:oauth_token]
+#      consumer = Dropbox::API::OAuth.consumer(:authorize)
+#      request_token = consumer.get_request_token
+#      session[:token] = request_token.token
+#      session[:token_secret] = request_token.secret
+#      redirect_to request_token.authorize_url(:oauth_callback => root_url)
+#      return
+#    else
+#      oauth_token=params[:oauth_token]
+#      hash = {:oauth_token=>session[:token],:oauth_token_secret=>session[:token_secret]}
+#      consumer = Dropbox::API::OAuth.consumer(:authorize)
+#      request_token  = OAuth::RequestToken.from_hash(consumer, hash)
+#      result = request_token.get_access_token(:oauth_verifier => oauth_token)
+#      session[:a_token] = result.token
+#      session[:a_secret] = result.secret
+#      dropbox = DropboxSession.new
+#      dropbox.token=session[:a_token]
+#      dropbox.secret=session[:a_secret]
+#      dropbox.save
+#    end
+#  end
 end

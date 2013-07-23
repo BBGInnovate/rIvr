@@ -58,15 +58,15 @@ class Entry< ActiveRecord::Base
         if !self.is_private
           self.public_url = DROPBOX.public_dir + "/#{self.branch}/#{self.dropbox_file}"
           content = client.copy(from, to)
-          # self.save
         elsif self.public_url
           self.public_url = nil
           client.delete(to)
-          # self.save
         end
       rescue Exception => msg 
         if msg.kind_of? Dropbox::FileNotFoundError
           self.public_url = nil
+          self.is_private = true
+          self.errors[:base] << "Dropbox file not found: /#{self.branch}/#{self.dropbox_file}. You should delete this record." 
         end
         logger.debug "Error copy #{from} #{to} : #{msg}"
         # do nothing
