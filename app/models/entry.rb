@@ -32,6 +32,10 @@ class Entry< ActiveRecord::Base
   def to_label
     "Entry"
   end
+  def soundcloud_url
+    self.soundkloud.url
+  end
+  
   def shared_link
     if !self.is_private && !self.public_url
       token = get_dropbox_session.access_token
@@ -86,12 +90,15 @@ class Entry< ActiveRecord::Base
         :tag_list=>self.dropbox_dir.sub("/",' '),
         :asset_data   => open(self.public_url)
       })
-      delete_from_soundcloud #delete old one first
-      soundcloud.track_id = track.id
-      soundcloud.url = track.permalink_url
-      soundcloud.entry_id = self.id
-      soundcloud.save
-      return self.soundkloud.url
+      logger.debug "TRACK #{track.inspect}"
+#      delete_from_soundcloud #delete old one first
+      if track.id
+        soundcloud.track_id = track.id
+        soundcloud.url = track.permalink_url
+        soundcloud.entry_id = self.id
+        soundcloud.save
+      end
+      return soundcloud.url
     rescue
        logger.warn "Entry#copy_to_soundcloud #{$!.message}"
        return "#{$!.message}"
