@@ -141,6 +141,7 @@ class EntriesController < ApplicationController
     end
   end
 
+  end
   def after_update_save(record)
      @href = "/entries/#{record.id}/play"
      flash[:error] = "#{record.errors.messages[:base][0]}" if record.errors.messages[:base]

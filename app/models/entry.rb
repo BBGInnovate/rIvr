@@ -84,10 +84,10 @@ class Entry< ActiveRecord::Base
     return if !self.public_url
     client = Soundcloud.new(:access_token => SOUNDCLOUD.access_token)
     begin
+      # :duration=>self.length ? self.length*1000 : nil,
       track = client.post('/tracks', :track=>{
         :title => soundcloud.title,
         :description=>soundcloud.description,
-        :duration=>self.length*1000,
         :downloadable => true,
         :sharing=>'public',
         :track_type=>'bbg',
@@ -97,13 +97,19 @@ class Entry< ActiveRecord::Base
         :tag_list=>self.dropbox_dir.sub("/",' '),
         :asset_data   => open(self.public_url)
       })
-      logger.debug "TRACK #{track.inspect}"
+#      logger.debug "TRACK #{track.inspect}"
 #      delete_from_soundcloud #delete old one first
       if track.id
         soundcloud.track_id = track.id
         soundcloud.url = track.permalink_url
         soundcloud.entry_id = self.id
         soundcloud.save
+#        not working here
+#        if !self.length || self.length < 1
+#           track = client.get "/tracks/#{track.id}"
+#           self.length = track.duration/1000
+#           self.save
+#        end
       end
       return soundcloud.url
     rescue
@@ -121,16 +127,16 @@ class Entry< ActiveRecord::Base
     s = get_dropbox_session
     begin
       s.delete self.file_path
+      delete_from_soundcloud
     rescue Exception => msg
       logger.debug "#{msg}"
     end
-    delete_from_soundcloud
   end
   def delete_from_soundcloud
     if self.soundkloud
       begin
         client = Soundcloud.new(:access_token => SOUNDCLOUD.access_token)
-        client.delete "/tracks/#{self.soundkcloud.track_id}"
+        client.delete "/tracks/#{self.soundkloud.track_id}"
       rescue Exception => msg
         logger.debug "ERROR: resolve #{self.soundkloud.url} #{msg}"
       end
