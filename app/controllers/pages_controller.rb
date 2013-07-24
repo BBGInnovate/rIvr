@@ -2,7 +2,7 @@ class PagesController < ApplicationController
 #  doorkeeper_for :create
   skip_before_filter :verify_authenticity_token, :only => [:create]
   
-  before_filter :authorize, :only=>[:index]
+#  before_filter :authorize, :only=>[:index]
   active_scaffold :page do |config|
     config.create.refresh_list = true
     config.update.refresh_list = true

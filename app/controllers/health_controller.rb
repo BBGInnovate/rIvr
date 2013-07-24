@@ -1,7 +1,7 @@
 class HealthController < ApplicationController
   skip_before_filter :verify_authenticity_token, :only => [:create]
     
-    before_filter :authorize, :only=>[:index]
+#    before_filter :authorize, :only=>[:index]
     before_filter :populate
     
     active_scaffold :health do |config|
