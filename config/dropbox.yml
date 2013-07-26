@@ -1,19 +1,19 @@
 development:
-  public_dir: https://dl.dropboxusercontent.com/u/193053939
+  public_dir: http://dl.dropboxusercontent.com/u/193053939
   consumer_key: gm7c12wyv6p4ogh
   consumer_secret: 33q9n3m2sz7ss0y
 #  consumer_key: qze5bzw7e8az7qz
 #  consumer_secret: x8j0x6hso4fnkte
 test:
-  public_dir: https://dl.dropboxusercontent.com/u/11357483
+  public_dir: http://dl.dropboxusercontent.com/u/11357483
   consumer_key: 0pk3wj3qyq7be7q
   consumer_secret: v6ujmd2ywlcgtq7
 staging:
-  public_dir: https://dl.dropboxusercontent.com/u/193053939
+  public_dir: http://dl.dropboxusercontent.com/u/193053939
   consumer_key: gm7c12wyv6p4ogh
   consumer_secret: 33q9n3m2sz7ss0y
 production:
-  public_dir: https://dl.dropboxusercontent.com/u/193053939
+  public_dir: http://dl.dropboxusercontent.com/u/193053939
   consumer_key: gm7c12wyv6p4ogh
   consumer_secret: 33q9n3m2sz7ss0y
 
