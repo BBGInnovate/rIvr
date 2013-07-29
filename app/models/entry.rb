@@ -4,7 +4,7 @@ class Entry< ActiveRecord::Base
   before_save :add_properties
   after_destroy :delete_from_dropbox
   before_save :copy_to_public
-  has_one :soundkloud, :dependent => :destroy, :foreign_key=>"entry_id"
+  has_one :soundkloud, :foreign_key=>"entry_id"
   
   HUMANIZED_COLUMNS = {:size=>"Size (bytes)"}
 
@@ -68,6 +68,7 @@ class Entry< ActiveRecord::Base
         elsif self.public_url
           self.public_url = nil
           client.delete(to)
+          self.delete_from_soundcloud
         end
       rescue Exception => msg 
         if msg.kind_of? Dropbox::FileNotFoundError
@@ -137,8 +138,9 @@ class Entry< ActiveRecord::Base
       begin
         client = Soundcloud.new(:access_token => SOUNDCLOUD.access_token)
         client.delete "/tracks/#{self.soundkloud.track_id}"
+        self.soundkloud.destroy
       rescue Exception => msg
-        logger.debug "ERROR: resolve #{self.soundkloud.url} #{msg}"
+        logger.debug "ERROR: delete_from_soundcloud #{self.soundkloud.url} #{msg}"
       end
     end
   end
