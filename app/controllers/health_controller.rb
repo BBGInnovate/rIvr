@@ -55,12 +55,16 @@ class HealthController < ApplicationController
     end
     
     def populate
-      sql = "SELECT t1.id, branch, action_id, created_at FROM events as t1 JOIN (SELECT MAX(id) id FROM events GROUP BY branch) as t2 ON t1.id = t2.id;"
-      events = Health.connection.execute sql
+      sql = "SELECT t1.id, branch, action_id, created_at FROM events as t1 JOIN (SELECT MAX(id) id FROM events WHERE action_id != #{Action.ping_server} GROUP BY branch) as t2 ON t1.id = t2.id;"
+      events1 = Health.connection.execute sql
+      # next to find ping server event
+      sql2 = "SELECT t1.id, branch, action_id, created_at FROM events as t1 JOIN (SELECT MAX(id) id FROM events WHERE action_id = #{Action.ping_server} GROUP BY branch) as t2 ON t1.id = t2.id;"
+      events2 = Health.connection.execute sql2
+      events = events1.to_a + events2.to_a
       actions = Action.all
-      events.each_entry do |e|
+      events.each do |e|
         act = actions.select{|a| a.id==e[2]}[0]
-        b = Health.find_by_branch e[1]
+        b = Health.find_by_event_id e[0]
         if b && act
           b.update_attributes :event_id=>e[0], :last_event=>e[3], :event=>act.name
         elsif act
