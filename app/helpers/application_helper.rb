@@ -1,7 +1,7 @@
 module ApplicationHelper
   def branch_form_column(record, input_name)
     if !record.kind_of?(Branch)
-      id = record.branch.downcase
+    id = record.branch.downcase rescue ""
       options = Branch.where("is_active=1").map{|b| [b.name, b.name.downcase]}
       select_tag 'record[branch]', options_for_select(options, id), :style=>''
     else

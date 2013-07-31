@@ -1,5 +1,7 @@
 require 'dropbox'
 require 'open-uri'
+require 'builder'
+
 class Entry< ActiveRecord::Base
   before_save :add_properties
   after_destroy :delete_from_dropbox
@@ -203,21 +205,115 @@ class Entry< ActiveRecord::Base
     end
   end
   
+#  # public messages for IVR caller to listen
+#  def self.rss_feeds
+#    client = self.new.get_dropbox_session
+#    Entry.select("distinct branch").each do | en |
+#      branch = en.branch.downcase
+#      options = Configure.conf(branch)
+#      feed_limit = options.feed_limit
+#     
+#      if options.feed_source == 'dropbox'
+#         entries = Entry.where("branch='#{branch}' AND is_private=0").all(:select => "public_url", :order => "id DESC", :limit => feed_limit )              
+#         if entries.size == 0
+#            entries = parse_feed(options.feed_url, feed_limit)
+#         end
+#      else
+#         entries = parse_feed(options.feed_url, feed_limit)
+#      end
+#      
+#      if entries.size > 0
+#        local_file_path = self.rss_feed(entries, branch)
+#        FileUtils.mkdir_p File.dirname(local_file_path)
+#        new_content = File.open(local_file_path, "r").read
+#        remote_dropbox_file = "#{DROPBOX.public_dir}/#{branch}/#{File.basename(local_file_path)}"
+#      
+#        begin
+#          # check if branch messages.xml is uploaded to dropbox
+#          old_xml = open(remote_dropbox_file)
+#          old_content = old_xml.read
+#        rescue Exception => e
+#          old_content = (e.message =~ /404/) ? "" : nil
+#        end
+#        if (old_content == "") || (new_content != old_content)
+#           puts "Upload #{local_file_path} to Public/#{branch}/"
+#           client.upload local_file_path, "Public/#{branch}/" 
+#
+#           # upload static_rss type public messages to dropbox
+#           entries.each do |entry|
+#             # this entry is not Entry type!
+#             upload_static_message(client, entry, branch)
+#           end
+#        else
+#           puts "rss_feeds : #{File.basename(local_file_path)} is in Public/#{branch}/"
+#        end
+#      end
+#    end
+#  end
+#  
+#  def self.rss_feed(entries, branch)
+#    file_path = "#{DROPBOX.tmp_dir}/#{branch}/messages.xml"
+#    File.open(file_path, "w") do |file|
+#      xml = ::Builder::XmlMarkup.new(:target => file, :indent => 2)
+#      xml.instruct! :xml, :version => "1.0" 
+#      xml.rss :version => "2.0" do
+#        xml.channel do
+#          xml.branch branch
+#          xml.count entries.size
+#          for entry in entries
+#            xml.item do
+#              xml.link entry.public_url.gsub("https","http")
+#            end
+#          end
+#       end
+#     end
+#   end
+#   return file_path
+# end
+  
   def self.truncate
     connection.execute "truncate table #{table_name}"
   end
   
-  protected
-
-  def get_dropbox_session
-    ds = DropboxSession.last
-    if !!ds
-      dropbox_session = Dropbox::Session.new(DROPBOX.consumer_key, DROPBOX.consumer_secret)
-      dropbox_session.set_access_token ds.token, ds.secret
-      dropbox_session.mode = :dropbox
+  def self.upload_static_message(client, entry, branch)
+    file_name = File.basename(entry.public_url)
+    static_url = entry.public_url
+    dropbox_file_url = "#{DROPBOX.public_dir}/#{branch}/#{file_name}"
+    to = "Public/#{branch}/"
+    if !Prompt.file_equal?(dropbox_file_url, static_url)
+      puts "#{Time.now.utc} Uploading #{static_url} to #{to}/"
+      client.upload open(static_url), to, :as=>file_name
+      puts "#{Time.now.utc} Uploaded #{static_url} to #{to}/"
     else
-      nil
+       puts "#{to}#{file_name} unchanged"
     end
-    dropbox_session
   end
+
+  def self.parse_feed(url, limit=10)
+    entries = []
+    begin
+      doc = Nokogiri::XML(open(url))
+      doc.xpath('//item/enclosure/@url')[0..(limit-1)].each do |i|
+         entry = OpenStruct.new
+         entry.public_url = i.text
+         entries << entry
+      end
+    rescue
+      logger.warn "Entry parse_feed: #{$!}"
+    end
+    entries
+  end
+  
+protected
+#  def get_dropbox_session
+#    ds = DropboxSession.last
+#    if !!ds
+#      dropbox_session = Dropbox::Session.new(DROPBOX.consumer_key, DROPBOX.consumer_secret)
+#      dropbox_session.set_access_token ds.token, ds.secret
+#      dropbox_session.mode = :dropbox
+#    else
+#      nil
+#    end
+#    dropbox_session
+#  end
 end

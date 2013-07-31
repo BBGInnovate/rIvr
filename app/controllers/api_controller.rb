@@ -25,6 +25,7 @@ class ApiController < ApplicationController
     render :nothing=>true
   end
 
+  # for voice prompts
   def message
     params[:feed] = {:branch=>'oddi'} if !params[:feed]
     feed = params[:feed]
@@ -37,6 +38,7 @@ class ApiController < ApplicationController
     end
   end
   
+  # for listening 
   def feed
     params[:feed] = {:branch=>'oddi', :caller_id=>'1234'} if !params[:feed]
     feed = params[:feed]
