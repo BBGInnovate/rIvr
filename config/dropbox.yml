@@ -1,6 +1,6 @@
 development:
   public_dir: http://dl.dropboxusercontent.com/u/193053939
-  tmp_dir: "/tmp"
+  tmp_dir: "/tmp/ivr"
   consumer_key: gm7c12wyv6p4ogh
   consumer_secret: 33q9n3m2sz7ss0y
 #  consumer_key: qze5bzw7e8az7qz
@@ -11,12 +11,12 @@ test:
   consumer_secret: v6ujmd2ywlcgtq7
 staging:
   public_dir: http://dl.dropboxusercontent.com/u/193053939
-  tmp_dir: "/data"
+  tmp_dir: "/data/ivr"
   consumer_key: gm7c12wyv6p4ogh
   consumer_secret: 33q9n3m2sz7ss0y
 production:
   public_dir: http://dl.dropboxusercontent.com/u/193053939
-  tmp_dir: "/data"
+  tmp_dir: "/data/ivr"
   consumer_key: gm7c12wyv6p4ogh
   consumer_secret: 33q9n3m2sz7ss0y
 
