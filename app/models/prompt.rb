@@ -44,8 +44,8 @@ class Prompt < ActiveRecord::Base
   def self.rss_feeds
     puts "#{Time.now.utc} Start"
     client = self.new.get_dropbox_session
-    Entry.select("distinct branch").each do | en |
-      branch = en.branch.downcase
+    Branch.all.each do | en |
+      branch = en.name.downcase
       dir = "#{DROPBOX.tmp_dir}/#{branch}"
       FileUtils.mkdir_p(dir) if !Dir.exists?(dir)
       generate_prompts_xml(branch, client)
@@ -60,6 +60,7 @@ class Prompt < ActiveRecord::Base
   # new_file is in temp directory
   def self.file_equal?(old_file, new_file)
     old_file.gsub!("https","http")
+    old_file = URI.encode(old_file)
     old_content = ""
     new_content = ""
     if File.extname(old_file) == ".xml"
@@ -84,10 +85,11 @@ class Prompt < ActiveRecord::Base
     begin
       url = URI.parse(old_file)
       response = Net::HTTP.new(url.host, url.port).request_head(url.path)
+      return (response.code == '200')
     rescue Exception=>e
       puts "INFO : Prompt file_equal?(#{old_file}) : #{e.message}"
+      return false
     end
-    return (response.code == '200')
   end
   
   protected
