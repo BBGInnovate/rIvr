@@ -95,25 +95,18 @@ class ApiController < ApplicationController
   end
   
   def create_entry(attr)
-    e = Entry.find_by_originated_at attr[:originated_at]
-    if !e
       e = Entry.create attr
       if !!@session_id
         # create an even as well
         Event.create :branch=>e.branch.downcase,:caller_id=>e.phone_number,
             :identifier=>e.dropbox_file, :page_id=>Page.recordMessage,
             :action_id=>Action.save_recording,
-            :session_id=>@session_id,
-            :originated_at => attr[:originated_at]
+            :session_id=>@session_id
       end
-    end  
   end
 
   def create_event(attr)
     attr[:branch] = attr[:branch].downcase
-    e = Event.find_by_originated_at attr[:originated_at]
-    if !e
-      Event.create(attr)
-    end
+    Event.create(attr)
   end
 end
