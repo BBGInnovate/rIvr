@@ -1,5 +1,6 @@
 # require 'file_column'
 require 'builder'
+require 'open-uri'
 
 class Prompt < ActiveRecord::Base
   file_column :sound_file
