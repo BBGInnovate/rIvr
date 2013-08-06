@@ -107,6 +107,9 @@ class ApiController < ApplicationController
 
   def create_event(attr)
     attr[:branch] = attr[:branch].downcase
+    if attr[:caller_id] =~ /System/
+      Event.delete_all "branch='#{attr[:branch]}' AND caller_id = 'System'"
+    end
     Event.create(attr)
   end
 end
