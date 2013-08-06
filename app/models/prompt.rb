@@ -45,7 +45,7 @@ class Prompt < ActiveRecord::Base
   def self.rss_feeds
     puts "#{Time.now.utc} Start"
     client = self.new.get_dropbox_session
-    Branch.all.each do | en |
+    Branch.where(:is_active=>true).all.each do | en |
       branch = en.name.downcase
       dir = "#{DROPBOX.tmp_dir}/#{branch}"
       FileUtils.mkdir_p(dir) if !Dir.exists?(dir)
