@@ -62,7 +62,10 @@ class HealthController < ApplicationController
       events2 = Health.connection.execute sql2
       events = events1.to_a + events2.to_a
       actions = Action.all
+      Health.truncate
       events.each do |e|
+        br  = Branch.find_by_name e[1]
+        next if (!br || !br.is_active)
         act = actions.select{|a| a.id==e[2]}[0]
         b = Health.find_by_event_id e[0]
         if b && act
