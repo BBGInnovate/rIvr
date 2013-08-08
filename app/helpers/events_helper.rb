@@ -3,7 +3,7 @@ module EventsHelper
      p = Page.find_by_id(record.page_id)
      p.name if p 
   end
-  def action_column(record, column=nil)
+  def actions_column(record, column=nil)
     if record.kind_of? Event
       p = Action.find_by_id(record.action_id)
       p.name if p
@@ -15,6 +15,13 @@ module EventsHelper
     if record.identifier =~ /^http|https/
       uri = URI(record.identifier)
       "<a href='#{record.identifier}'>#{uri.path.split('/')[-3..-1].join('/')}</a>".html_safe
+    elsif record.identifier =~ /^\d+\.wav$/
+      entry = Entry.find_by_dropbox_file record.identifier
+      if entry
+        link_to entry.dropbox_file, play_entry_path(entry), :target => '_blank'
+      else
+        record.identifier
+      end
     else
       record.identifier
     end

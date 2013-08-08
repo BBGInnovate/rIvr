@@ -4,6 +4,11 @@ class AddPingServerActions < ActiveRecord::Migration
     if !a
       Action.create :name=>"ping server"
     end
+    p = Page.find_by_name "testing"
+    if !p
+      Page.create :name=>'testing'
+    end
+
     begin
       remove_index :healthes, :branch
     rescue
