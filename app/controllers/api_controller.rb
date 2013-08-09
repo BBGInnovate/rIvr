@@ -101,6 +101,7 @@ class ApiController < ApplicationController
         Event.create :branch=>e.branch.downcase,:caller_id=>e.phone_number,
             :identifier=>e.dropbox_file, :page_id=>Page.recordMessage,
             :action_id=>Action.save_recording,
+            :created_at => e.created_at,
             :session_id=>@session_id
       end
   end

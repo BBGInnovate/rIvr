@@ -15,6 +15,9 @@ module EventsHelper
     if record.identifier =~ /^http|https/
       uri = URI(record.identifier)
       "<a href='#{record.identifier}'>#{uri.path.split('/')[-3..-1].join('/')}</a>".html_safe
+    elsif record.identifier =~ /\.\.\/Uploads\//
+      f = record.identifier.split("/").last
+      link_to "File", "#{DROPBOX.public_dir}/#{record.branch}/#{f}",:target => '_blank' 
     elsif record.identifier =~ /^\d+\.wav$/
       entry = Entry.find_by_dropbox_file record.identifier
       if entry
@@ -22,8 +25,10 @@ module EventsHelper
       else
         record.identifier
       end
+    elsif !!record.identifier
+      "<abbr title='#{record.identifier}'>#{record.identifier.truncate(18)}</abbr>".html_safe
     else
-      record.identifier
+      ""
     end
   end
 end
