@@ -3,8 +3,11 @@
  * <%= stylesheet_include_tag "as_overrides" %>
  * 
  */
+body {
+  font-family: Arial, sans serif;
+}
 .overBg {
-  width: 980px;
+  width: 480px;
   margin: 0 auto;
 }
 #contentHolder {
@@ -92,6 +95,57 @@ input.btnAction:hover {
 }
 .success {
   color: green;
+}
+
+/* templates */
+.inputSpacing {
+    padding: 10px 0;
+}
+.notice {
+  margin: 0 0 10px 0;
+}
+#template-popup {
+      background-color: #FFFFFF;
+      border: 1px solid #9CD5F8;
+      border-radius: 25px 25px 25px 25px;
+      float: left;
+      margin: 0;
+      min-height: 250px;
+      padding: 20px 30px 5px;
+      width: 400px;
+}
+h2 {
+    color: #004276;
+    font-size: 18px;
+    font-weight: normal;
+    margin: 0;
+    padding: 0 0 25px 0px;
+   /* text-transform: lowercase; */
+}
+div {
+  color: #5D5D5D;
+}
+#template-popup input.btnAction {
+    float: none;
+    height: 31px;
+    margin-top: 20px;
+    width: 100px;
+    font-size: 14px;
+}
+
+input.btnAction:hover {
+  background-color:#004276;
+  cursor: pointer; 
+  color: #FFF;
+}
+
+#report_sound {
+  display: block;
+  overflow: hidden;
+  font-size: 14px;
+  height: 26px;
+  
+  border-radius: 3px;
 }
 /*
 a.soundcloud:hover {

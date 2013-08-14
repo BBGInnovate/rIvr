@@ -11,6 +11,12 @@ TestIvr::Application.routes.draw do
       post :prompt
     end
   end
+  resources :templates do
+    collection do
+      post :headline
+      get :headline
+    end
+  end
   resources :users
   resource :session, :only => [:new, :create, :destroy]
   match 'signup' => 'users#new', :as => :signup

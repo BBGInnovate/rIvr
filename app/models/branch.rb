@@ -14,4 +14,7 @@ class Branch< ActiveRecord::Base
         logger.error "#{name} - #{id} cannot converted"
       end
     end
+  def self.find_me(attr)
+    self.first :conditions=>["id=? or name=?", attr, attr]
+  end
 end

@@ -30,8 +30,8 @@ class ApiController < ApplicationController
     params[:feed] = {:branch=>'oddi'} if !params[:feed]
     feed = params[:feed]
     if feed
-       branch = feed[:branch].downcase
-       @messages = Prompt.where("branch='#{branch}' AND is_active=1").all
+       branch = Branch.find_by_name feed[:branch]
+       @messages = Prompt.where("branch_id='#{branch.id}' AND is_active=1").all
        respond_to do |format|
          format.rss { render :layout => false } # message.rss.builder
        end
@@ -43,7 +43,7 @@ class ApiController < ApplicationController
     params[:feed] = {:branch=>'oddi', :caller_id=>'1234'} if !params[:feed]
     feed = params[:feed]
     if feed
-      branch = feed[:branch].downcase
+      branch = Branch.find_by_name feed[:branch]
       caller_id = feed[:caller_id]
       options = Configure.conf(branch)
       feed_limit = options.feed_limit
@@ -53,7 +53,7 @@ class ApiController < ApplicationController
         # provide the audio file locally
         # @entries = Entry.where("branch='#{branch}' AND is_private=0 AND (phone_number is null OR phone_number!='#{caller_id}')").all(:select => 'CONCAT("http://localhost/Uploads/", dropbox_file) AS public_url', :order => "id DESC", :limit => feed_limit )
         # @entries = Entry.where("branch='#{branch}' AND is_private=0 AND (phone_number is null OR phone_number!='#{caller_id}')").all(:select => "public_url", :order => "id DESC", :limit => feed_limit )
-        @entries = Entry.where("branch='#{branch}' AND is_private=0").all(:select => "public_url", :order => "id DESC", :limit => feed_limit )              
+        @entries = Entry.where("branch_id='#{branch.id}' AND is_private=0").all(:select => "public_url", :order => "id DESC", :limit => feed_limit )              
          if @entries.size == 0
             @entries = parse_feed(options.feed_url, feed_limit)
          end
@@ -95,10 +95,12 @@ class ApiController < ApplicationController
   end
   
   def create_entry(attr)
+    branch = Branch.find_by_name attr.delete(:branch)
+    attr[:branch_id] = branch.id
       e = Entry.create attr
       if !!@session_id
         # create an even as well
-        Event.create :branch=>e.branch.downcase,:caller_id=>e.phone_number,
+        Event.create :branch_id=>branch.id,:caller_id=>e.phone_number,
             :identifier=>e.dropbox_file, :page_id=>Page.recordMessage,
             :action_id=>Action.save_recording,
             :created_at => e.created_at,
@@ -107,9 +109,10 @@ class ApiController < ApplicationController
   end
 
   def create_event(attr)
-    attr[:branch] = attr[:branch].downcase
+    branch = Branch.find_by_name attr.delete(:branch)
+    attr[:branch_id] = branch.id
     if attr[:caller_id] =~ /System/
-      Event.delete_all "branch='#{attr[:branch]}' AND caller_id = 'System'"
+      Event.delete_all "branch_id='#{branch.id}' AND caller_id = 'System'"
     end
     Event.create(attr)
   end

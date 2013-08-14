@@ -1,5 +1,6 @@
 class Health< ActiveRecord::Base
   attr_accessor :status
+  belongs_to :branch
   self.table_name = "healthes"
   def to_label
     "Health"
@@ -15,7 +16,7 @@ class Health< ActiveRecord::Base
       hours = seconds/3600.to_i
       minutes = (seconds/60 - hours * 60).to_i
       if h.send_alarm && ( seconds > h.no_activity*3600)
-        message = "Branch #{h.branch}: No Activity For #{hours} hours and #{minutes} minutes"
+        message = "Branch #{h.branch.name}: No Activity For #{hours} hours and #{minutes} minutes"
         if h.deliver_method == "email"
           UserMailer.alarm_email(h, message).deliver if h.email
           logger.debug "SENT #{h.email} #{message}"

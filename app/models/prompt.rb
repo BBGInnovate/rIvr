@@ -4,7 +4,8 @@ require 'open-uri'
 
 class Prompt < ActiveRecord::Base
   file_column :sound_file
-  validates :branch, :presence => true, :length => { :maximum => 50 }
+  belongs_to :branch
+#  validates :branch, :presence => true, :length => { :maximum => 50 }
   validates :name, :presence => true, :length => { :maximum => 255 }
   validates :sound_file, :presence => true,:length => { :maximum => 255 }
 
@@ -45,9 +46,9 @@ class Prompt < ActiveRecord::Base
   def self.rss_feeds
     puts "#{Time.now.utc} Start"
     client = self.new.get_dropbox_session
-    Branch.where(:is_active=>true).all.each do | en |
-      branch = en.name.downcase
-      dir = "#{DROPBOX.tmp_dir}/#{branch}"
+    Branch.where(:is_active=>true).all.each do | branch |
+      # branch = en.name.downcase
+      dir = "#{DROPBOX.tmp_dir}/#{branch.name}"
       FileUtils.mkdir_p(dir) if !Dir.exists?(dir)
       generate_prompts_xml(branch, client)
       generate_messages_xml(branch, client)
@@ -96,12 +97,13 @@ class Prompt < ActiveRecord::Base
   protected
 
   def self.rss_feed(records, branch, xml_name)
-    file_path = "#{DROPBOX.tmp_dir}/#{branch}/#{xml_name}.xml"
+    file_path = "#{DROPBOX.tmp_dir}/#{branch.name}/#{xml_name}.xml"
     File.open(file_path, "w") do |file|
       xml = ::Builder::XmlMarkup.new(:target => file, :indent => 2)
       xml.instruct! :xml, :version => "1.0"
       xml.rss :version => "2.0" do
         xml.channel do
+          xml.message_type (branch.option || "")
           xml.branch branch
           xml.count records.size
           for m in records
@@ -120,10 +122,12 @@ class Prompt < ActiveRecord::Base
   end
 
   def self.generate_prompts_xml(branch, client)
-    prompts = Prompt.where("branch='#{branch}' AND is_active=1").all
+    name = branch.name
+    # In Branch, Prompt tables Branch is not downcased
+    prompts = Prompt.where("branch='#{name}' AND is_active=1").all
     local_file = self.rss_feed(prompts, branch, "prompts")
-    remote_file = "#{DROPBOX.public_dir}/#{branch}/#{File.basename(local_file)}"
-    to = "Public/#{branch}/"
+    remote_file = "#{DROPBOX.public_dir}/#{name}/#{File.basename(local_file)}"
+    to = "Public/#{name}/"
     if !file_equal?(remote_file, local_file)
       client.upload local_file, to
       puts "Uploaded #{local_file} to #{to}"
@@ -133,12 +137,13 @@ class Prompt < ActiveRecord::Base
   end
 
   def self.generate_messages_xml(branch, client)
-    options = Configure.conf(branch)
+    name = branch.name
+    options = Configure.conf(name)
     feed_limit = options.feed_limit
     entries = []
     static_rss = false
     if options.feed_source == 'dropbox'
-      entries = Entry.where("branch='#{branch}' AND is_private=0").all(:select => "public_url", :order => "id DESC", :limit => feed_limit )
+      entries = Entry.where("branch_id='#{branch.id}' AND is_private=0").all(:select => "public_url", :order => "id DESC", :limit => feed_limit )
     end
     if entries.size == 0
       entries = Entry.parse_feed(options.feed_url, feed_limit)
@@ -146,7 +151,7 @@ class Prompt < ActiveRecord::Base
     end
     if entries.size > 0
       local_file = self.rss_feed(entries, branch, "messages")
-      remote_file = "#{DROPBOX.public_dir}/#{branch}/#{File.basename(local_file)}"
+      remote_file = "#{DROPBOX.public_dir}/#{name}/#{File.basename(local_file)}"
       to = "Public/#{branch}/"
       if !file_equal?(remote_file, local_file)
         puts "#{Time.now.utc} Uploading #{local_file} to #{to}"

@@ -1,5 +1,6 @@
 class Event < ActiveRecord::Base
   belongs_to :action
+  belongs_to :branch
   def to_label
     "Event Log"
   end

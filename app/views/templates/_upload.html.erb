@@ -1,0 +1,31 @@
+<%= form_for template, :url=> templates_path, :html => {:method=>'post',:multipart => true, :id=>"frm-upload-logo"} do |f| %>
+<div class="inputSpacing">
+  <%= f.hidden_field :name %>
+  <%= f.hidden_field :id %>
+  <%= f.hidden_field :branch_id %>
+  <div class='notice'>
+    <%= flash[:notice] %>
+  </div>
+  <h2>Select your <%= template.name.titleize %> file to upload</h2>
+  <div class='fileBrowseWrap'>
+    <%= f.file_field :sound %>
+  </div>
+  <div class="btnUploadWrap">
+    <span><%= submit_tag 'Preview', :class=>"btnAction" %></span>
+    <span><%= submit_tag 'Cancel', :class=>"btnAction" %></span>
+  </div>
+  <div class="clear">
+    <% if @preview %>
+    <% src="/#{template.audio_link}" %>
+    <object data="<%= src %>" type="application/x-mplayer2" width="300" height="60">
+      <param name="filename" value="<%= src %>">
+    </object><!--
+    <embed type="application/x-mplayer2" src="<%= src %>" width="300" height="60"></embed>
+    --><% end %>
+  </div><% if params[:preview] %>
+  <div class="btnUploadWrap">
+    <span><%= submit_tag 'Save', :class=>"btnAction" %></span>
+  </div>
+  <% end %>
+</div>
+<% end %>

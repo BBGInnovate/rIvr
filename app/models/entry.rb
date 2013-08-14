@@ -7,6 +7,7 @@ class Entry< ActiveRecord::Base
   after_destroy :delete_from_dropbox
   before_save :copy_to_public
   has_one :soundkloud, :foreign_key=>"entry_id"
+  belongs_to :branch
   
   HUMANIZED_COLUMNS = {:size=>"Size (bytes)"}
 
@@ -15,20 +16,12 @@ class Entry< ActiveRecord::Base
     attribute.to_s.gsub(/_id$/, "").gsub(/_/, " ").capitalize
   end
 
-  # When ActiveScaffold needs to present a string description of a record,
-  # it searches through a common list of record properties looking for
-  # something that responds. The search set, in order, is:
-  # :to_label, :name, :label, :title, and finally :to_s.
-  # So if your schema already has one of those fields, it’ll be automatically
-  # used. But you can always define a to_label method to customize the
-  # string description.
-  
   def self.public_entries(caller)
     where("is_private=0 AND phone_number != #{caller}").order('id desc').limit(10).all
   end
   
   def file_path
-    "/bbg/#{self.branch}/#{self.dropbox_file}"
+    "/bbg/#{self.branch.name}/#{self.dropbox_file}"
   end
 
   def to_label
@@ -58,14 +51,15 @@ class Entry< ActiveRecord::Base
     end
   end
   def copy_to_public
+    # Public/#{self.branch} folder will be created if not exixts
     ds = DropboxSession.last
     if !!ds
       client = get_dropbox_session
-      to = "Public/#{self.branch}/#{self.dropbox_file}"
+      to = "Public/#{self.branch.name}/#{self.dropbox_file}"
       from = file_path
       begin
         if !self.is_private
-          self.public_url = DROPBOX.public_dir + "/#{self.branch}/#{self.dropbox_file}"
+          self.public_url = DROPBOX.public_dir + "/#{self.branch.name}/#{self.dropbox_file}"
           content = client.copy(from, to)
         elsif self.public_url
           self.public_url = nil
@@ -76,7 +70,7 @@ class Entry< ActiveRecord::Base
         if msg.kind_of? Dropbox::FileNotFoundError
           self.public_url = nil
           self.is_private = true
-          self.errors[:base] << "Dropbox file not found: /#{self.branch}/#{self.dropbox_file}. You should delete this record." 
+          self.errors[:base] << "Dropbox file not found: /#{self.branch.name}/#{self.dropbox_file}. You should delete this record." 
         end
         logger.debug "Error copy #{from} #{to} : #{msg}"
         # do nothing
@@ -123,7 +117,7 @@ class Entry< ActiveRecord::Base
   end
   
   def add_properties
-    self.dropbox_dir="bbg/#{self.branch}"
+    self.dropbox_dir="bbg/#{self.branch.name}"
   end
   
   def delete_from_dropbox
@@ -148,12 +142,9 @@ class Entry< ActiveRecord::Base
   end
   
   def dropbox_dir
-     read_attribute(:dropbox_dir) || "bbg/#{self.branch}"
+     read_attribute(:dropbox_dir) || "bbg/#{self.name}"
   end
 
-  def branch=(value)
-    write_attribute :branch, value.downcase
-  end
   def self.sync_dropbox
     client = Entry.new.send "get_dropbox_session"
     self.all.each do | e |
@@ -181,6 +172,7 @@ class Entry< ActiveRecord::Base
     if !s.is_dir
       arr = s.path.split('/')
       d_br = arr[2].to_s
+      branch = Branch.find_by_name d_br
       d_file = arr.last
       d_dir = arr[1..2].join('/')
       begin
@@ -191,7 +183,7 @@ class Entry< ActiveRecord::Base
       end
       e = Entry.find_by_dropbox_file d_file
       if !e
-        Entry.create :branch=>d_br,
+        Entry.create :branch_id=>branch.id,
            :dropbox_file => d_file,
            :dropbox_dir=>d_dir,
            :mime_type=>s.mime_type,
@@ -199,78 +191,12 @@ class Entry< ActiveRecord::Base
            :is_private=>!meta
       else
         e.is_private = !meta
-        e.branch = d_br 
+        e.branch_id = branch.id 
         e.save
       end  
     end
   end
-  
-#  # public messages for IVR caller to listen
-#  def self.rss_feeds
-#    client = self.new.get_dropbox_session
-#    Entry.select("distinct branch").each do | en |
-#      branch = en.branch.downcase
-#      options = Configure.conf(branch)
-#      feed_limit = options.feed_limit
-#     
-#      if options.feed_source == 'dropbox'
-#         entries = Entry.where("branch='#{branch}' AND is_private=0").all(:select => "public_url", :order => "id DESC", :limit => feed_limit )              
-#         if entries.size == 0
-#            entries = parse_feed(options.feed_url, feed_limit)
-#         end
-#      else
-#         entries = parse_feed(options.feed_url, feed_limit)
-#      end
-#      
-#      if entries.size > 0
-#        local_file_path = self.rss_feed(entries, branch)
-#        FileUtils.mkdir_p File.dirname(local_file_path)
-#        new_content = File.open(local_file_path, "r").read
-#        remote_dropbox_file = "#{DROPBOX.public_dir}/#{branch}/#{File.basename(local_file_path)}"
-#      
-#        begin
-#          # check if branch messages.xml is uploaded to dropbox
-#          old_xml = open(remote_dropbox_file)
-#          old_content = old_xml.read
-#        rescue Exception => e
-#          old_content = (e.message =~ /404/) ? "" : nil
-#        end
-#        if (old_content == "") || (new_content != old_content)
-#           puts "Upload #{local_file_path} to Public/#{branch}/"
-#           client.upload local_file_path, "Public/#{branch}/" 
-#
-#           # upload static_rss type public messages to dropbox
-#           entries.each do |entry|
-#             # this entry is not Entry type!
-#             upload_static_message(client, entry, branch)
-#           end
-#        else
-#           puts "rss_feeds : #{File.basename(local_file_path)} is in Public/#{branch}/"
-#        end
-#      end
-#    end
-#  end
-#  
-#  def self.rss_feed(entries, branch)
-#    file_path = "#{DROPBOX.tmp_dir}/#{branch}/messages.xml"
-#    File.open(file_path, "w") do |file|
-#      xml = ::Builder::XmlMarkup.new(:target => file, :indent => 2)
-#      xml.instruct! :xml, :version => "1.0" 
-#      xml.rss :version => "2.0" do
-#        xml.channel do
-#          xml.branch branch
-#          xml.count entries.size
-#          for entry in entries
-#            xml.item do
-#              xml.link entry.public_url.gsub("https","http")
-#            end
-#          end
-#       end
-#     end
-#   end
-#   return file_path
-# end
-  
+
   def self.truncate
     connection.execute "truncate table #{table_name}"
   end
@@ -278,8 +204,8 @@ class Entry< ActiveRecord::Base
   def self.upload_static_message(client, entry, branch)
     file_name = File.basename(entry.public_url)
     static_url = entry.public_url
-    dropbox_file_url = "#{DROPBOX.public_dir}/#{branch}/#{file_name}"
-    to = "Public/#{branch}/"
+    dropbox_file_url = "#{DROPBOX.public_dir}/#{branch.name}/#{file_name}"
+    to = "Public/#{branch.name}/"
     if !Prompt.file_equal?(dropbox_file_url, static_url)
       puts "#{Time.now.utc} Uploading #{static_url} to #{to}/"
       client.upload open(static_url), to, :as=>file_name
@@ -305,15 +231,5 @@ class Entry< ActiveRecord::Base
   end
   
 protected
-#  def get_dropbox_session
-#    ds = DropboxSession.last
-#    if !!ds
-#      dropbox_session = Dropbox::Session.new(DROPBOX.consumer_key, DROPBOX.consumer_secret)
-#      dropbox_session.set_access_token ds.token, ds.secret
-#      dropbox_session.mode = :dropbox
-#    else
-#      nil
-#    end
-#    dropbox_session
-#  end
+
 end

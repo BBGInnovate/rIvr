@@ -60,6 +60,7 @@ ssh -i ${keyfile} -t ${host} -l ${user} \
    ln -s $shared/config/database.yml current/config/database.yml; \
    ln -s $shared/log current/log; \
    ln -s $shared/tmp current/tmp; \
+   ln -s $shared/system current/public/system; \
    rm -rf current/public/prompt; \
    ln -s $shared/prompt current/public/prompt; \
    cd current; \
