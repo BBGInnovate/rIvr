@@ -12,6 +12,9 @@
   </div>
   <div class="btnUploadWrap">
     <span><%= submit_tag 'Preview', :class=>"btnAction" %></span>
+    <% if params[:commit] == "Preview" %>
+      <span><%= submit_tag 'Save', :class=>"btnAction" %></span>
+    <% end %>
     <span><%= submit_tag 'Cancel', :class=>"btnAction" %></span>
   </div>
   <div class="clear">
@@ -22,10 +25,7 @@
     </object><!--
     <embed type="application/x-mplayer2" src="<%= src %>" width="300" height="60"></embed>
     --><% end %>
-  </div><% if params[:preview] %>
-  <div class="btnUploadWrap">
-    <span><%= submit_tag 'Save', :class=>"btnAction" %></span>
   </div>
-  <% end %>
+  
 </div>
 <% end %>

@@ -23,14 +23,14 @@ class Prompt < ActiveRecord::Base
     ds = DropboxSession.last
     if !!ds
       client = get_dropbox_session
-      to = "/Public/#{self.branch}/"
+      to = "/Public/#{self.branch.name}/"
       from = file_field.tempfile
       begin
-        self.url = DROPBOX.public_dir + "/#{self.branch}/#{file}"
+        self.url = DROPBOX.public_dir + "/#{self.branch.name}/#{file}"
         #        content = client.upload(from, to)
         FileUtils.cp(file_field.tempfile.path, '/tmp/' + file_field.original_filename)
         file_field.tempfile.unlink
-        client.upload '/tmp/' + file_field.original_filename, "Public/#{self.branch}/"
+        client.upload '/tmp/' + file_field.original_filename, "Public/#{self.branch.name}/"
       rescue Exception => msg
         if msg.kind_of? Dropbox::FileNotFoundError
           self.url = nil
@@ -52,6 +52,7 @@ class Prompt < ActiveRecord::Base
       FileUtils.mkdir_p(dir) if !Dir.exists?(dir)
       generate_prompts_xml(branch, client)
       generate_messages_xml(branch, client)
+      Report.generate_report_xml(branch, client)
     end
     puts "#{Time.now.utc} End"
   end
@@ -103,8 +104,8 @@ class Prompt < ActiveRecord::Base
       xml.instruct! :xml, :version => "1.0"
       xml.rss :version => "2.0" do
         xml.channel do
-          xml.message_type (branch.option || "")
-          xml.branch branch
+          xml.forum_type (branch.forum_type || "report")
+          xml.branch branch.name
           xml.count records.size
           for m in records
             xml.item do
@@ -124,7 +125,7 @@ class Prompt < ActiveRecord::Base
   def self.generate_prompts_xml(branch, client)
     name = branch.name
     # In Branch, Prompt tables Branch is not downcased
-    prompts = Prompt.where("branch='#{name}' AND is_active=1").all
+    prompts = Prompt.where("branch_id='#{branch.id}' AND is_active=1").all
     local_file = self.rss_feed(prompts, branch, "prompts")
     remote_file = "#{DROPBOX.public_dir}/#{name}/#{File.basename(local_file)}"
     to = "Public/#{name}/"
@@ -138,7 +139,7 @@ class Prompt < ActiveRecord::Base
 
   def self.generate_messages_xml(branch, client)
     name = branch.name
-    options = Configure.conf(name)
+    options = Configure.conf(branch)
     feed_limit = options.feed_limit
     entries = []
     static_rss = false
