@@ -24,20 +24,39 @@ class Branch< ActiveRecord::Base
   has_many :entries do
     # allow from dropbox or static rss, depending on configuration
     def forum_messages(limit=10)
-      opt = Configure.conf(proxy_association.owner)
-      forum = proxy_association.owner.forum_type
-      puts "AAAAA #{forum}"
+      brch = proxy_association.owner
+      opt = Configure.conf(brch)
+      forum = brch.forum_type
       limit = [limit, opt.feed_limit].max
-      if forum !='bulletin'
+      # if forum !='bulletin'
         conditions="entries.forum_type='#{forum}'"
-      else
-        conditions = ''
-      end
+      # end
       if opt.feed_source == 'dropbox'
-        where("public_url is not null").all :conditions=>conditions,
+        if forum == 'report'
+          # upload report forum messages to "/Public/oddi/report/"
+          entries = []
+          client = brch.get_dropbox_session
+          records = client.list("Public/#{brch.name}/report")
+          records.each do |record|
+            if !record.is_dir
+              entry = OpenStruct.new
+              entry.public_url = record.path
+              entries << entry
+              # path="/Public/oddi/report/recording-was-saved2.wav"
+            end
+          end
+          entries
+        else
+          # forum type == bulletin. IVR client posts caller 
+          # message to Dashboard with xml:
+          # xml.entry do
+          #  xml.forum_type 'bulletin'
+          #  xml.branch brch
+          where("public_url is not null").all :conditions=>conditions,
           :select => "public_url", :order => "id DESC",
           :limit => limit
-      else
+        end
+      else # from static_rss
         entries = Entry.parse_feed(opt.feed_url, limit)
       end
     end
