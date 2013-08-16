@@ -1,6 +1,10 @@
-
-  <%= form_for @option, :url=> headline_templates_path, :html => {:method=>'post',:id=>"frm-upload-logo"} do |f| %>
+<div id="template-headline" class="template-popup">
+  <%= form_for @option, :url=> headline_templates_path, :html => {:method=>'post',:id=>"frm-headline"} do |f| %>
   <%= f.hidden_field :branch_id %>
+  <input type="hidden" name="todo" value="" />
+  <div class='notice'>
+    <%= flash[:notice] %>
+  </div>
   <% options = [['dropbox','dropbox'],['static_rss','static_rss']]
   id = @option.feed_source %>
   
@@ -9,8 +13,15 @@
     <%= f.select :feed_source, options_for_select(options, id), :style=>'' %>
   </div>
   <div>
-    <span><%= submit_tag 'Save', :class=>"btnAction" %></span>
-    <span><%= submit_tag 'Cance', :class=>"btnAction" %></span>
+    <span><%= submit_tag 'Save', :id=>"save",:class=>"btnAction" %></span>
+    <span><%= submit_tag 'Cance',:id=>"cancel",:class=>"btnAction" %></span>
   </div>
   <% end %>
+</div>
+<script>
+  jQuery(document).ready(function () { 
+  // pass forum type
+    reportUpload.init("<%= @template.class.name.downcase %>");
+  });
+</script>
 

@@ -3,8 +3,17 @@ class TemplatesController < ApplicationController
   skip_before_filter :verify_authenticity_token, :only => [:create]
   layout 'application'
   
+  def index
+    @branch_name = params[:branch] || 'oddi'
+    @forum_type = params[:type] || 'report'
+  end
+  # For upload voice prompt voice forum
+  # voice forum type must be one of report | bulletin | vote
+  # prompt name must be one of introduction | goodbye | question
+  # query format:
+  # /templates/new?branch=tripoli&type=report&name=introduction
   def new
-    # params[:report] params[:branch] params[:name]
+    flash[:notice] = nil
     b = Branch.find_me(params[:branch])
     if params[:type] == 'report'
       @template = Report.find_me(b.id, params[:name])
@@ -13,28 +22,26 @@ class TemplatesController < ApplicationController
     elsif params[:type] == 'vote'
       @template = Vote.find_me(b.id, params[:name])
     end
-    if !!@template.dropbox_file
+    if !!@template && !!@template.dropbox_file
       flash[:notice] = "#{params[:name].titleize} file " +
       File.basename(@template.dropbox_file) +
       " has been uploaded"
     end
     @preview = false
-    render :layout=>'templates'
+    render :layout=>false # 'templates'
   end
 
   def create
     temp = params[:report] || params[:bulletin] || params[:vote]
-    @template = Report.find_by_id temp[:id]
+    @template = Template.find_by_id temp[:id]
     @preview = false
     # save button pressed
-    if params[:commit] == 'Save'
+    if params[:todo] == 'save'
       @template.is_active=true
       @template.save!
-      flash[:notice] = "#{params[:name].titleize} file " +
+      flash[:notice] = "#{@template.name.titleize} file " +
       File.basename(@template.dropbox_file) +
       " has been uploaded"
-    elsif params[:commit] == 'Cancel'
-      render :index and return
     else
       # Preview the sound
       file = temp[:sound]
@@ -43,27 +50,32 @@ class TemplatesController < ApplicationController
       else
         @template.upload_to_dropbox(file)
         @preview = true
+        flash[:notice] = "#{@template.name.titleize} file " +
+              File.basename(@template.dropbox_file) +
+              " was uploaded to temperary folder"
       end
     end
-    render :action=>'new', :layout => 'templates'
+    render :action=>'new', :layout => false
   end
 
+  # UI for selecting feed source from dropbox or static rss
   def headline
-    # params[:branch] == 'oddi'
     if request.post?
-      if params[:commit] == 'Save'
+      if params[:todo] == 'save'
+        # params[:configure][:branch_id] == 'oddi'
         opt = params[:configure]
-        branch = Branch.find_by_name opt[:branch]
+        branch = Branch.find_by_id opt[:branch_id]
         feed_source= opt[:feed_source]
         @option = Configure.find_me(branch, "feed_source")
-        @option.feed_source = feed_source
+        @option.value = feed_source
         @option.save!
+        flash[:notice] = "#{@option.value} saved"
       end
-      render :index and return
+      render :layout => false
     else
       branch = Branch.find_me(params[:branch])
       @option = Configure.find_me(branch, "feed_source")
-      render :layout => 'templates'
+      render :layout => false
     end
   end
 

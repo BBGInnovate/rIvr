@@ -1,7 +1,7 @@
 class Health< ActiveRecord::Base
   attr_accessor :status
   belongs_to :branch
-  self.table_name = "healthes"
+  self.table_name = "healths"
   def to_label
     "Health"
   end

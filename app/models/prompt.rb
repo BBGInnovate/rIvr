@@ -46,13 +46,13 @@ class Prompt < ActiveRecord::Base
   def self.rss_feeds
     puts "#{Time.now.utc} Start"
     client = self.new.get_dropbox_session
-    Branch.where(:is_active=>true).all.each do | branch |
+    Branch.where(:is_active=>true, :name=>'Tripoli').all.each do | branch |
       # branch = en.name.downcase
       dir = "#{DROPBOX.tmp_dir}/#{branch.name}"
       FileUtils.mkdir_p(dir) if !Dir.exists?(dir)
       generate_prompts_xml(branch, client)
       generate_messages_xml(branch, client)
-      Report.generate_report_xml(branch, client)
+      branch.generate_forum_feed(client)
     end
     puts "#{Time.now.utc} End"
   end
@@ -70,7 +70,7 @@ class Prompt < ActiveRecord::Base
       begin
         old_content = open(old_file).read
       rescue Exception=>e
-        puts "INFO : Prompt file_equal?(#{old_file}) : #{e.message}"
+        puts "INFO : 1 Prompt file_equal?(#{old_file}) : #{e.message}"
       end
       begin       
         if (new_file =~ /^http/)
@@ -79,7 +79,7 @@ class Prompt < ActiveRecord::Base
           new_content = File.open(new_file).read
         end
       rescue Exception=>e
-        puts "INFO : Prompt file_equal?(#{new_file}) : #{e.message}"
+        puts "INFO : 2 Prompt file_equal?(#{new_file}) : #{e.message}"
       end
       return (new_content == old_content)
     end
@@ -90,7 +90,7 @@ class Prompt < ActiveRecord::Base
       response = Net::HTTP.new(url.host, url.port).request_head(url.path)
       return (response.code == '200')
     rescue Exception=>e
-      puts "INFO : Prompt file_equal?(#{old_file}) : #{e.message}"
+      puts "INFO : 3 Prompt file_equal?(#{old_file}) : #{e.message}"
       return false
     end
   end
@@ -153,7 +153,7 @@ class Prompt < ActiveRecord::Base
     if entries.size > 0
       local_file = self.rss_feed(entries, branch, "messages")
       remote_file = "#{DROPBOX.public_dir}/#{name}/#{File.basename(local_file)}"
-      to = "Public/#{branch}/"
+      to = "Public/#{name}/"
       if !file_equal?(remote_file, local_file)
         puts "#{Time.now.utc} Uploading #{local_file} to #{to}"
         client.upload local_file, to

@@ -11,12 +11,12 @@ class EntriesController < ApplicationController
     config.label = 'Moderation'
 #    config.actions.exclude :create
     config.list.sorting = {:id => 'DESC'}
-    config.columns = [:branch, :public_url, :dropbox_file, :length, :soundcloud_url, :dropbox_dir, :phone_number, :is_private, :created_at, :updated_at]
+    config.columns = [:branch, :forum_type, :public_url, :dropbox_file, :length, :soundcloud_url, :dropbox_dir, :phone_number, :is_private, :created_at, :updated_at]
 #    config.search.text_search = :start
 #    config.search.columns = [:branch, :dropbox_file]
-    config.actions.exclude :create, :search
+    config.actions.exclude :search
     config.columns[:phone_number].label = 'Phone'
-    config.list.columns.exclude [:created_at, :dropbox_dir, :phone_number]
+    config.list.columns.exclude [:created_at, :dropbox_dir, :length, :phone_number]
     config.action_links.add 'configure',
                :label => 'Configure',
                :type => :collection,

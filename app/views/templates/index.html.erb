@@ -1,1 +1,15 @@
-Index page here!
+<div id="forum-template" class="float-left">
+  <h2><%= @forum_type.titleize %></h2>
+  <input type="hidden" name="branch" id="branch-name" value="<%=@branch_name%>" />
+  <div id="introduction" class="square">Intro</div>
+  <div id="headline" class="square">Headline News</div>
+  <div id="goodbye" class="square">Goodbye</div>
+</div>
+<div id="forum-upload" class="float-left">
+  
+</div>
+<script>
+  jQuery(document).ready(function () { 
+    reportUpload.init("<%= @forum_type %>");
+  });
+</script>

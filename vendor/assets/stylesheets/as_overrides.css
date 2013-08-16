@@ -7,7 +7,11 @@ body {
   font-family: Arial, sans serif;
 }
 .overBg {
-  width: 480px;
+  width: 880px;
+  margin: 0 auto;
+}
+.overSm {
+  width: 320px;
   margin: 0 auto;
 }
 #contentHolder {
@@ -125,7 +129,7 @@ h2 {
 div {
   color: #5D5D5D;
 }
-#template-popup input.btnAction {
+.template-popup input.btnAction {
     float: none;
     height: 31px;
     margin-top: 20px;
@@ -147,6 +151,29 @@ input.btnAction:hover {
   
   border-radius: 3px;
 }
+#forum-template {
+  float: left;
+}
+#forum-template .square {
+  border: 1px solid #9CD5F8;
+  text-align: center;
+  width: 200px;
+  height: 100px;
+  line-height: 100px;
+  margin: 0 20px 10px 0;
+}
+#forum-upload {
+  width: 480px;
+  margin: 50px 0 0 0;
+  
+  overflow: hidden;
+}
+#forum-template .square:hover {
+  background-color:#004276;
+  cursor: pointer; 
+  color: #FFF;
+}
+
 /*
 a.soundcloud:hover {
   background-color:yellow;

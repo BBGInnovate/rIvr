@@ -1,5 +1,7 @@
+<div id="template-popup" class="template-popup">
 <%= form_for template, :url=> templates_path, :html => {:method=>'post',:multipart => true, :id=>"frm-upload-logo"} do |f| %>
-<div class="inputSpacing">
+<div class="inputSpacing"> 
+  <input type="hidden" name="todo" value="" />
   <%= f.hidden_field :name %>
   <%= f.hidden_field :id %>
   <%= f.hidden_field :branch_id %>
@@ -11,11 +13,11 @@
     <%= f.file_field :sound %>
   </div>
   <div class="btnUploadWrap">
-    <span><%= submit_tag 'Preview', :class=>"btnAction" %></span>
-    <% if params[:commit] == "Preview" %>
-      <span><%= submit_tag 'Save', :class=>"btnAction" %></span>
+    <span><%= submit_tag 'Preview', :id=>"preview", :class=>"btnAction" %></span>
+    <% if @preview %>
+      <span><%= submit_tag 'Save', :id=>"save", :class=>"btnAction" %></span>
     <% end %>
-    <span><%= submit_tag 'Cancel', :class=>"btnAction" %></span>
+    <span><%= submit_tag 'Cancel', :id=>"cancel", :class=>"btnAction" %></span>
   </div>
   <div class="clear">
     <% if @preview %>
@@ -29,3 +31,5 @@
   
 </div>
 <% end %>
+</div>
+

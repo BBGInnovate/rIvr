@@ -1,10 +1,12 @@
 class Template < ActiveRecord::Base
   belongs_to :branch
+
+  after_save :generate_forum_feed
+
   self.inheritance_column = "temp_type"
   #  has_attached_file :sound,
   #     :path => ":rails_root/public/system/:attachment/:id/:style/:filename",
   #     :url => "/system/:attachment/:id/:style/:filename"
-  
   # name == 'introduction', 'message' etc.
   def self.find_me(branch_id, name)
     record = self.last :conditions=>["branch_id=? and name=?", branch_id, name]
@@ -14,7 +16,11 @@ class Template < ActiveRecord::Base
       record
     end
   end
-  
+
+  def generate_forum_feed
+    branch.generate_forum_feed
+  end
+
   def dropbox_dir
     "/bbg/#{self.branch.name.downcase}/#{self.class.name.downcase}"
   end

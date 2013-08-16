@@ -47,12 +47,97 @@ var required = {
 			});
 		}
 }
+
+String.prototype.titleize = function() {
+	return this.charAt(0).toUpperCase() + this.slice(1);
+}
+
+var reportUpload = {
+  init : function(forum_type) {
+		jQuery("#forum-template").on('click',"#introduction,#goodbye", function(e) {
+			var name = this.id;
+			var b = jQuery('#branch-name').val();
+			var url='/templates/new';
+		  var data={name: name, type: forum_type, branch: b};
+			jQuery.get(url, data, reportUpload.update, 'html');
+			jQuery('#forum-upload').show();
+		});
+		jQuery("#forum-template").on('click',"#headline", function(e) {
+			var name = this.id;
+			var b = jQuery('#branch-name').val();
+			var url='/templates/headline';
+		  var data={name: name, type: forum_type, branch: b};
+			jQuery.get(url, data, reportUpload.update, 'html');
+			jQuery('#forum-upload').show();
+		});
+		jQuery("#template-headline").on('click',"#save", function(e) {
+   		var url='/templates/headline';
+   		jQuery("[name='todo']").val("save");
+   		var options = {
+					beforeSubmit : function(arr, $form, options) {
+						jQuery('#template-popup').css({
+							"cursor" : "wait"
+						});
+					},
+					success : function(data) {
+						jQuery('#template-popup').css({
+							"cursor" : "hand",
+							"cursor" : "pointer"
+						});
+						jQuery("#forum-upload").html(data); 
+					}
+			};
+   		$('#frm-headline').ajaxForm(options);
+		});
+		jQuery("#template-popup").on('click',"#preview, #save", function(e) {
+   		var url='/templates';
+   		jQuery("[name='todo']").val(this.id);
+   		var options = {
+					beforeSubmit : function(arr, $form, options) {
+						jQuery('#template-popup').css({
+							"cursor" : "wait"
+						});
+					},
+					success : function(data) {
+						jQuery('#template-popup').css({
+							"cursor" : "hand",
+							"cursor" : "pointer"
+						});
+						jQuery("#forum-upload").html(data); 
+					}
+			};
+   		$('#frm-upload-logo').ajaxForm(options);
+   		jQuery('#forum-upload').show();
+		});
+		jQuery(".template-popup").on('click',"#cancel", function(e) {
+			jQuery('#forum-upload').hide();
+   		return false;
+		});
+	},
+	update : function(data) {
+    jQuery("#forum-upload").html(data); 
+  }
+}
 function blinkeffect(selector) {
   $(selector).fadeOut('slow', function() {
     $(this).fadeIn('slow', function() {
        blinkeffect(this);
     });
  });
+}
+function getwith(to, options) {
+  var myForm = document.createElement("form");
+    myForm.method="get" ;
+    myForm.action = to ;
+    for (var k in options) {
+      var myInput = document.createElement("input") ;
+      myInput.setAttribute("name", k) ;
+      myInput.setAttribute("value", options[k]);
+      myForm.appendChild(myInput) ;
+    }
+    document.body.appendChild(myForm) ;
+    myForm.submit() ;
+    document.body.removeChild(myForm) ;
 }
 function dump() {	
 }
