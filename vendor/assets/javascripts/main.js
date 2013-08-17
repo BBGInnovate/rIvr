@@ -118,6 +118,69 @@ var reportUpload = {
     jQuery("#forum-upload").html(data); 
   }
 }
+
+var branchManage = {
+	  init : function() {
+			jQuery("#branch").on('click',"#create", function(e) {
+				var name = this.id;
+				var url='/branch/new';
+			  var data={};
+				jQuery.get(url, data, branchManage.update, 'html');
+				jQuery('#new-branch').show();
+				return false
+			});
+			jQuery("#branch").on('change',"#record_id", function(e) {
+				var branch_id = this.value;
+				var url='/branch/'+branch_id;
+			  var data={};
+				jQuery.get(url, data, branchManage.updateForumType, 'html');
+			});
+			jQuery("#frm-new-branch").on('click',"#save", function(e) {
+	   		var url='/branch';
+	   		var options = {
+						beforeSubmit : function(arr, $form, options) {
+							jQuery('#branch').css({
+								"cursor" : "wait"
+							});
+						},
+						success : function(data) {
+							jQuery('#branch').css({
+								"cursor" : "hand",
+								"cursor" : "pointer"
+							});
+							
+						var obj = jQuery.parseJSON(data);
+							if (obj.error=='error')
+							  jQuery(".error").html(obj.msg); 
+							else
+								jQuery(".notice").html(obj.msg); 
+						}
+				};
+	   		$('#frm-new-branch').ajaxForm(options);
+			});
+			jQuery("#branch").on('click',"input[name='forum_type']", function(e) {
+	   		elem_id = this.id
+	   		branch_id = jQuery("#record_id").val();
+				var url='/branch/'+branch_id;
+	   		var data={forum_type: elem_id};
+				jQuery.get(url, data, function(data){
+					jQuery('#return-msg').html(data);
+				}, 'html');
+	   	  
+			});
+			jQuery("#frm-new-branch").on('click',"#cancel", function(e) {
+				jQuery('#new-branch').hide();
+	   		return false;
+			});
+		},
+		updateForumType : function(data) {
+	    jQuery("#forum_type_"+data).prop('checked', true); 
+	  },
+		update : function(data) {
+	    jQuery("#new-branch").html(data); 
+	  }
+	}
+
 function blinkeffect(selector) {
   $(selector).fadeOut('slow', function() {
     $(this).fadeIn('slow', function() {

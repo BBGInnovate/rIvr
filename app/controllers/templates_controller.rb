@@ -6,6 +6,15 @@ class TemplatesController < ApplicationController
   def index
     @branch_name = params[:branch] || 'oddi'
     @forum_type = params[:type] || 'report'
+    @goodbye=nil
+    branch = Branch.find_me(@branch_name)
+    if branch.forum_type == 'report'
+      @headline="Headline News"
+      @goodbye="Goodbye"
+    elsif branch.forum_type == 'bulletin'
+      @template = Bulletin.find_me(branch.id, params[:name])
+      @headline="Bulletin Board"    
+    end
   end
   # For upload voice prompt voice forum
   # voice forum type must be one of report | bulletin | vote
@@ -14,13 +23,18 @@ class TemplatesController < ApplicationController
   # /templates/new?branch=tripoli&type=report&name=introduction
   def new
     flash[:notice] = nil
-    b = Branch.find_me(params[:branch])
-    if params[:type] == 'report'
-      @template = Report.find_me(b.id, params[:name])
-    elsif params[:type] == 'bulletin'
-      @template = Bulletin.find_me(b.id, params[:name])
-    elsif params[:type] == 'vote'
-      @template = Vote.find_me(b.id, params[:name])
+    @headline=nil
+    @goodbye=nil
+    branch = Branch.find_me(params[:branch])
+    if branch.forum_type == 'report'
+      @template = Report.find_me(branch.id, params[:name])
+      @headline="Headline News"
+      @goodbye="Goodbye"
+    elsif branch.forum_type == 'bulletin'
+      @template = Bulletin.find_me(branch.id, params[:name])
+      @headline="Bulletin Board"
+    elsif branch.forum_type == 'vote'
+      @template = Vote.find_me(branch.id, params[:name])
     end
     if !!@template && !!@template.dropbox_file
       flash[:notice] = "#{params[:name].titleize} file " +

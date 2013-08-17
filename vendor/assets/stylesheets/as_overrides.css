@@ -102,10 +102,17 @@ input.btnAction:hover {
 }
 
 /* templates */
+.clear {
+  clear: both;
+}
+.float-left {
+  float: left;
+}
 .inputSpacing {
     padding: 10px 0;
 }
 .notice {
+  color: green;
   margin: 0 0 10px 0;
 }
 #template-popup {
@@ -173,7 +180,31 @@ input.btnAction:hover {
   cursor: pointer; 
   color: #FFF;
 }
-
+/* branch create */
+#new-branch {
+  margin: 0 0 0 10px;
+}
+#new-branch label {
+  width: 110px;
+  vertical-align: top;
+  display: inline-block;
+}
+#new-branch input,select, textarea {
+  width: 200px;
+}
+#new-branch textarea {
+  width: 200px;
+  height: 50px;
+}
+#new-branch input.btnAction {
+  width: 80px;
+}
+#branch input.btnAction {
+    float: none;
+    font-size: 14px;
+    height: 31px;
+    margin: 10px 0 5px 0;
+}
 /*
 a.soundcloud:hover {
   background-color:yellow;

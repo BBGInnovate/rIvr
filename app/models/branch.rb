@@ -10,6 +10,9 @@ class Branch< ActiveRecord::Base
   has_many :bulletins
   has_many :prompts, :conditions =>"is_active=1"
 
+  validates_presence_of :name 
+  validates :name, :uniqueness => {:scope => :country_id}
+    
   has_many :options do
     def feed_limit
       where(:name=>'feed_limit').last

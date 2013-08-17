@@ -11,6 +11,7 @@ TestIvr::Application.routes.draw do
       post :prompt
     end
   end
+  resources :branch
   resources :templates do
     collection do
       post :headline

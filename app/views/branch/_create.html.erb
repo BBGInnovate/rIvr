@@ -1,0 +1,33 @@
+<div id="template-popup" class="template-popup">
+<h2>Create Branch</h2>
+<%= form_for @branch, :url=> "/branch", :html => {:method=>'post',:multipart => true, :id=>"frm-new-branch"} do |f| %>
+<div class="inputSpacing">
+  <div class='error'>
+    <%= flash[:error] %>
+  </div>
+  <div class='notice'>
+    <%= flash[:notice] %>
+  </div>
+  <div class="clear"></div>
+  <label for="branch_name">Name </label>
+  <%= f.text_field :name, :placeholder=>"myBranch" %>
+  <p></p>
+  <label for="branch_forum_type">Forum&nbsp;Type </label>
+  <% options = [['Report','report'],['Bulletin Board','bulletin']] %>
+  <%= f.select :forum_type, options_for_select(options, 0), :style=>'' %>
+  <p></p>
+  <label for="branch_country_id">Country </label>
+  <% options = Country.all.map{|b| [b.name, b.id]} %>
+  <%= f.select :country_id, options_for_select(options, 0), :style=>'' %>
+  <p></p>
+  <label for="branch_description">Description</label>
+  <%= f.text_area :description %>
+  <div class="btnUploadWrap">
+    <span><%= submit_tag 'Save', :id=>"save", :class=>"btnAction" %></span>
+    <span><%= submit_tag 'Cancel', :id=>"cancel", :class=>"btnAction" %></span>
+  </div>
+  
+</div>
+<% end %>
+</div>
+

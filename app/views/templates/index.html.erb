@@ -2,8 +2,10 @@
   <h2><%= @forum_type.titleize %></h2>
   <input type="hidden" name="branch" id="branch-name" value="<%=@branch_name%>" />
   <div id="introduction" class="square">Intro</div>
-  <div id="headline" class="square">Headline News</div>
-  <div id="goodbye" class="square">Goodbye</div>
+  <div id="headline" class="square"><%= @headline %></div>
+  <% if @goodbye %>
+  <div id="goodbye" class="square"><%= @goodbye %></div>
+  <% end %>
 </div>
 <div id="forum-upload" class="float-left">
   

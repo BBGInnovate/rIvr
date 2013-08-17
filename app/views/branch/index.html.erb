@@ -1,0 +1,23 @@
+<div id="branch" class="float-left"> 
+  <input type="hidden" name="todo" value="" />
+  <% options = Branch.where("is_active=1").map{|b| [b.name, b.id]} %>
+  <p>Select Branch</p>
+  <%= select_tag 'record[id]', options_for_select(options, '0'), :style=>'' %>
+  <p>  
+  <p>
+    <%= submit_tag 'Create Branch', :id=>"create", :class=>"btnAction" %>
+  </p>
+  <p>
+  <%= radio_button_tag 'forum_type', 'report' %>&nbsp;Report
+  <%= radio_button_tag 'forum_type', 'bulleting' %>&nbsp;Bulletin Board
+  </p>
+  <p id="return-msg" class="notice"></p>
+</div>
+<div id="new-branch" class="float-left">
+  
+</div>
+<script>
+  jQuery(document).ready(function () { 
+    branchManage.init();
+  });
+</script>
