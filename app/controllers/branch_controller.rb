@@ -1,15 +1,16 @@
 class BranchController < ApplicationController
   def index
-    
+    @branch = nil
   end
   def show
-    branch= Branch.find_me(params[:id])
+    @branch= Branch.find_me(params[:id])
     if params[:forum_type]
-      branch.forum_type = params[:forum_type].split("_").last
-      branch.save
+      @branch.forum_type = params[:forum_type].split("_").last
+      @branch.save
      # render :text=>branch.forum_type and return 
     end
-    render :text =>"Forum Type changed to #{branch.forum_type.titleize}" ,:content_type=>'text',:layout=>false and return
+    text=%{{"forum":"#{@branch.forum_type}", "branch":"#{@branch.name}"}}
+    render :text =>text ,:content_type=>'application/text',:layout=>false and return
 
   end
   def new

@@ -132,8 +132,9 @@ var branchManage = {
 			jQuery("#branch").on('change',"#record_id", function(e) {
 				var branch_id = this.value;
 				var url='/branch/'+branch_id;
-			  var data={};
+			    var data={};
 				jQuery.get(url, data, branchManage.updateForumType, 'html');
+				jQuery('#go-template').show();
 			});
 			jQuery("#frm-new-branch").on('click',"#save", function(e) {
 	   		var url='/branch';
@@ -159,12 +160,15 @@ var branchManage = {
 	   		$('#frm-new-branch').ajaxForm(options);
 			});
 			jQuery("#branch").on('click',"input[name='forum_type']", function(e) {
-	   		elem_id = this.id
-	   		branch_id = jQuery("#record_id").val();
+	   		    elem_id = this.id
+	   		    branch_id = jQuery("#record_id").val();
 				var url='/branch/'+branch_id;
-	   		var data={forum_type: elem_id};
+	   		    var data={forum_type: elem_id};
 				jQuery.get(url, data, function(data){
-					jQuery('#return-msg').html(data);
+					var obj = jQuery.parseJSON(data);
+					jQuery('#return-msg').html("Forum Type changed to "+obj.forum);
+					jQuery('#go-template').show();
+					jQuery('#go-template').attr('href',"/templates?branch="+obj.branch);
 				}, 'html');
 	   	  
 			});
@@ -174,7 +178,9 @@ var branchManage = {
 			});
 		},
 		updateForumType : function(data) {
-	    jQuery("#forum_type_"+data).prop('checked', true); 
+			var obj = jQuery.parseJSON(data);
+	    jQuery("#forum_type_"+obj.forum).prop('checked', true); 
+	    jQuery('#go-template').attr('href',"/templates?branch="+obj.branch);
 	  },
 		update : function(data) {
 	    jQuery("#new-branch").html(data); 

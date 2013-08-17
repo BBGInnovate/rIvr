@@ -1,6 +1,7 @@
 <div id="branch" class="float-left"> 
   <input type="hidden" name="todo" value="" />
-  <% options = Branch.where("is_active=1").map{|b| [b.name, b.id]} %>
+  <% options = Branch.where("is_active=1").map{|b| [b.name, b.id]}
+     options.unshift ["--Select Branch--","0"] %>
   <p>Select Branch</p>
   <%= select_tag 'record[id]', options_for_select(options, '0'), :style=>'' %>
   <p>  
@@ -12,10 +13,14 @@
   <%= radio_button_tag 'forum_type', 'bulleting' %>&nbsp;Bulletin Board
   </p>
   <p id="return-msg" class="notice"></p>
+  <p>
+  <a id="go-template" href="/templates">Edit Forum</a>
+  </p>
 </div>
 <div id="new-branch" class="float-left">
   
 </div>
+
 <script>
   jQuery(document).ready(function () { 
     branchManage.init();

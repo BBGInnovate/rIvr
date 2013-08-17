@@ -1,5 +1,5 @@
 <div id="forum-template" class="float-left">
-  <h2><%= @forum_type.titleize %></h2>
+  <h2><%= @branch.forum_type.titleize %></h2>
   <input type="hidden" name="branch" id="branch-name" value="<%=@branch_name%>" />
   <div id="introduction" class="square">Intro</div>
   <div id="headline" class="square"><%= @headline %></div>
@@ -12,6 +12,6 @@
 </div>
 <script>
   jQuery(document).ready(function () { 
-    reportUpload.init("<%= @forum_type %>");
+    reportUpload.init("<%= @branch.forum_type %>");
   });
 </script>

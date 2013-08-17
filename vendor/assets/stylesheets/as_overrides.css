@@ -205,6 +205,9 @@ input.btnAction:hover {
     height: 31px;
     margin: 10px 0 5px 0;
 }
+a#go-template {
+	display: none;
+}
 /*
 a.soundcloud:hover {
   background-color:yellow;
