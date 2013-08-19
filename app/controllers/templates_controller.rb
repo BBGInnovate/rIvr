@@ -83,6 +83,7 @@ class TemplatesController < ApplicationController
         @option = Configure.find_me(branch, "feed_source")
         @option.value = feed_source
         @option.save!
+        branch.generate_forum_feed
         flash[:notice] = "#{@option.value} saved"
       end
       render :layout => false
