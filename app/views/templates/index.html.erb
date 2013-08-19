@@ -2,7 +2,12 @@
   <h2><%= @branch.forum_type.titleize %></h2>
   <input type="hidden" name="branch" id="branch-name" value="<%=@branch_name%>" />
   <div id="introduction" class="square">Intro</div>
+  <% if @headline %>
   <div id="headline" class="square"><%= @headline %></div>
+  <% end %>
+  <% if @question %>
+  <div id="bulletin_question" class="square"><%= @question %></div>
+  <% end %>
   <% if @goodbye %>
   <div id="goodbye" class="square"><%= @goodbye %></div>
   <% end %>

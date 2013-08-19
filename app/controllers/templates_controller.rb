@@ -7,13 +7,14 @@ class TemplatesController < ApplicationController
     @branch_name = params[:branch] || 'oddi'
     @goodbye=nil
     @headline = nil
+    @question = nil
     @branch = Branch.find_me(@branch_name)
     if @branch.forum_type == 'report'
       @headline="Headline News"
       @goodbye="Goodbye"
     elsif @branch.forum_type == 'bulletin'
       # @template = Bulletin.find_me(@branch.id, params[:name])
-      @headline="Bulletin Board"    
+      @question="Bulletin Board"    
     end
   end
   # For upload voice prompt voice forum
@@ -25,6 +26,7 @@ class TemplatesController < ApplicationController
     flash[:notice] = nil
     @headline=nil
     @goodbye=nil
+    @question = nil
     branch = Branch.find_me(params[:branch])
     if branch.forum_type == 'report'
       @template = Report.find_me(branch.id, params[:name])
@@ -32,7 +34,7 @@ class TemplatesController < ApplicationController
       @goodbye="Goodbye"
     elsif branch.forum_type == 'bulletin'
       @template = Bulletin.find_me(branch.id, params[:name])
-      @headline="Bulletin Board"
+      @question="Bulletin Board"
     elsif branch.forum_type == 'vote'
       @template = Vote.find_me(branch.id, params[:name])
     end

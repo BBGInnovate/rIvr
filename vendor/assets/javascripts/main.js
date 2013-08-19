@@ -54,7 +54,7 @@ String.prototype.titleize = function() {
 
 var reportUpload = {
   init : function(forum_type) {
-		jQuery("#forum-template").on('click',"#introduction,#goodbye", function(e) {
+		jQuery("#forum-template").on('click',"#introduction,#goodbye, #bulletin_question", function(e) {
 			var name = this.id;
 			var b = jQuery('#branch-name').val();
 			var url='/templates/new';
