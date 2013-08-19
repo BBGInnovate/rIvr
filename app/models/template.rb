@@ -21,8 +21,10 @@ class Template < ActiveRecord::Base
     branch.generate_forum_feed
   end
 
+  # for forum prompts file
   def dropbox_dir
     "/bbg/#{self.branch.name.downcase}/#{self.class.name.downcase}"
+    # "/Public/#{self.branch.name.downcase}/#{self.class.name.downcase}"
     # "/bbg/#{self.branch.name.downcase}/forum"
   end
 

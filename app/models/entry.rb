@@ -55,11 +55,18 @@ class Entry< ActiveRecord::Base
     ds = DropboxSession.last
     if !!ds
       client = get_dropbox_session
-      to = "Public/#{self.branch.name}/#{self.dropbox_file}"
+      if self.forum_type=='bulletin'
+        to = "Public/#{self.branch.name}/#{self.forum_type}/#{self.dropbox_file}"
+        file_url = DROPBOX.public_dir + "/#{self.branch.name}/#{self.forum_type}/#{self.dropbox_file}"
+      else
+        to = "Public/#{self.branch.name}/#{self.dropbox_file}"
+        file_url = DROPBOX.public_dir + "/#{self.branch.name}/#{self.dropbox_file}"
+      end
       from = file_path
       begin
         if !self.is_private
-          self.public_url = DROPBOX.public_dir + "/#{self.branch.name}/#{self.dropbox_file}"
+          self.public_url = file_url
+          # logger.debug "copy #{from} #{to}"
           content = client.copy(from, to)
         elsif self.public_url
           self.public_url = nil

@@ -160,8 +160,13 @@ var branchManage = {
 	   		$('#frm-new-branch').ajaxForm(options);
 			});
 			jQuery("#branch").on('click',"input[name='forum_type']", function(e) {
-	   		    elem_id = this.id
-	   		    branch_id = jQuery("#record_id").val();
+	   		elem_id = this.id
+	   		branch_id = jQuery("#record_id").val();
+	   		if (branch_id=='0') {
+	   			jQuery('#return-msg').html('Please select a branch')
+	   			return false;
+	   		}
+	   			
 				var url='/branch/'+branch_id;
 	   		    var data={forum_type: elem_id};
 				jQuery.get(url, data, function(data){

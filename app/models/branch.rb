@@ -35,7 +35,7 @@ class Branch< ActiveRecord::Base
         conditions="entries.forum_type='#{forum}'"
       # end
       if opt.feed_source == 'dropbox'
-        if forum == 'report'
+#        if forum == 'report'
           # upload report forum messages to "/Public/oddi/#{forum}/"
           entries = []
           client = brch.get_dropbox_session
@@ -45,27 +45,26 @@ class Branch< ActiveRecord::Base
               entry = OpenStruct.new
               entry.public_url = record.path
               entries << entry
-              # path="/Public/oddi/report/recording-was-saved2.wav"
             end
           end
           entries
-        else
+#        else
           # forum type == bulletin. IVR client posts caller 
           # message to Dashboard with xml:
           # xml.entry do
           #  xml.forum_type 'bulletin'
           #  xml.branch brch
-          where("public_url is not null").all :conditions=>conditions,
-          :select => "public_url", :order => "id DESC",
-          :limit => limit
-        end
+#          where("public_url is not null").all :conditions=>conditions,
+#          :select => "public_url", :order => "id DESC",
+#          :limit => limit
+#        end
       else # from static_rss
         entries = Entry.parse_feed(opt.feed_url, limit)
       end
     end
   end
   def forum_type
-    read_attribute(:forum_type) || 'report'
+    read_attribute(:forum_type) || ''
   end
   
   def forum_prompts
