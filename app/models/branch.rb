@@ -36,10 +36,10 @@ class Branch< ActiveRecord::Base
       # end
       if opt.feed_source == 'dropbox'
         if forum == 'report'
-          # upload report forum messages to "/Public/oddi/report/"
+          # upload report forum messages to "/Public/oddi/#{forum}/"
           entries = []
           client = brch.get_dropbox_session
-          records = client.list("Public/#{brch.name}/report")
+          records = client.list("Public/#{brch.name}/#{forum}")
           records.each do |record|
             if !record.is_dir
               entry = OpenStruct.new
