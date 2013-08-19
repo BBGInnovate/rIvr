@@ -153,7 +153,7 @@ class Branch< ActiveRecord::Base
           xml.branch self.name
           xml.count entries.size
           for m in prompts
-            xml.item do
+            xml.prompt do
               # <introduction>/bbg/tripoli/bulletin/introduction.wav</introduction>
               xml.method_missing(m.name, m.dropbox_file)
             end
