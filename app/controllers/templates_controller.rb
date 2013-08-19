@@ -84,7 +84,7 @@ class TemplatesController < ApplicationController
         @option.value = feed_source
         @option.save!
         branch.generate_forum_feed
-        flash[:notice] = "#{@option.value} saved"
+        flash[:notice] = "FEED SOURCE changed to #{@option.value}"
       end
       render :layout => false
     else
