@@ -23,6 +23,7 @@ class Template < ActiveRecord::Base
 
   def dropbox_dir
     "/bbg/#{self.branch.name.downcase}/#{self.class.name.downcase}"
+    # "/bbg/#{self.branch.name.downcase}/forum"
   end
 
   def upload_to_dropbox(file)

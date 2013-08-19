@@ -79,7 +79,7 @@ class Branch< ActiveRecord::Base
     end
   end
   
-  # generate report.xml or bulletin.xml in dropboc public
+  # generate forum.xml in dropbox public/<branch>
   def generate_forum_feed(client=nil)
     local_file = self.forum_feed
     remote_file = "#{DROPBOX.public_dir}/#{self.name}/#{File.basename(local_file)}"
@@ -140,9 +140,10 @@ class Branch< ActiveRecord::Base
     # forum_type must be 'report' or 'bulletin'
     # call branch.reports() or branch.bulletins()
     prompts = self.forum_prompts
-    tmp = "#{DROPBOX.tmp_dir}/#{self.name}"
+    # tmp = "#{DROPBOX.tmp_dir}/#{self.name}"
+    tmp = "#{DROPBOX.tmp_dir}"
     FileUtils.mkdir_p tmp
-    file_path = "#{tmp}/#{self.forum_type.downcase}.xml"
+    file_path = "#{tmp}/forum.xml"
     File.open(file_path, "w") do |file|
       xml = ::Builder::XmlMarkup.new(:target => file, :indent => 2)
       xml.instruct! :xml, :version => "1.0"
