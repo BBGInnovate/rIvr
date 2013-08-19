@@ -5,14 +5,14 @@ class TemplatesController < ApplicationController
   
   def index
     @branch_name = params[:branch] || 'oddi'
-    
     @goodbye=nil
+    @headline = nil
     @branch = Branch.find_me(@branch_name)
     if @branch.forum_type == 'report'
       @headline="Headline News"
       @goodbye="Goodbye"
     elsif @branch.forum_type == 'bulletin'
-      @template = Bulletin.find_me(@branch.id, params[:name])
+      # @template = Bulletin.find_me(@branch.id, params[:name])
       @headline="Bulletin Board"    
     end
   end
