@@ -65,9 +65,9 @@ class ConfigureController < ApplicationController
     attr =  params[:record]
     begin
       active_scaffold_config.model.transaction do
-        Option.create :branch=>attr[:branch], :name=>"feed_limit", :value=>attr[:feed_limit]
-        Option.create :branch=>attr[:branch], :name=>"feed_source", :value=>attr[:feed_source]
-        Option.create :branch=>attr[:branch], :name=>"feed_url", :value=>attr[:feed_url]
+        Option.create :branch_id=>attr[:branch_id], :name=>"feed_limit", :value=>attr[:feed_limit]
+        Option.create :branch_id=>attr[:branch_id], :name=>"feed_source", :value=>attr[:feed_source]
+        Option.create :branch_id=>attr[:branch_id], :name=>"feed_url", :value=>attr[:feed_url]
       end
     rescue ActiveRecord::ActiveRecordError => ex
       flash[:error] = ex.message
@@ -85,11 +85,11 @@ class ConfigureController < ApplicationController
     attr = params[:record]
     begin
       Configure.transaction do
-        @record = Configure.find_me(attr[:branch], 'feed_limit')
+        @record = Configure.find_me(attr[:branch_id], 'feed_limit')
         @record.value = attr[:feed_limit]
-        @record1 = Configure.find_me(attr[:branch], 'feed_source')
+        @record1 = Configure.find_me(attr[:branch_id], 'feed_source')
         @record1.value = attr[:feed_source]
-        @record2 = Configure.find_me(attr[:branch], 'feed_url')
+        @record2 = Configure.find_me(attr[:branch_id], 'feed_url')
         @record2.value = attr[:feed_url]
         self.successful = @record.valid?
         if successful?
@@ -117,7 +117,7 @@ class ConfigureController < ApplicationController
   def do_destroy
     # params[:branch_id] is set in def render_action_link
     # of configure_helper.rb
-    Configure.where("branch='#{params[:branch_id]}'").all.each do |record|
+    Configure.where("branch_id='#{params[:branch_id]}'").all.each do |record|
       begin
         self.successful = record.destroy
       rescue Exception => ex

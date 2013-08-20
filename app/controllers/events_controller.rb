@@ -11,6 +11,7 @@ class EventsController < ApplicationController
     config.actions.exclude :create
     config.list.sorting = {:id => 'DESC'}
     config.columns = [:branch, :session_id, :caller_id, :page, :actions, :identifier, :created_at]
+    config.update.columns.exclude [:branch]
     config.search.text_search = :start
     config.search.columns = [:branch, :caller_id]
     # config.list.columns.exclude [:identifier]

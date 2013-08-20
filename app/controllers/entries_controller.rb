@@ -17,6 +17,8 @@ class EntriesController < ApplicationController
     config.actions.exclude :search
     config.columns[:phone_number].label = 'Phone'
     config.list.columns.exclude [:created_at, :dropbox_dir, :length, :phone_number]
+    config.update.columns.exclude [:branch,:forum_type,:created_at, :dropbox_dir, :length, :phone_number]
+      
     config.action_links.add 'configure',
                :label => 'Configure',
                :type => :collection,
@@ -98,12 +100,12 @@ class EntriesController < ApplicationController
       e = Entry.find_by_id params[:id]
       return '' if !e
       # mime_type posted by IVR system may not be correct
-      meta = dropbox_session.metadata("bbg/#{e.branch}/#{e.dropbox_file}")
+      meta = dropbox_session.metadata("bbg/#{e.branch.name}/#{e.dropbox_file}")
       e.mime_type = meta.mime_type
       e.size = meta.bytes
       e.save
       
-      content = dropbox_session.download("bbg/#{e.branch}/#{e.dropbox_file}")
+      content = dropbox_session.download("bbg/#{e.branch.name}/#{e.dropbox_file}")
       send_data content,
       :filename=>e.dropbox_file,
       :type=>e.mime_type,
