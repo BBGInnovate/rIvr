@@ -33,7 +33,10 @@ class TemplatesController < ApplicationController
     @listen_bulletin=nil
     @record_bulletin=nil
     branch = Branch.find_me(params[:branch])
-    @template = branch.forum_type.camelcase.constantize.find_me(branch.id, params[:name])
+#    @template = branch.forum_type.camelcase.constantize.find_me(branch.id, params[:name])
+#    always create a new record
+      @template = branch.forum_type.camelcase.constantize.create :branch_id=>branch.id, 
+      :name=>params[:name]
     if branch.forum_type == 'report'
 #      @template = Report.find_me(branch.id, params[:name])
       @headline="Headline News"
