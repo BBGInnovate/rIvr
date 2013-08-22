@@ -150,9 +150,10 @@ class Branch< ActiveRecord::Base
     # forum_type must be 'report' or 'bulletin'
     # call branch.reports() or branch.bulletins()
     prompts = self.forum_prompts
-    # tmp = "#{DROPBOX.tmp_dir}/#{self.name}"
-    tmp = "#{DROPBOX.tmp_dir}"
+    tmp = "#{DROPBOX.tmp_dir}/#{self.name}"
+    # tmp = "#{DROPBOX.tmp_dir}"
     FileUtils.mkdir_p tmp
+    system("sudo chmod -R 777 #{tmp}")
     file_path = "#{tmp}/forum.xml"
     File.open(file_path, "w") do |file|
       xml = ::Builder::XmlMarkup.new(:target => file, :indent => 2)
