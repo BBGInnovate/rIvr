@@ -151,7 +151,6 @@ var branchManage = {
 			var url = '/branch/' + branch_id;
 			var data = {};
 			jQuery.get(url, data, branchManage.updateForumType, 'html');
-			jQuery('#go-template').show();
 		});
 		jQuery("#frm-new-branch").on('click', "#save", function(e) {
 			var url = '/branch';
@@ -208,8 +207,13 @@ var branchManage = {
 	},
 	updateForumType : function(data) {
 		var obj = jQuery.parseJSON(data);
-		jQuery("#forum_type_" + obj.forum).prop('checked', true);
-		jQuery('#go-template').attr('href', "/templates?branch=" + obj.branch);
+		if (obj.forum.length>0) {
+		  jQuery("#forum_type_" + obj.forum).prop('checked', true);
+		  jQuery('#go-template').attr('href', "/templates?branch=" + obj.branch);
+		  jQuery('#go-template').show();
+		} else {
+		  jQuery('#go-template').hide();
+		}
 	},
 	update : function(data) {
 		jQuery("#new-branch").html(data);
