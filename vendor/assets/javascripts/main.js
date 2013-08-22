@@ -212,6 +212,7 @@ var branchManage = {
 		  jQuery('#go-template').attr('href', "/templates?branch=" + obj.branch);
 		  jQuery('#go-template').show();
 		} else {
+		  jQuery("input[id*='forum_type_']").prop('checked', false);
 		  jQuery('#go-template').hide();
 		}
 	},
