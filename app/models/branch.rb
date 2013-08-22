@@ -63,9 +63,10 @@ class Branch< ActiveRecord::Base
       end
     end
   end
-  def forum_type
-    read_attribute(:forum_type) || ''
-  end
+  
+#  def forum_type
+#    read_attribute(:forum_type) || false
+#  end
   
   def forum_prompts
     # if undefined forum_type ,return reports
