@@ -6,8 +6,18 @@ class Branch< ActiveRecord::Base
   belongs_to :country, :foreign_key=>"country_id"
   has_many :events
   has_many :healths
-  has_many :reports
-  has_many :bulletins
+  has_many :reports do 
+    def latest
+      res = select("max(id) as id").group(:name)
+      select("id, name, dropbox_file").where(["id in (?)", res.map{|t| t.id}])
+    end
+  end
+  has_many :bulletins do 
+    def latest
+      res = select("max(id) as id").group(:name)
+      select("id, name, dropbox_file").where(["id in (?)", res.map{|t| t.id}])
+  end
+  end
   has_many :prompts, :conditions =>"is_active=1"
 
   validates_presence_of :name 
@@ -71,9 +81,9 @@ class Branch< ActiveRecord::Base
   def forum_prompts
     # if undefined forum_type ,return reports
     if self.forum_type == 'report'
-      self.reports
+      self.reports.latest
     elsif self.forum_type == 'bulletin'
-      self.bulletins
+      self.bulletins.latest
     else
       []
     end
