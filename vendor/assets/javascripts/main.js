@@ -2,7 +2,7 @@ var monitor = {
 	init : function() {
 		var v = jQuery("#record_deliver_method").val();
 		monitor.update(v);
-		jQuery("body").on('change',"#record_deliver_method", function(e) {
+		jQuery("body").on('change', "#record_deliver_method", function(e) {
 			var v = jQuery(this).val();
 			monitor.update(v);
 		});
@@ -20,32 +20,36 @@ var monitor = {
 	}
 }
 var loadMessage = {
-		init : function() {
-			jQuery("body").on('change',"#message-name", function(e) {
-				var v = jQuery(this).val();
-				jQuery.post('/api/prompt', {
-					"msg[name]" : v,
-					_method : 'post'
-				}, loadMessage.updated, 'text');
-				return false;
-			});
-		},
-		updated : function(data) {
-			jQuery("#record_description_,.description-input").val(data);
-		}
+	init : function() {
+		jQuery("body").on('change', "#message-name", function(e) {
+			var v = jQuery(this).val();
+			jQuery.post('/api/prompt', {
+				"msg[name]" : v,
+				_method : 'post'
+			}, loadMessage.updated, 'text');
+			return false;
+		});
+	},
+	updated : function(data) {
+		jQuery("#record_description_,.description-input").val(data);
+	}
 }
 var required = {
-		init : function() {
-			jQuery("#submit").click( function(e) {
-				var v = jQuery("#soundcloud_title").val();
-				if (v) {
-				  // jQuery('#uploadForm').submit();
-				} else {
-					jQuery('#result').html("<span class='error'>Error: Title is required</span>");
-					return false;
-				}
-			});
-		}
+	init : function() {
+		jQuery("#submit")
+				.click(
+						function(e) {
+							var v = jQuery("#soundcloud_title").val();
+							if (v) {
+								// jQuery('#uploadForm').submit();
+							} else {
+								jQuery('#result')
+										.html(
+												"<span class='error'>Error: Title is required</span>");
+								return false;
+							}
+						});
+	}
 }
 
 String.prototype.titleize = function() {
@@ -53,190 +57,211 @@ String.prototype.titleize = function() {
 }
 
 var reportUpload = {
-  init : function(forum_type) {
-		jQuery("#forum-template").on('click',"#introduction,#goodbye, #bulletin_question", function(e) {
+  myId : '',
+	init : function(forum_type) {
+		var ids = "#introduction,#goodbye,#bulletin_question, #listen_bulletin_board,#record_bulletin_board";
+		jQuery("#forum-template").on('click', ids, function(e) {
 			var name = this.id;
+			reportUpload.myId = this;
+			$(this).css("cursor", "progress");
 			var b = jQuery('#branch-name').val();
-			var url='/templates/new';
-		  var data={name: name, type: forum_type, branch: b};
+			var url = '/templates/new';
+			var data = {
+				name : name,
+				type : forum_type,
+				branch : b
+			};
 			jQuery.get(url, data, reportUpload.update, 'html');
 			jQuery('#forum-upload').show();
 		});
-		jQuery("#forum-template").on('click',"#headline", function(e) {
+		jQuery("#forum-template").on('click', "#headline", function(e) {
 			var name = this.id;
 			var b = jQuery('#branch-name').val();
-			var url='/templates/headline';
-		  var data={name: name, type: forum_type, branch: b};
+			var url = '/templates/headline';
+			var data = {
+				name : name,
+				type : forum_type,
+				branch : b
+			};
 			jQuery.get(url, data, reportUpload.update, 'html');
 			jQuery('#forum-upload').show();
 		});
-		jQuery("#template-headline").on('click',"#save", function(e) {
-   		var url='/templates/headline';
-   		jQuery("[name='todo']").val("save");
-   		var options = {
-					beforeSubmit : function(arr, $form, options) {
-						jQuery('#template-popup').css({
-							"cursor" : "wait"
-						});
-					},
-					success : function(data) {
-						jQuery('#template-popup').css({
-							"cursor" : "hand",
-							"cursor" : "pointer"
-						});
-						jQuery("#forum-upload").html(data); 
-					}
+		jQuery("#template-headline").on('click', "#save", function(e) {
+			var url = '/templates/headline';
+			jQuery("[name='todo']").val("save");
+			var options = {
+				beforeSubmit : function(arr, $form, options) {
+					jQuery('#template-popup').css({
+						"cursor" : "wait"
+					});
+				},
+				success : function(data) {
+					jQuery('#template-popup').css({
+						"cursor" : "hand",
+						"cursor" : "pointer"
+					});
+					jQuery("#forum-upload").html(data);
+				}
 			};
-   		$('#frm-headline').ajaxForm(options);
+			$('#frm-headline').ajaxForm(options);
 		});
-		jQuery("#template-popup").on('click',"#preview, #save", function(e) {
-   		var url='/templates';
-   		jQuery("[name='todo']").val(this.id);
-   		var options = {
-					beforeSubmit : function(arr, $form, options) {
-						jQuery('#template-popup').css({
-							"cursor" : "wait"
-						});
-					},
-					success : function(data) {
-						jQuery('#template-popup').css({
-							"cursor" : "hand",
-							"cursor" : "pointer"
-						});
-						jQuery("#forum-upload").html(data); 
-					}
+		jQuery("#template-popup").on('click', "#preview, #save", function(e) {
+			var url = '/templates';
+			jQuery("[name='todo']").val(this.id);
+			var options = {
+				beforeSubmit : function(arr, $form, options) {
+					jQuery('#template-popup').css({
+						"cursor" : "wait"
+					});
+				},
+				success : function(data) {
+					jQuery('#template-popup').css({
+						"cursor" : "hand",
+						"cursor" : "pointer"
+					});
+					jQuery("#forum-upload").html(data);
+				}
 			};
-   		$('#frm-upload-logo').ajaxForm(options);
-   		jQuery('#forum-upload').show();
+			$('#frm-upload-logo').ajaxForm(options);
+			jQuery('#forum-upload').show();
 		});
-		jQuery(".template-popup").on('click',"#cancel", function(e) {
+		jQuery(".template-popup").on('click', "#cancel", function(e) {
 			jQuery('#forum-upload').hide();
-   		return false;
+			return false;
 		});
 	},
 	update : function(data) {
-    jQuery("#forum-upload").html(data); 
-  }
+		jQuery("#forum-upload").html(data);
+		$(reportUpload.myId).css("cursor", "pointer");
+	}
 }
 
 var branchManage = {
-	  init : function() {
-			jQuery("#branch").on('click',"#create", function(e) {
-				var name = this.id;
-				var url='/branch/new';
-			  var data={};
-				jQuery.get(url, data, branchManage.update, 'html');
-				jQuery('#new-branch').show();
-				return false
-			});
-			jQuery("#branch").on('change',"#record_id", function(e) {
-				var branch_id = this.value;
-				var url='/branch/'+branch_id;
-			    var data={};
-				jQuery.get(url, data, branchManage.updateForumType, 'html');
-				jQuery('#go-template').show();
-			});
-			jQuery("#frm-new-branch").on('click',"#save", function(e) {
-	   		var url='/branch';
-	   		var options = {
-						beforeSubmit : function(arr, $form, options) {
-							jQuery('#branch').css({
-								"cursor" : "wait"
-							});
-						},
-						success : function(data) {
-							jQuery('#branch').css({
-								"cursor" : "hand",
-								"cursor" : "pointer"
-							});
-							
-						var obj = jQuery.parseJSON(data);
-							if (obj.error=='error')
-							  jQuery(".error").html(obj.msg); 
-							else
-								jQuery(".notice").html(obj.msg); 
-						}
-				};
-	   		$('#frm-new-branch').ajaxForm(options);
-			});
-			jQuery("#branch").on('click',"input[name='forum_type']", function(e) {
-	   		elem_id = this.id
-	   		branch_id = jQuery("#record_id").val();
-	   		if (branch_id=='0') {
-	   			jQuery('#return-msg').html('Please select a branch')
-	   			return false;
-	   		}
-	   			
-				var url='/branch/'+branch_id;
-	   		    var data={forum_type: elem_id};
-				jQuery.get(url, data, function(data){
+	init : function() {
+		jQuery("#branch").on('click', "#create", function(e) {
+			var name = this.id;
+			var url = '/branch/new';
+			var data = {};
+			jQuery.get(url, data, branchManage.update, 'html');
+			jQuery('#new-branch').show();
+			return false
+		});
+		jQuery("#branch").on('change', "#record_id", function(e) {
+			var branch_id = this.value;
+			var url = '/branch/' + branch_id;
+			var data = {};
+			jQuery.get(url, data, branchManage.updateForumType, 'html');
+			jQuery('#go-template').show();
+		});
+		jQuery("#frm-new-branch").on('click', "#save", function(e) {
+			var url = '/branch';
+			var options = {
+				beforeSubmit : function(arr, $form, options) {
+					jQuery('#branch').css({
+						"cursor" : "wait"
+					});
+				},
+				success : function(data) {
+					jQuery('#branch').css({
+						"cursor" : "hand",
+						"cursor" : "pointer"
+					});
+
 					var obj = jQuery.parseJSON(data);
-					jQuery('#return-msg').html("Forum Type changed to "+obj.forum);
-					jQuery('#go-template').show();
-					jQuery('#go-template').attr('href',"/templates?branch="+obj.branch);
-				}, 'html');
-	   	  
-			});
-			jQuery("#frm-new-branch").on('click',"#cancel", function(e) {
-				jQuery('#new-branch').hide();
-	   		return false;
-			});
-		},
-		updateForumType : function(data) {
-			var obj = jQuery.parseJSON(data);
-	    jQuery("#forum_type_"+obj.forum).prop('checked', true); 
-	    jQuery('#go-template').attr('href',"/templates?branch="+obj.branch);
-	  },
-		update : function(data) {
-	    jQuery("#new-branch").html(data); 
-	  }
+					if (obj.error == 'error')
+						jQuery(".error").html(obj.msg);
+					else
+						jQuery(".notice").html(obj.msg);
+				}
+			};
+			$('#frm-new-branch').ajaxForm(options);
+		});
+		jQuery("#branch").on(
+				'click',
+				"input[name='forum_type']",
+				function(e) {
+					var forum_type = this.value;
+					branch_id = jQuery("#record_id").val();
+					if (branch_id == '0') {
+						jQuery('#return-msg').html('Please select a branch')
+						return false;
+					}
+
+					var url = '/branch/' + branch_id;
+					var data = {
+						forum_type : forum_type
+					};
+					jQuery.get(url, data, function(data) {
+						var obj = jQuery.parseJSON(data);
+						jQuery('#return-msg').html(
+								"Forum Type changed to " + obj.forum.titleize());
+						jQuery('#go-template').show();
+						jQuery('#go-template').attr('href',
+								"/templates?branch=" + obj.branch);
+					}, 'html');
+
+				});
+		jQuery("#frm-new-branch").on('click', "#cancel", function(e) {
+			jQuery('#new-branch').hide();
+			return false;
+		});
+	},
+	updateForumType : function(data) {
+		var obj = jQuery.parseJSON(data);
+		jQuery("#forum_type_" + obj.forum).prop('checked', true);
+		jQuery('#go-template').attr('href', "/templates?branch=" + obj.branch);
+	},
+	update : function(data) {
+		jQuery("#new-branch").html(data);
 	}
+}
 
 function blinkeffect(selector) {
-  $(selector).fadeOut('slow', function() {
-    $(this).fadeIn('slow', function() {
-       blinkeffect(this);
-    });
- });
+	$(selector).fadeOut('slow', function() {
+		$(this).fadeIn('slow', function() {
+			blinkeffect(this);
+		});
+	});
 }
 function getwith(to, options) {
-  var myForm = document.createElement("form");
-    myForm.method="get" ;
-    myForm.action = to ;
-    for (var k in options) {
-      var myInput = document.createElement("input") ;
-      myInput.setAttribute("name", k) ;
-      myInput.setAttribute("value", options[k]);
-      myForm.appendChild(myInput) ;
-    }
-    document.body.appendChild(myForm) ;
-    myForm.submit() ;
-    document.body.removeChild(myForm) ;
+	var myForm = document.createElement("form");
+	myForm.method = "get";
+	myForm.action = to;
+	for ( var k in options) {
+		var myInput = document.createElement("input");
+		myInput.setAttribute("name", k);
+		myInput.setAttribute("value", options[k]);
+		myForm.appendChild(myInput);
+	}
+	document.body.appendChild(myForm);
+	myForm.submit();
+	document.body.removeChild(myForm);
 }
-function dump() {	
+function dump() {
 }
-(function($){ 
-  $.fn.extend({  
-  limit: function(limit,element) {
-    var interval,  f;
-    var self = $(this);
-    $(this).focus(function(){
-      interval = window.setInterval(substring,100);
-    });
-    $(this).blur(function(){
-      clearInterval(interval);
-      substring();
-    });
-    $(this).keyup(function(){
-        clearInterval(interval);
-        substring();
-      });
-    substringFunction = "function substring(){ var val = $(self).val();var length = val.length;if(length > limit){$(self).val($(self).val().substring(0,limit));}";
-    if(typeof element != 'undefined')
-      substringFunction += "if($(element).html() != limit-length){$(element).html((limit-length<=0)?'0':limit-length);}"
-      substringFunction += "}";
-      eval(substringFunction);
-      substring();
-    } 
-  }); 
+(function($) {
+	$.fn
+			.extend({
+				limit : function(limit, element) {
+					var interval, f;
+					var self = $(this);
+					$(this).focus(function() {
+						interval = window.setInterval(substring, 100);
+					});
+					$(this).blur(function() {
+						clearInterval(interval);
+						substring();
+					});
+					$(this).keyup(function() {
+						clearInterval(interval);
+						substring();
+					});
+					substringFunction = "function substring(){ var val = $(self).val();var length = val.length;if(length > limit){$(self).val($(self).val().substring(0,limit));}";
+					if (typeof element != 'undefined')
+						substringFunction += "if($(element).html() != limit-length){$(element).html((limit-length<=0)?'0':limit-length);}"
+					substringFunction += "}";
+					eval(substringFunction);
+					substring();
+				}
+			});
 })(jQuery);

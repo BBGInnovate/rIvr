@@ -12,4 +12,9 @@ class Page< ActiveRecord::Base
       logger.error "#{name} - #{id} cannot converted"
     end
   end
+  
+  def self.truncate
+      connection.execute "truncate table #{table_name}"
+  end
+    
 end

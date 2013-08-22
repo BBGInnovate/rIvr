@@ -5,7 +5,7 @@ class BranchController < ApplicationController
   def show
     @branch= Branch.find_me(params[:id])
     if params[:forum_type]
-      @branch.forum_type = params[:forum_type].split("_").last
+      @branch.forum_type = params[:forum_type]  # .split("_").last
       @branch.save
      # render :text=>branch.forum_type and return 
     end

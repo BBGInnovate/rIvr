@@ -8,13 +8,16 @@ class TemplatesController < ApplicationController
     @goodbye=nil
     @headline = nil
     @question = nil
+    @listen_bulletin=nil
+    @record_bulletin=nil
     @branch = Branch.find_me(@branch_name)
     if @branch.forum_type == 'report'
       @headline="Headline News"
       @goodbye="Goodbye"
     elsif @branch.forum_type == 'bulletin'
-      # @template = Bulletin.find_me(@branch.id, params[:name])
-      @question="Bulletin Board"    
+      @question="Bulletin Board"
+      @listen_bulletin="Listen Message"
+      @record_bulletin="Record Message"
     end
   end
   # For upload voice prompt voice forum
@@ -27,16 +30,21 @@ class TemplatesController < ApplicationController
     @headline=nil
     @goodbye=nil
     @question = nil
+    @listen_bulletin=nil
+    @record_bulletin=nil
     branch = Branch.find_me(params[:branch])
+    @template = branch.forum_type.camelcase.constantize.find_me(branch.id, params[:name])
     if branch.forum_type == 'report'
-      @template = Report.find_me(branch.id, params[:name])
+#      @template = Report.find_me(branch.id, params[:name])
       @headline="Headline News"
       @goodbye="Goodbye"
     elsif branch.forum_type == 'bulletin'
-      @template = Bulletin.find_me(branch.id, params[:name])
+#      @template = Bulletin.find_me(branch.id, params[:name])
       @question="Bulletin Board"
+      @listen_bulletin="Listen Message"
+      @record_bulletin="Record Message"
     elsif branch.forum_type == 'vote'
-      @template = Vote.find_me(branch.id, params[:name])
+#      @template = Vote.find_me(branch.id, params[:name])
     end
     if !!@template && !!@template.dropbox_file
       flash[:notice] = "#{params[:name].titleize} file " +
