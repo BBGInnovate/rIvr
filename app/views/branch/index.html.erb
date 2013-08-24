@@ -11,10 +11,15 @@
   <p>
   <%= radio_button_tag 'forum_type', 'report' %>&nbsp;Report
   <%= radio_button_tag 'forum_type', 'bulletin' %>&nbsp;Bulletin Board
+		<%= radio_button_tag 'forum_type', 'vote' %>&nbsp;Vote
+  <%= radio_button_tag 'forum_type', 'poll' %>&nbsp;Poll
   </p>
   <p id="return-msg" class="notice"></p>
   <p>
-  <a id="go-template" href="/templates">Edit Forum</a>
+  <a id="go-template" class="go-template" href="/templates">Edit Forum</a>
+		</p>
+		<p>
+		<a id="go-template-result" class="go-template" href="/templates">Edit Forum Result</a>
   </p>
 </div>
 <div id="new-branch" class="float-left">

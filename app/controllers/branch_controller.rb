@@ -23,15 +23,15 @@ class BranchController < ApplicationController
       temp = params[:branch]
       @branch = Branch.new temp
       if !@branch.valid?
-        text = %{{"error": "error", "msg": "#{@branch.errors.full_messages.first}"}}
+        text = %{{"error": "error", "msg": "Invalid #{@branch.errors.full_messages.first}"}}
       else 
         begin
-          @branch = @branch.save
-        text = %{{"error": "notice", "msg": "Branch #{@branch.name.titleize} created"}} 
+          @branch.save
+          text = %{{"error": "notice", "msg": "Branch #{@branch.name.titleize} created"}} 
         rescue Mysql2::Error => e
-          text = %{{"error": "error", "msg": "#{e.message}"}}
+          text = %{{"error": "error", "msg": "MySQL error #{e.message}"}}
         rescue Exception=>e
-        text = %{{"error": "error", "msg": "#{e.message}"}}
+          text = %{{"error": "error", "msg": "Exception #{e.message}"}}
         end
       end
       render :text=>text,:content_type=>"application/text", :layout => false

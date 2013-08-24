@@ -5,15 +5,29 @@
   <%= f.hidden_field :name %>
   <%= f.hidden_field :id %>
   <%= f.hidden_field :branch_id %>
+		<div class='error'>
+    <%= flash[:error] %>
+  </div>
   <div class='notice'>
     <%= flash[:notice] %>
   </div>
+		<% if template.name =~ /introduction/ %>
+		  <div class="title">Enter a name for this <%= template.class.name %></div>
+		  <%= f.text_field :identifier %>
+		<% elsif !template.find_introduction %>
+		  <div class='error'>
+       You have to upload Introdution Voice Prompt first
+    </div>
+		<% else %>
+		  <%= f.hidden_field :identifier, :value=>"#{template.find_introduction.name}" %>
+		<% end %>
+		<p></p>
   <h2>Select your <%= template.name.titleize %> file to upload</h2>
   <div class='fileBrowseWrap'>
     <%= f.file_field :sound %>
   </div>
   <div class="btnUploadWrap">
-    <span><%= submit_tag 'Preview', :id=>"preview", :class=>"btnAction" %></span>
+    <span><%= submit_tag 'Preview', :id=>"preview", :value=>"Upload (Preview)", :class=>"btnAction" %></span>
     <% if @preview %>
       <span><%= submit_tag 'Save', :id=>"save", :class=>"btnAction" %></span>
     <% end %>

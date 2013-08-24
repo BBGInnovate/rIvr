@@ -136,11 +136,27 @@ h2 {
 div {
   color: #5D5D5D;
 }
+
+.template-popup .title {
+    color: #004276;
+    font-size: 18px;
+    font-weight: normal;
+    margin: 0;
+    padding: 0 0 10px;
+}
+
 .template-popup input.btnAction {
     float: none;
     height: 31px;
     margin-top: 20px;
     width: 100px;
+    font-size: 14px;
+}
+.template-popup #preview {
+    float: none;
+    height: 31px;
+    margin-top: 20px;
+    width: 150px;
     font-size: 14px;
 }
 
@@ -205,7 +221,7 @@ input.btnAction:hover {
     height: 31px;
     margin: 10px 0 5px 0;
 }
-a#go-template {
+a.go-template {
 	display: none;
 }
 /*

@@ -13,12 +13,16 @@
   <%= f.text_field :name, :placeholder=>"myBranch" %>
   <p></p>
   <label for="branch_forum_type">Forum&nbsp;Type </label>
-  <% options = [['Report','report'],['Bulletin Board','bulletin']] %>
+  <% options = forum_options %>
   <%= f.select :forum_type, options_for_select(options, 0), :style=>'' %>
   <p></p>
   <label for="branch_country_id">Country </label>
   <% options = Country.all.map{|b| [b.name, b.id]} %>
   <%= f.select :country_id, options_for_select(options, 0), :style=>'' %>
+  <p></p>
+		<label for="branch_is_active">Is Active? </label>
+  <% options = [['False', 0], ['True', 1]] %>
+  <%= f.select :is_active, options_for_select(options, 1), :style=>'' %>
   <p></p>
   <label for="branch_description">Description</label>
   <%= f.text_area :description %>

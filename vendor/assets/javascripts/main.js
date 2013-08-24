@@ -59,10 +59,10 @@ String.prototype.titleize = function() {
 var reportUpload = {
   myId : '',
 	init : function(forum_type) {
-		var ids = "#introduction,#goodbye,#bulletin_question, #listen_bulletin_board,#record_bulletin_board";
-		jQuery("#forum-template").on('click', ids, function(e) {
+		var ids = "#introduction,#goodbye,#bulletin_question, .square";
+		jQuery("#forum-template").on('click', ".square", function(e) {
 			var name = this.id;
-			reportUpload.myId = this;
+			reportUpload.myId = this.id;
 			$(this).css("cursor", "progress");
 			var b = jQuery('#branch-name').val();
 			var url = '/templates/new';
@@ -195,8 +195,14 @@ var branchManage = {
 						jQuery('#return-msg').html(
 								"Forum Type changed to " + obj.forum.titleize());
 						jQuery('#go-template').show();
-						jQuery('#go-template').attr('href',
-								"/templates?branch=" + obj.branch);
+						jQuery('#go-template').attr('href',"/templates?branch=" + obj.branch);
+						if (forum_type=="poll" || forum_type=="vote") {
+						  jQuery('#go-template-result').show();
+	            jQuery('#go-template-result').attr('href',"/templates?result=1&branch=" + obj.branch);
+						} else {
+						  jQuery('#go-template-result').hide();
+						}
+						
 					}, 'html');
 
 				});
@@ -211,9 +217,13 @@ var branchManage = {
 		  jQuery("#forum_type_" + obj.forum).prop('checked', true);
 		  jQuery('#go-template').attr('href', "/templates?branch=" + obj.branch);
 		  jQuery('#go-template').show();
+		  if (obj.forum=='vote' || obj.forum=='poll') {
+		    jQuery('#go-template-result').attr('href', "/templates?result=1&branch=" + obj.branch);
+		    jQuery('#go-template-result').show();
+		  }
 		} else {
-		  jQuery("input[id*='forum_type_']").prop('checked', false);
-		  jQuery('#go-template').hide();
+		  jQuery("[id*='forum_type_']").prop('checked', false);
+		  jQuery("[id^='go-template']").hide();
 		}
 	},
 	update : function(data) {

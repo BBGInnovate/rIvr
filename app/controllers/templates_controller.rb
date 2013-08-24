@@ -18,6 +18,22 @@ class TemplatesController < ApplicationController
       @question="Bulletin Board"
       @listen_bulletin="Listen Message"
       @record_bulletin="Record Message"
+    elsif @branch.forum_type == 'poll'
+      if params[:result].to_i == 1
+        @question="Poll Result"
+      else
+        @question="Poll Question"
+      end
+    elsif @branch.forum_type == 'vote'
+      if params[:result].to_i == 1
+        @question="Vote Result"
+      else
+        @question="Vote Candidate"
+      end  
+    end
+    @temp_partial = @branch.forum_type
+    if params[:result] && ['vote','poll'].include?(@branch.forum_type)
+      @temp_partial = @temp_partial + "_result"
     end
   end
   # For upload voice prompt voice forum
@@ -35,19 +51,22 @@ class TemplatesController < ApplicationController
     branch = Branch.find_me(params[:branch])
 #    @template = branch.forum_type.camelcase.constantize.find_me(branch.id, params[:name])
 #    always create a new record
-      @template = branch.forum_type.camelcase.constantize.create :branch_id=>branch.id, 
+    @template = branch.forum_type.camelcase.constantize.new :branch_id=>branch.id, 
       :name=>params[:name]
+    if !@template.valid?
+      flash[:error] = @template.class.name + " : " + @template.errors.full_messages.join(", ")
+    else
+      @template.save
+    end
     if branch.forum_type == 'report'
-#      @template = Report.find_me(branch.id, params[:name])
       @headline="Headline News"
       @goodbye="Goodbye"
     elsif branch.forum_type == 'bulletin'
-#      @template = Bulletin.find_me(branch.id, params[:name])
       @question="Bulletin Board"
       @listen_bulletin="Listen Message"
       @record_bulletin="Record Message"
     elsif branch.forum_type == 'vote'
-#      @template = Vote.find_me(branch.id, params[:name])
+
     end
     if !!@template && !!@template.dropbox_file
       flash[:notice] = "#{params[:name].titleize} file " +
@@ -59,7 +78,7 @@ class TemplatesController < ApplicationController
   end
 
   def create
-    temp = params[:report] || params[:bulletin] || params[:vote]
+    temp = params[:report] || params[:bulletin] || params[:poll] || params[:vote]
     @template = Template.find_by_id temp[:id]
     @preview = false
     # save button pressed
@@ -76,6 +95,8 @@ class TemplatesController < ApplicationController
         @preview = true if !!@template.dropbox_file
       else
         @template.upload_to_dropbox(file)
+        @template.identifier = temp[:identifier]
+        @template.save
         @preview = true
         flash[:notice] = "#{@template.name.titleize} file " +
               File.basename(@template.dropbox_file) +
