@@ -25,6 +25,15 @@ class Branch< ActiveRecord::Base
       select("id, name, dropbox_file, identifier").where(["id in (?)", res.map{|t| t.id}])
     end
 
+    def original_identifier
+      coll = latest
+      intro = coll.select{|t| t.name=='introduction'}
+      if intro.size == 0
+        return nil
+      end
+      identifier = intro.last.identifier
+    end
+
     def candidate_result
       coll = latest
       intro = coll.select{|t| t.name=='introduction'}
@@ -55,6 +64,15 @@ class Branch< ActiveRecord::Base
       select("id, name, dropbox_file, identifier").where(["id in (?)", res.map{|t| t.id}])
     end
 
+    def original_identifier
+      coll = latest
+      intro = coll.select{|t| t.name=='introduction'}
+      if intro.size == 0
+        return nil
+      end
+      identifier = intro.last.identifier
+    end
+
     def candidate_result
       coll = latest
       intro = coll.select{|t| t.name=='introduction'}
@@ -77,6 +95,28 @@ class Branch< ActiveRecord::Base
     def vote_ended
       !!candidate_result
     end
+  end
+
+  # vote or poll results
+  has_many :vote_results do
+    def yes(identifier='')
+      brch = proxy_association.owner
+      brch.votes.original_identifier
+      where(:result=>1, :identifier=>brch.votes.original_identifier)
+    end
+
+    def no(identifier='')
+      brch = proxy_association.owner
+      brch.votes.original_identifier
+      where(:result=>-1, :identifier=>brch.votes.original_identifier)
+    end
+
+    def none(identifier='')
+      brch = proxy_association.owner
+      brch.votes.original_identifier
+      where(:result=>0, :identifier=>brch.votes.original_identifier)
+    end
+
   end
 
   has_many :prompts, :conditions =>"is_active=1"
@@ -137,19 +177,27 @@ class Branch< ActiveRecord::Base
     end
   end
 
+  def identifier
+
+  end
   #  def forum_type
   #    read_attribute(:forum_type) || false
   #  end
 
   def forum_prompts
-    # if undefined forum_type ,return reports
-    if self.forum_type == 'report'
-      self.reports.latest
-    elsif self.forum_type == 'bulletin'
-      self.bulletins.latest
-    else
-      []
-    end
+    records = self.send(self.forum_type.pluralize)
+    records.latest
+    #    if self.forum_type == 'report'
+    #      self.reports.latest
+    #    elsif self.forum_type == 'bulletin'
+    #      self.bulletins.latest
+    #    elsif self.forum_type == 'poll'
+    #      self.polls.latest
+    #    elsif self.forum_type == 'vote'
+    #      self.votes.latest
+    #    else
+    #      []
+    #    end
   end
 
   # generate forum.xml in dropbox public/<branch>

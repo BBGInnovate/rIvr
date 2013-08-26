@@ -108,13 +108,14 @@ var reportUpload = {
 		jQuery("#template-popup").on('click', "#preview, #save", function(e) {
 			var url = '/templates';
 			jQuery("[name='todo']").val(this.id);
+			jQuery('#template-popup').css({
+        "cursor" : "wait"
+      });
 			var options = {
 				beforeSubmit : function(arr, $form, options) {
-					jQuery('#template-popup').css({
-						"cursor" : "wait"
-					});
 				},
 				success : function(data) {
+				  jQuery('.error').hide();
 					jQuery('#template-popup').css({
 						"cursor" : "hand",
 						"cursor" : "pointer"

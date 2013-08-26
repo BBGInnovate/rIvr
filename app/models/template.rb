@@ -18,7 +18,7 @@ class Template < ActiveRecord::Base
   end
 
   def find_introduction
-    self.class.where("branch_id=#{branch_id} AND name='introduction'").limit(1).order("created_at desc")
+    self.class.where("branch_id=#{branch_id} AND name='introduction' AND is_active=1 AND identifier is not null").limit(1).order("created_at desc")
   end
     
   def generate_forum_feed

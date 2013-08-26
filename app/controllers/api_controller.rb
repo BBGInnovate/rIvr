@@ -108,6 +108,16 @@ class ApiController < ApplicationController
       end
   end
 
+  def create_vote_result(attr)
+    branch = Branch.find_by_name attr.delete(:branch)
+    attr[:branch_id] = branch.id
+    if attr[:caller_id] =~ /System/
+      VoteResult.delete_all "branch_id='#{branch.id}' AND caller_id = 'System'"
+    end
+    # branch_id, identifier, vote_result, caller_id, session_id vote (1,0,-1)
+    VoteResult.create(attr)
+  end
+  
   def create_event(attr)
     branch = Branch.find_by_name attr.delete(:branch)
     attr[:branch_id] = branch.id

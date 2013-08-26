@@ -1,7 +1,7 @@
 module BranchesHelper
   
   def forum_options
-    [['Report','report'],['Bulletin Board','bulletin'],['Poll','poll'],['Vote','vote']]
+    [['Report','report'],['Bulletin Board','bulletin'],['Vote/Poll','vote']]
   end
   def forum_type_form_column(record, input_name)
     id = record.forum_type

@@ -53,11 +53,11 @@ class TemplatesController < ApplicationController
 #    always create a new record
     @template = branch.forum_type.camelcase.constantize.new :branch_id=>branch.id, 
       :name=>params[:name]
-    if !@template.valid?
-      flash[:error] = @template.class.name + " : " + @template.errors.full_messages.join(", ")
-    else
-      @template.save
-    end
+    # if !@template.valid?
+      # flash[:error] = @template.class.name + " : " + @template.errors.full_messages.join(", ")
+    # else
+      @template.save :validate=>false
+    # end
     if branch.forum_type == 'report'
       @headline="Headline News"
       @goodbye="Goodbye"
@@ -78,16 +78,22 @@ class TemplatesController < ApplicationController
   end
 
   def create
-    temp = params[:report] || params[:bulletin] || params[:poll] || params[:vote]
+    temp = params[:report] || params[:bulletin] || params[:vote]
     @template = Template.find_by_id temp[:id]
     @preview = false
     # save button pressed
     if params[:todo] == 'save'
       @template.is_active=true
-      @template.save!
-      flash[:notice] = "#{@template.name.titleize} file " +
-      File.basename(@template.dropbox_file) +
-      " has been uploaded"
+      @template.identifier = temp[:identifier]
+      if @template.valid?
+        @template.save
+        flash[:notice] = "#{@template.name.titleize} file " +
+              File.basename(@template.dropbox_file) +
+              " has been uploaded"
+      else
+        @save = true
+        flash[:error] = @template.class.name + " : " + @template.errors.full_messages.first
+      end
     else
       # Preview the sound
       file = temp[:sound]
@@ -95,12 +101,11 @@ class TemplatesController < ApplicationController
         @preview = true if !!@template.dropbox_file
       else
         @template.upload_to_dropbox(file)
-        @template.identifier = temp[:identifier]
-        @template.save
+        @template.save :validate=>false
         @preview = true
         flash[:notice] = "#{@template.name.titleize} file " +
-              File.basename(@template.dropbox_file) +
-              " was uploaded to temperary folder"
+                        File.basename(@template.dropbox_file) +
+                        " was uploaded to temperary folder"
       end
     end
     render :action=>'new', :layout => false
