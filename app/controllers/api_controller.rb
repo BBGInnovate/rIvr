@@ -127,8 +127,7 @@ class ApiController < ApplicationController
     logger.warn "VOTE ATTR #{attr.inspect}"
     # branch_id, identifier, vote_result, caller_id, session_id vote (1,0,-1)
     attr.delete(:identifier) # TODO use this to get voting_session_id ?
-    attr[:voting_session_id]=branch.voting_sessions.latest.id
-    
+    attr[:voting_session_id]=branch.votes.last.voting_session.id
     VoteResult.create(attr)
   end
   
