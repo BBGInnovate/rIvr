@@ -74,6 +74,7 @@ var reportUpload = {
 			jQuery.get(url, data, reportUpload.update, 'html');
 			jQuery('#forum-upload').show();
 		});
+
 		jQuery("#forum-template").on('click', "#headline", function(e) {
 			var name = this.id;
 			var b = jQuery('#branch-name').val();
@@ -91,9 +92,7 @@ var reportUpload = {
 			jQuery("[name='todo']").val("save");
 			var options = {
 				beforeSubmit : function(arr, $form, options) {
-					jQuery('#template-popup').css({
-						"cursor" : "wait"
-					});
+					jQuery('#template-popup').css("cursor", "progress");
 				},
 				success : function(data) {
 					jQuery('#template-popup').css({
@@ -108,20 +107,24 @@ var reportUpload = {
 		});
 		jQuery("#template-popup").on('click', "#preview, #save", function(e) {
 			var url = '/templates';
+			jQuery(this).css("cursor", "progress");
+			var v = jQuery("[id*='_sound']").val();
+      if(v.length==0 && this.id=="preview") {
+        alert("You must select a upload file first")
+        return false;
+      }
 			jQuery("[name='todo']").val(this.id);
-			jQuery('#template-popup').css({
-        "cursor" : "wait"
-      });
 			var options = {
 				beforeSubmit : function(arr, $form, options) {
+				  // jQuery('#template-popup').css("cursor", "progress");
 				},
 				success : function(data) {
-				  jQuery('.error').hide();
 					jQuery('#template-popup').css({
 						"cursor" : "hand",
 						"cursor" : "pointer"
 					});
 					jQuery("#forum-upload").html(data);
+					jQuery(".error").hide();
 				}
 			};
 			$('#frm-upload-logo').ajaxForm(options);
@@ -134,7 +137,7 @@ var reportUpload = {
 	},
 	update : function(data) {
 		jQuery("#forum-upload").html(data);
-		$(reportUpload.myId).css("cursor", "pointer");
+		$(".square").css("cursor", "pointer");
 	}
 }
 

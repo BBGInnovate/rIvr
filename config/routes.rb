@@ -16,6 +16,7 @@ TestIvr::Application.routes.draw do
     collection do
       post :headline
       get :headline
+      get :forum_feed
     end
   end
   resources :users

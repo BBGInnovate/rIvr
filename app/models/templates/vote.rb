@@ -3,6 +3,8 @@ require 'open-uri'
 require 'builder'
 
 class Vote < Template
+  belongs_to :voting_session
+  
   HUMANIZED_COLUMNS = {:identifier=>"Name"}
     
       def self.human_attribute_name(attribute, options = {})
@@ -13,7 +15,7 @@ class Vote < Template
   validates :identifier, :presence => true,:length => {:minimum=>6, :maximum=>40}
    
   def identifier
-    self.voting_session.name rescue nil
+    self.branch.voting_sessions.latest.name rescue nil
   end
   
   def identifier=(name)
@@ -32,5 +34,9 @@ class Vote < Template
     end
     self.voting_session_id=votingsession.id
     self.save!
+  end
+  
+  def name_map(name)
+    {'introduction'=>'Introduction','candidate'=>'Vote/Poll'}[name]
   end
 end

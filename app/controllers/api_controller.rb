@@ -124,9 +124,11 @@ class ApiController < ApplicationController
     if attr[:caller_id] =~ /System/
       VoteResult.delete_all "branch_id='#{branch.id}' AND caller_id = 'System'"
     end
+    logger.warn "VOTE ATTR #{attr.inspect}"
     # branch_id, identifier, vote_result, caller_id, session_id vote (1,0,-1)
-    attr.delete(:identifier)
-    attr[:identifier]=branch.identifier
+    attr.delete(:identifier) # TODO use this to get voting_session_id ?
+    attr[:voting_session_id]=branch.voting_sessions.latest.id
+    
     VoteResult.create(attr)
   end
   

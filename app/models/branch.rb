@@ -6,7 +6,7 @@ class Branch< ActiveRecord::Base
   belongs_to :country, :foreign_key=>"country_id"
   has_many :voting_sessions do
     def latest
-       last
+      last
     end
   end
   has_many :events
@@ -24,45 +24,7 @@ class Branch< ActiveRecord::Base
     end
   end
 
-  has_many :polls do
-    def latest
-      res = select("max(id) as id").group(:name).where(:is_active=>true)
-      select("id, name, dropbox_file, identifier").where(["id in (?)", res.map{|t| t.id}])
-    end
-
-    def original_identifier
-      coll = latest
-      intro = coll.select{|t| t.name=='introduction'}
-      if intro.size == 0
-        return nil
-      end
-      identifier = intro.last.identifier
-    end
-
-    def candidate_result
-      coll = latest
-      intro = coll.select{|t| t.name=='introduction'}
-      if intro.size == 0
-        return nil
-      end
-      identifier = intro.last.identifier
-      candidate = coll.select{|t| (t.name=='candidate_result')}
-      if candidate.size == 0
-        return nil
-      end
-      if (candidate.identifier==identifier)
-        candidate.last
-      else
-        nil
-      end
-    end
-
-    # if candidate_result prompt was uploaded indicating poll has ended
-    def ended
-      !!candidate_result
-    end
-  end
-
+  # is a vote template
   has_many :votes do
     def latest
       res = select("max(id) as id").group(:name).where(:is_active=>true)
@@ -103,25 +65,34 @@ class Branch< ActiveRecord::Base
   end
 
   # vote or poll results
-  has_many :vote_results do
-    def yes(identifier='')
-      brch = proxy_association.owner
-      brch.votes.original_identifier
-      where(:result=>1, :identifier=>brch.votes.original_identifier)
+  has_many :vote_results  do
+    def yes(voting_session_id=nil)
+      #      brch = proxy_association.owner
+      i = voting_session_id || last.voting_session_id
+      if i
+        where(:result=>1, :voting_session_id=>i)
+      else
+        []
+      end
     end
 
-    def no(identifier='')
-      brch = proxy_association.owner
-      brch.votes.original_identifier
-      where(:result=>-1, :identifier=>brch.votes.original_identifier)
+    def no(voting_session_id=nil)
+      i = voting_session_id || last.voting_session_id
+      if i
+        where(:result=>1, :voting_session_id=>i)
+      else
+        []
+      end
     end
 
-    def none(identifier='')
-      brch = proxy_association.owner
-      brch.votes.original_identifier
-      where(:result=>0, :identifier=>brch.votes.original_identifier)
+    def none(voting_session_id=nil)
+      i = voting_session_id || last.voting_session_id
+      if i
+        where(:result=>0, :voting_session_id=>i)
+      else
+        []
+      end
     end
-
   end
 
   has_many :prompts, :conditions =>"is_active=1"
@@ -167,7 +138,7 @@ class Branch< ActiveRecord::Base
             end
           end
         rescue
-          
+
         end
         entries
       else # from static_rss
@@ -277,6 +248,7 @@ class Branch< ActiveRecord::Base
       xml.instruct! :xml, :version => "1.0"
       xml.rss :version => "2.0" do
         xml.channel do
+          xml.created_at Time.now.getutc
           xml.forum_type self.forum_type
           xml.identifier self.identifier
           xml.status (self.forum_type=="vote" && self.votes.ended) ? "vote ended" : "OK"

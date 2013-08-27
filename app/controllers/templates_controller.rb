@@ -53,11 +53,13 @@ class TemplatesController < ApplicationController
 #    always create a new record
     @template = branch.forum_type.camelcase.constantize.new :branch_id=>branch.id, 
       :name=>params[:name]
-    # if !@template.valid?
-      # flash[:error] = @template.class.name + " : " + @template.errors.full_messages.join(", ")
-    # else
-      @template.save :validate=>false
-    # end
+        
+#    if params[:name] == 'introduction'
+#      Template.delete_all("is_active=0")
+#    end
+
+#    @template.save :validate=>false
+
     if branch.forum_type == 'report'
       @headline="Headline News"
       @goodbye="Goodbye"
@@ -66,48 +68,61 @@ class TemplatesController < ApplicationController
       @listen_bulletin="Listen Message"
       @record_bulletin="Record Message"
     elsif branch.forum_type == 'vote'
-
+      if params[:result].to_i == 1
+        @question="Results"
+      else
+        @question="Vote/Poll"
+      end  
     end
-    if !!@template && !!@template.dropbox_file
-      flash[:notice] = "#{params[:name].titleize} file " +
-      File.basename(@template.dropbox_file) +
-      " has been uploaded"
-    end
+#    if !!@template && !!@template.dropbox_file
+#      flash[:notice] = "#{params[:name].titleize} file " +
+#      File.basename(@template.dropbox_file) +
+#      " has been uploaded"
+#    end
     @preview = false
     render :layout=>false # 'templates'
   end
 
   def create
-    temp = params[:report] || params[:bulletin] || params[:vote]
-    @template = Template.find_by_id temp[:id]
+    branch=Branch.find_by_id params[:branch_id]
+    temp = params[branch.forum_type.to_sym] # || params[:report] || params[:bulletin] || params[:vote]
+
+#    @template = Template.find_by_id temp[:id]
+#    branch=Branch.find_by_id temp[:branch_id]
+    sound_file = temp.delete(:sound)
+    identifier = temp.delete(:identifier)
+    
+    @template = Template.find_by_id temp.delete(:id)
+    if !@template
+      @template = branch.forum_type.camelcase.constantize.new temp
+    end
+    
     @preview = false
-    # save button pressed
-    if params[:todo] == 'save'
-      @template.is_active=true
-      if @template.kind_of?(Vote)
-        @template.identifier = temp[:identifier]
+    if params[:todo] == 'preview'
+      @template.identifier = identifier if @template.kind_of?(Vote)
+      # Preview the sound
+      if !sound_file
+         @preview = true if !!@template.dropbox_file
+      else
+         @template.upload_to_dropbox(sound_file)
+         @template.save :validate=>false
+         @preview = true
+
+         flash[:notice] = "#{@template.name_map(@template.name)} file " +
+                              File.basename(@template.dropbox_file) +
+                              " was uploaded to temperary folder"
       end
+    # save button pressed
+    elsif params[:todo] == 'save'
+      @template.is_active=true
       if @template.valid?
         @template.save
-        flash[:notice] = "#{@template.name.titleize} file " +
+        flash[:notice] = "#{@template.name_map(@template.name)} file " +
               File.basename(@template.dropbox_file) +
               " has been uploaded"
       else
         @save = true
         flash[:error] = @template.class.name + " : " + @template.errors.full_messages.first
-      end
-    else
-      # Preview the sound
-      file = temp[:sound]
-      if !file
-        @preview = true if !!@template.dropbox_file
-      else
-        @template.upload_to_dropbox(file)
-        @template.save :validate=>false
-        @preview = true
-        flash[:notice] = "#{@template.name.titleize} file " +
-                        File.basename(@template.dropbox_file) +
-                        " was uploaded to temperary folder"
       end
     end
     render :action=>'new', :layout => false
@@ -135,4 +150,17 @@ class TemplatesController < ApplicationController
     end
   end
 
+  def forum_feed
+    branch = Branch.find_by_name params[:branch]
+    if branch
+      branch.generate_forum_feed
+      tmp_file = "#{DROPBOX.tmp_dir}/#{branch.name}/forum.xml"
+      content = File.open(tmp_file, "r") {|file| file.read}
+      send_data content,
+            :filename=>"forum.xml",
+            :type=>"text",
+            :disposition=>'inline'
+            
+    end
+  end
 end

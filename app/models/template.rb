@@ -1,6 +1,6 @@
 class Template < ActiveRecord::Base
   belongs_to :branch
-  belongs_to :voting_session
+  
   after_save :generate_forum_feed
 
   self.inheritance_column = "temp_type"
@@ -22,7 +22,9 @@ class Template < ActiveRecord::Base
   end
     
   def generate_forum_feed
-    branch.generate_forum_feed
+    if self.is_active==true
+      # branch.generate_forum_feed  # let cron job do the work
+    end
   end
 
   # for forum prompts file
@@ -40,7 +42,7 @@ class Template < ActiveRecord::Base
       begin
         client.mkdir to
       rescue
-        # do nothing
+        logger.warn "Error: upload_to_dropbox : #{$!}"
       end
       name = self.name
       begin
@@ -49,8 +51,9 @@ class Template < ActiveRecord::Base
         self.dropbox_file=re.path
         self.content_type=re.mime_type
         self.save!
+        logger.warn "INFO: Dropbox uploaded: #{file.original_filename}"
       rescue Exception=>ex
-        puts "Error #{ex.message}"
+        logger.warn "Error #{ex.message}"
       end
     end
   end
@@ -75,4 +78,12 @@ class Template < ActiveRecord::Base
     link
   end
 
+  def name_map(name)
+    name.titleize
+  end
+  
+  def self.truncate
+     connection.execute "truncate table #{table_name}"
+  end
+    
 end

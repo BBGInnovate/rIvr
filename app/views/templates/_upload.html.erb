@@ -5,6 +5,7 @@
   <%= f.hidden_field :name %>
   <%= f.hidden_field :id %>
   <%= f.hidden_field :branch_id %>
+		<input type="hidden" name="branch_id" value="<%= template.branch_id %>" />
 		<div class='error'>
     <%= flash[:error] %>
   </div>
@@ -14,7 +15,16 @@
 		<% if template.name =~ /introduction/ %>
     	<% if template.kind_of?(Vote) %>
 		      <div class="title">Enter a name for this Vote/Poll</div>
-		      <input type="text" name="<%= template.class.name.downcase%>[identifier]" value="" />
+								
+		      <input type="text" name="<%= template.class.name.downcase%>[identifier]" value="<%= template.identifier%>" />
+								<!--
+								<input type="text" list="cookies" name="<%#= template.class.name.downcase%>[identifier]" placeholder="Vote/Poll Name"/>
+        <datalist id="cookies">
+        	<%# template.branch.voting_sessions.each do | v| %>
+         <option value="<%#=v.name%>" label="<%#= v.name %>"></option>
+         <%# end %>
+         </datalist>
+									-->
 					<% end %>
 		<% elsif !template.find_introduction %>
 		  <div class='error'>
@@ -29,7 +39,7 @@
 
 
 		<p></p>
-  <h2>Select your <%= template.name.titleize %> file to upload</h2>
+  <h2>Select your <%= template.name_map(template.name) %> file to upload</h2>
   <div class='fileBrowseWrap'>
     <%= f.file_field :sound %>
   </div>
