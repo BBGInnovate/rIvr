@@ -14,13 +14,13 @@ class Branch< ActiveRecord::Base
   has_many :reports do
     def latest
       res = select("max(id) as id").group(:name).where(:is_active=>true)
-      select("id, name, dropbox_file, identifier").where(["id in (?)", res.map{|t| t.id}])
+      select("id, name, dropbox_file, voting_session_id").where(["id in (?)", res.map{|t| t.id}])
     end
   end
   has_many :bulletins do
     def latest
       res = select("max(id) as id").group(:name).where(:is_active=>true)
-      select("id, name, dropbox_file, identifier").where(["id in (?)", res.map{|t| t.id}])
+      select("id, name, dropbox_file, voting_session_id").where(["id in (?)", res.map{|t| t.id}])
     end
   end
 
