@@ -14,9 +14,8 @@
   </div>
 		<% if template.name =~ /introduction/ %>
     	<% if template.kind_of?(Vote) %>
-		      <div class="title">Enter a name for this Vote/Poll</div>
-								
-		      <input type="text" name="<%= template.class.name.downcase%>[identifier]" value="<%= template.identifier%>" />
+		      <div class="title">Enter a name for this Vote/Poll</div>		
+		      <input type="text" name="<%= template.class.name.downcase%>[identifier]" value="<%= template.identifier %>" />
 								<!--
 								<input type="text" list="cookies" name="<%#= template.class.name.downcase%>[identifier]" placeholder="Vote/Poll Name"/>
         <datalist id="cookies">

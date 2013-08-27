@@ -15,7 +15,11 @@ class Vote < Template
   validates :identifier, :presence => true,:length => {:minimum=>6, :maximum=>40}
    
   def identifier
-    self.branch.voting_sessions.latest.name rescue nil
+    if self.voting_session
+      self.voting_session.name 
+    else
+      nil
+    end
   end
   
   def identifier=(name)

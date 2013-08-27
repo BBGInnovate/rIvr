@@ -125,6 +125,7 @@ var reportUpload = {
 					});
 					jQuery("#forum-upload").html(data);
 					jQuery(".error").hide();
+					$("[name='vote[identifier]']").attr("readonly", "readonly")
 				}
 			};
 			$('#frm-upload-logo').ajaxForm(options);
