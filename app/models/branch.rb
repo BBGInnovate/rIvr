@@ -4,6 +4,11 @@ require 'open-uri'
 class Branch< ActiveRecord::Base
   self.table_name = "branches"
   belongs_to :country, :foreign_key=>"country_id"
+  has_many :voting_sessions do
+    def latest
+       last
+    end
+  end
   has_many :events
   has_many :healths
   has_many :reports do
@@ -53,7 +58,7 @@ class Branch< ActiveRecord::Base
     end
 
     # if candidate_result prompt was uploaded indicating poll has ended
-    def poll_ended
+    def ended
       !!candidate_result
     end
   end
@@ -61,7 +66,7 @@ class Branch< ActiveRecord::Base
   has_many :votes do
     def latest
       res = select("max(id) as id").group(:name).where(:is_active=>true)
-      select("id, name, dropbox_file, identifier").where(["id in (?)", res.map{|t| t.id}])
+      select("id, name, dropbox_file, voting_session_id").where(["id in (?)", res.map{|t| t.id}])
     end
 
     def original_identifier
@@ -70,7 +75,7 @@ class Branch< ActiveRecord::Base
       if intro.size == 0
         return nil
       end
-      identifier = intro.last.identifier
+      identifier = intro.last.voting_session.name
     end
 
     def candidate_result
@@ -92,7 +97,7 @@ class Branch< ActiveRecord::Base
     end
 
     # if candidate_result prompt was uploaded indicating poll has ended
-    def vote_ended
+    def ended
       !!candidate_result
     end
   end
@@ -152,25 +157,19 @@ class Branch< ActiveRecord::Base
         # upload report forum messages to "/Public/oddi/#{forum}/"
         entries = []
         client = brch.get_dropbox_session
-        records = client.list("Public/#{brch.name}/#{forum}")
-        records.each do |record|
-          if !record.is_dir
-            entry = OpenStruct.new
-            entry.public_url = record.path
-            entries << entry
+        begin
+          records = client.list("Public/#{brch.name}/#{forum}")
+          records.each do |record|
+            if !record.is_dir
+              entry = OpenStruct.new
+              entry.public_url = record.path
+              entries << entry
+            end
           end
+        rescue
+          
         end
         entries
-        #        else
-        # forum type == bulletin. IVR client posts caller
-        # message to Dashboard with xml:
-        # xml.entry do
-        #  xml.forum_type 'bulletin'
-        #  xml.branch brch
-        #          where("public_url is not null").all :conditions=>conditions,
-        #          :select => "public_url", :order => "id DESC",
-        #          :limit => limit
-        #        end
       else # from static_rss
         entries = Entry.parse_feed(opt.feed_url, limit)
       end
@@ -178,7 +177,11 @@ class Branch< ActiveRecord::Base
   end
 
   def identifier
-
+    if self.forum_type=="vote"
+      self.votes.original_identifier
+    else
+      "Not Defined"
+    end
   end
   #  def forum_type
   #    read_attribute(:forum_type) || false
@@ -275,6 +278,8 @@ class Branch< ActiveRecord::Base
       xml.rss :version => "2.0" do
         xml.channel do
           xml.forum_type self.forum_type
+          xml.identifier self.identifier
+          xml.status (self.forum_type=="vote" && self.votes.ended) ? "vote ended" : "OK"
           xml.branch self.name
           xml.count entries.size
           for m in prompts

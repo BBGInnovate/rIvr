@@ -1,11 +1,10 @@
 class AlterTemplates < ActiveRecord::Migration
   def up
-    add_column :templates, :identifier, :string, :limit=>40
-    add_index :templates, :identifier
+    add_column :templates, :voting_session_id, :integer
   end
 
   def down
-    drop_index :templates, :identifier
-    remove_column :templates, :identifier
+    remove_index :templates, :voting_session_id
+    remove_column :templates, :voting_session_id
   end
 end

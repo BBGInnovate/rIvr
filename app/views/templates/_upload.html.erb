@@ -12,18 +12,22 @@
     <%= flash[:notice] %>
   </div>
 		<% if template.name =~ /introduction/ %>
-		<% if template.class.name == 'Vote'
-     klass_name = 'Vote/Poll"
-    %>
-		  <div class="title">Enter a name for this <%= klass_name %></div>
-		  <%= f.text_field :identifier %>
+    	<% if template.kind_of?(Vote) %>
+		      <div class="title">Enter a name for this Vote/Poll</div>
+		      <input type="text" name="<%= template.class.name.downcase%>[identifier]" value="" />
+					<% end %>
 		<% elsif !template.find_introduction %>
 		  <div class='error'>
        You have to upload Introdution Voice Prompt first
     </div>
 		<% else %>
-		  <%= f.hidden_field :identifier, :value=>"#{template.find_introduction.identifer}" %>
+		  <% if (template.kind_of? Vote)
+         voting_name = template.identifier %>
+         <input type="hidden" name="<%= template.class.name.downcase%>[identifier]" value="<%= voting_name %>" />
+    <% end %>
 		<% end %>
+
+
 		<p></p>
   <h2>Select your <%= template.name.titleize %> file to upload</h2>
   <div class='fileBrowseWrap'>

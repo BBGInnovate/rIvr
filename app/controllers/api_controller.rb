@@ -16,11 +16,14 @@ class ApiController < ApplicationController
   def create
     entry = params[:entry]
     event = params[:event]
+    vote_result = params[:vote_result]
     if entry
       @session_id = entry.delete(:session_id)
       create_entry entry
     elsif event
       create_event event
+    elsif vote_result
+      create_vote_result vote_result
     end
     render :nothing=>true
   end
@@ -96,12 +99,19 @@ class ApiController < ApplicationController
   
   def create_entry(attr)
     branch = Branch.find_by_name attr.delete(:branch)
+    if branch.forum_type=='bulletin'
+      page_id = Page.recordBulletin
+    elsif branch.forum_type=='vote'
+      page_id = Page.recordComment
+    else
+      page_id = Page.recordMessage
+    end
     attr[:branch_id] = branch.id
       e = Entry.create attr
       if !!@session_id
         # create an even as well
         Event.create :branch_id=>branch.id,:caller_id=>e.phone_number,
-            :identifier=>e.dropbox_file, :page_id=>Page.recordMessage,
+            :identifier=>e.dropbox_file, :page_id=>page_id,
             :action_id=>Action.save_recording,
             :created_at => e.created_at,
             :session_id=>@session_id
@@ -115,6 +125,8 @@ class ApiController < ApplicationController
       VoteResult.delete_all "branch_id='#{branch.id}' AND caller_id = 'System'"
     end
     # branch_id, identifier, vote_result, caller_id, session_id vote (1,0,-1)
+    attr.delete(:identifier)
+    attr[:identifier]=branch.identifier
     VoteResult.create(attr)
   end
   

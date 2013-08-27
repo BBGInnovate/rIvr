@@ -101,6 +101,7 @@ var reportUpload = {
 						"cursor" : "pointer"
 					});
 					jQuery("#forum-upload").html(data);
+					jQuery(".error").hide();
 				}
 			};
 			$('#frm-headline').ajaxForm(options);

@@ -26,9 +26,9 @@ class TemplatesController < ApplicationController
       end
     elsif @branch.forum_type == 'vote'
       if params[:result].to_i == 1
-        @question="Vote Result"
+        @question="Results"
       else
-        @question="Vote Candidate"
+        @question="Vote/Poll"
       end  
     end
     @temp_partial = @branch.forum_type
@@ -84,7 +84,9 @@ class TemplatesController < ApplicationController
     # save button pressed
     if params[:todo] == 'save'
       @template.is_active=true
-      @template.identifier = temp[:identifier]
+      if @template.kind_of?(Vote)
+        @template.identifier = temp[:identifier]
+      end
       if @template.valid?
         @template.save
         flash[:notice] = "#{@template.name.titleize} file " +
