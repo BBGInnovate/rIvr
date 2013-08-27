@@ -15,8 +15,12 @@ class Vote < Template
   validates :identifier, :presence => true,:length => {:minimum=>6, :maximum=>40}
    
   def identifier
+    # if this template is saved before
     if self.voting_session
-      self.voting_session.name 
+      self.voting_session.name
+    # if introduciton template is saved before
+    elsif self.branch.votes.last
+      self.branch.votes.last.voting_session.name
     else
       nil
     end
