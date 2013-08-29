@@ -3,6 +3,8 @@ require 'open-uri'
 
 class Branch< ActiveRecord::Base
   self.table_name = "branches"
+  attr_accessor :vote_result
+  
   belongs_to :country, :foreign_key=>"country_id"
   has_many :voting_sessions do
     def latest
@@ -46,12 +48,12 @@ class Branch< ActiveRecord::Base
       if intro.size == 0
         return nil
       end
-      identifier = intro.last.identifier
+      identifier = intro.last.voting_session_id
       candidate = coll.select{|t| (t.name=='candidate_result')}
       if candidate.size == 0
         return nil
       end
-      if (candidate.identifier==identifier)
+      if (candidate.voting_session_id==identifier)
         candidate.last
       else
         nil
@@ -65,33 +67,27 @@ class Branch< ActiveRecord::Base
   end
 
   # vote or poll results
+  # pattern= 1, 0, -1
   has_many :vote_results  do
+    def get_result(pattern, voting_session_id=nil)
+      i = voting_session_id || (!!last && last.voting_session_id)
+      if i
+         where(:result=>pattern, :voting_session_id=>i)
+      else
+         []
+      end
+    end 
     def yes(voting_session_id=nil)
       #      brch = proxy_association.owner
-      i = voting_session_id || last.voting_session_id
-      if i
-        where(:result=>1, :voting_session_id=>i)
-      else
-        []
-      end
+      get_result(1)
     end
 
     def no(voting_session_id=nil)
-      i = voting_session_id || last.voting_session_id
-      if i
-        where(:result=>1, :voting_session_id=>i)
-      else
-        []
-      end
+      get_result(-1)
     end
 
     def none(voting_session_id=nil)
-      i = voting_session_id || last.voting_session_id
-      if i
-        where(:result=>0, :voting_session_id=>i)
-      else
-        []
-      end
+      get_result(0)
     end
   end
 
@@ -159,19 +155,12 @@ class Branch< ActiveRecord::Base
   #  end
 
   def forum_prompts
-    records = self.send(self.forum_type.pluralize)
-    records.latest
-    #    if self.forum_type == 'report'
-    #      self.reports.latest
-    #    elsif self.forum_type == 'bulletin'
-    #      self.bulletins.latest
-    #    elsif self.forum_type == 'poll'
-    #      self.polls.latest
-    #    elsif self.forum_type == 'vote'
-    #      self.votes.latest
-    #    else
-    #      []
-    #    end
+    begin
+      records = self.send(self.forum_type.pluralize)
+      records.latest
+    rescue
+      []
+    end
   end
 
   # generate forum.xml in dropbox public/<branch>

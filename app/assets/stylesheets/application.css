@@ -11,5 +11,6 @@
  *= require_self
  *= require_tree .
  *= require active_scaffold
+ *= require jquery-ui
  */
 
