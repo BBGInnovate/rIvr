@@ -21,7 +21,8 @@ class Health< ActiveRecord::Base
           if h.email
             UserMailer.alarm_email(h, message).deliver
             logger.debug "SENT #{h.email} #{message}"
-            AlertedMessage.create :branch_id=>h.branch_id,:message=>message,
+            AlertedMessage.create :branch_id=>h.branch_id,
+              :message=>message,
               :delivered_to=>h.email
           end
         else
