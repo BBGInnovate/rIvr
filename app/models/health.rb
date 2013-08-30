@@ -18,12 +18,18 @@ class Health< ActiveRecord::Base
       if h.send_alarm && ( seconds > h.no_activity*3600)
         message = "Branch #{h.branch.name}: No Activity For #{hours} hours and #{minutes} minutes"
         if h.deliver_method == "email"
-          UserMailer.alarm_email(h, message).deliver if h.email
-          logger.debug "SENT #{h.email} #{message}"
+          if h.email
+            UserMailer.alarm_email(h, message).deliver
+            logger.debug "SENT #{h.email} #{message}"
+            AlertedMessage.create :branch_id=>h.branch_id,:message=>message,
+              :delivered_to=>h.email
+          end
         else
           if h.cell_phone && h.phone_carrier
             sms_fu.deliver(h.cell_phone, h.phone_carrier, message)
             logger.debug "SENT #{h.cell_phone} #{message}"
+            AlertedMessage.create :branch_id=>h.branch_id,:message=>message,
+                :delivered_to=>h.cell_phone
           end
         end
       end
