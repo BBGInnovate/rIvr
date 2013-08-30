@@ -18,5 +18,6 @@ module BranchesHelper
     else
       ''
     end
-  end  
+  end 
+
 end

@@ -61,7 +61,7 @@ var reportUpload = {
 	init : function(forum_type) {
 		var ids = "#introduction,#goodbye,#bulletin_question, .square";
 		jQuery("#forum-template").on('click', ".square", function(e) {
-			var name = this.id;
+			var name = this.id; // this div id is used as template.name
 			reportUpload.myId = this.id;
 			$(this).css("cursor", "progress");
 			var b = jQuery('#branch-name').val();

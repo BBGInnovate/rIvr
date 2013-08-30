@@ -32,6 +32,7 @@ class TemplatesController < ApplicationController
       end  
     end
     @temp_partial = @branch.forum_type
+    # params[:result] came from main.js branchManage.updateForumType 
     if params[:result] && ['vote','poll'].include?(@branch.forum_type)
       @temp_partial = @temp_partial + "_result"
     end

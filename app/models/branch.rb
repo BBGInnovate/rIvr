@@ -4,14 +4,60 @@ require 'open-uri'
 class Branch< ActiveRecord::Base
   self.table_name = "branches"
   attr_accessor :vote_result
-  
+
   belongs_to :country, :foreign_key=>"country_id"
   has_many :voting_sessions do
     def latest
       last
     end
   end
-  has_many :events
+  has_many :events do
+    def get_length(session_rows)
+      listen_started = nil
+      listen_ended = nil
+      session_listen_time = 0
+      session_rows.each do |row|
+        if row.action_id == 3 && !listen_started
+          listen_started = row.created_at
+        elsif row.action_id == 4 && !!listen_started && !listen_ended
+          if row.created_at > listen_started
+            listen_ended = row.created_at
+          end
+        end
+        if !!listen_ended
+          puts "STARTED:ENDED #{listen_started} : #{listen_ended}"
+          session_listen_time += (listen_ended.to_i - listen_started.to_i)
+          listen_ended = nil
+          listen_started = nil
+        end
+      end
+      session_listen_time
+    end
+
+    ## return total listening time in second for the time interval
+    def listened(start_date=nil, end_date=nil)
+      # start_date, end_date must be format Time.now.to_s(:db)
+      start_date = 1.month.ago.to_s(:db) if !start_date
+      end_date = Time.now.to_s(:db) if !end_date
+      sessions = where(:created_at=>start_date..end_date).
+        where("action_id in (#{Action.begin_listen},#{Action.end_listen})").
+          select("distinct session_id")
+     
+      # get all rows for those session_ids
+      rows = where(["session_id in (?) AND action_id in (#{Action.begin_listen},#{Action.end_listen})",
+          sessions.map{|s| s.session_id}]).order("created_at asc").all
+    
+      # rows = b.events.where("session_id in ('7cf02b767c6bd573ac8bdb73bcab72d1')")
+        
+      total_seconds = 0
+      sessions.each do |session|
+        session_rows=rows.select{|r| r.session_id == session.session_id}.compact
+        total_seconds += get_length(session_rows)
+      end
+      total_seconds
+      # AppliactionHelper#format_seconds(total_seconds)
+    end
+  end
   has_many :healths
   has_many :reports do
     def latest
@@ -69,14 +115,22 @@ class Branch< ActiveRecord::Base
   # vote or poll results
   # pattern= 1, 0, -1
   has_many :vote_results  do
+    def by_session
+      sessions = select("distinct voting_session_id")
+      rows = all
+      sessions.each do |s|
+        
+      end
+    end
     def get_result(pattern, voting_session_id=nil)
       i = voting_session_id || (!!last && last.voting_session_id)
       if i
-         where(:result=>pattern, :voting_session_id=>i)
+        where(:result=>pattern, :voting_session_id=>i)
       else
-         []
+        []
       end
-    end 
+    end
+
     def yes(voting_session_id=nil)
       #      brch = proxy_association.owner
       get_result(1)
@@ -110,6 +164,15 @@ class Branch< ActiveRecord::Base
     end
   end
   has_many :entries do
+    def recorded(start_date=nil, end_date=nil)
+      start_date = 1.month.ago.to_s(:db) if !start_date
+      end_date = Time.now.to_s(:db) if !end_date
+      total_seconds = where(:created_at=>start_date..end_date).
+         select("cast(sum(length) AS SIGNED) AS total").last.total.to_i
+      
+      # AppliactionHelper#format_seconds(total_seconds)
+    end
+
     # allow from dropbox or static rss, depending on configuration
     def forum_messages(limit=10)
       brch = proxy_association.owner
@@ -198,6 +261,13 @@ class Branch< ActiveRecord::Base
     else
       puts "#{to}#{File.basename(local_file)} unchanged"
     end
+  end
+
+  def self.recorded(start_date=nil, end_date=nil)
+    start_date = 1.month.ago.to_s(:db) if !start_date
+    end_date = Time.now.to_s(:db) if !end_date
+    Entry.where(:created_at=>start_date..end_date).select("branch_id, cast(sum(length) AS SIGNED) AS total").
+    group(:branch_id)
   end
 
   def self.constant_iter(&block)
