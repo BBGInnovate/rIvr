@@ -15,3 +15,4 @@
 //= require_tree .
 //= require active_scaffold
 //= require jquery.form
+//= require main

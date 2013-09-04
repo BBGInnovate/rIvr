@@ -13,5 +13,6 @@
  *= require active_scaffold
  *= require jquery-ui
  *= require gmaps4rails
+ *= require as_overrides
  */
 
