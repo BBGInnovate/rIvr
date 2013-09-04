@@ -1,0 +1,9 @@
+<% 
+   stat = Stat.new(1.year.ago.to_s(:db))
+%>
+<div class="header">
+	 <span class='float-left'>BRANCH CALLER AND ACTIVITY</span>
+		<span class='float-right'><%= (stat.listened_length/60).ceil %> Minutes Listened</span>
+		<span class='float-right'><%= stat.alerted[:total] %> Alerts</span>
+		<span class='float-right'><%= stat.messages[:total] %> Messags</span>
+</div>

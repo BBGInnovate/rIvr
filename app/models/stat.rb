@@ -9,10 +9,13 @@ class Stat
       # start_date, end_date must be format Time.now.to_s(:db)
       # Time.now.beginning_of_month
       if !!start_date
-        @start_date = Time.parse(start_date).beginning_of_day.to_s(:db) 
-        @end_date = Time.parse(end_date).end_of_day.to_s(:db)
-      else
+        @started = Time.parse(start_date).beginning_of_day.to_s(:db) 
+      else 
         @started = 1.month.ago.to_s(:db) 
+      end
+      if !!end_date
+        @ended = Time.parse(end_date).end_of_day.to_s(:db)
+      else
         @ended = Time.now.to_s(:db)
       end
     end
@@ -23,11 +26,19 @@ class Stat
     def alerted
       numbers = AlertedMessage.joins(:branch).where("branches.is_active=1").
       where(:created_at=>started..ended).
-      select("branch_id, count(id) AS total").
+      select("branch_id, count(alerted_messages.id) AS total").
       group(:branch_id)
       set_hash(numbers)
     end
 
+    def listened_length
+      len = 0
+      Branch.where(:is_active=>true).all.each do |b|
+        len += b.events.listened_length(started, ended)
+      end
+      len
+    end
+      
     # for active branches
     # in seconds
     # message_length[:total] #=> total message length for all

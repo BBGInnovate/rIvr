@@ -2,7 +2,7 @@ require 'builder'
 require 'open-uri'
 
 class Branch< ActiveRecord::Base
-  acts_as_gmappable
+  acts_as_gmappable :process_geocoding => false
   self.table_name = "branches"
   attr_accessor :vote_result
 

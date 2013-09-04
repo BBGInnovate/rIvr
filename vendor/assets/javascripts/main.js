@@ -27,6 +27,23 @@ var datePicker = {
 	}
 }
 
+var homePage = {
+    init : function() {
+      jQuery("body").on('click', ".left-nav", function(e) {
+        var name = this.id;
+        var url = '/'+name;
+        window.location = url;
+        /*
+        var data = {};
+        jQuery.get(url, data, homePage.update, 'html');
+        return false
+        */
+      });
+    },
+    update : function(data) {
+      $('#content').html(data);
+    }
+}
 var monitor = {
 	init : function() {
 		var v = jQuery("#record_deliver_method").val();
