@@ -16,6 +16,13 @@ class Entry< ActiveRecord::Base
     attribute.to_s.gsub(/_id$/, "").gsub(/_/, " ").capitalize
   end
 
+  # return hash table key=branch_id, value=number of messages
+  # hsh[:total] = sum of all messages
+  # for all active branches
+  def self.total_messages(start_date=nil, end_date=nil)
+     Stat.total_messages(start_date, end_date)
+  end
+  
   def self.public_entries(caller)
     where("is_private=0 AND phone_number != #{caller}").order('id desc').limit(10).all
   end

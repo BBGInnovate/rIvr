@@ -1,3 +1,32 @@
+var datePicker = {
+  options : {
+  	  dateFormat: "yy-mm-dd",
+    changeMonth: true,
+    changeYear: true,
+    showButtonPanel: true,
+    minDate: new Date(2013, 0, 1),
+    maxDate: '+1Y',
+    showOn: 'button',
+    buttonImageOnly: true,
+    buttonImage: 'assets/calendar.gif' 
+  },
+  css : {
+  	  "vertical-align": "middle",
+    "line-height": "24px",
+    "margin-left": "5px",
+    "width": "20px",
+    "height": "20px"
+  },
+	init : function(start_date_id, end_date_id) {
+		$("#"+start_date_id).datepicker(datePicker.options);
+		$("#"+end_date_id).datepicker(datePicker.options);
+		$('.ui-datepicker-trigger').css(datePicker.css);
+	},
+	update : function() {
+		
+	}
+}
+
 var monitor = {
 	init : function() {
 		var v = jQuery("#record_deliver_method").val();

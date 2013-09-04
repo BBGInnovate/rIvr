@@ -10,13 +10,13 @@ class BranchesController < ApplicationController
     config.label = 'Branch'
     # config.actions.exclude :create
     config.list.sorting = {:id => 'ASC'}
-    config.columns = [:name, :vote_result, :country, :is_active, :forum_type, :description]
+    config.columns = [:name, :gmaps, :latitude, :longitude, :vote_result, :country, :is_active, :forum_type, :description]
     config.columns[:country].label = 'Country'
     config.columns[:description].form_ui = :textarea
     # config.search.text_search = :start
     # config.search.columns = [:name]
     config.actions.exclude :search
-    config.list.columns.exclude [:id, :description]
+    config.list.columns.exclude [:gmaps,:latitude, :longitude,:id, :description]
     config.create.columns.exclude [:vote_result]
     config.update.columns.exclude [:vote_result]
       

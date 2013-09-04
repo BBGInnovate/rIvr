@@ -1,14 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>TestIvr</title>
+  <title>BBG IVR</title>
   <!-- <META HTTP-EQUIV="refresh" CONTENT="60" /> -->
   <%= stylesheet_link_tag    "application", :media => "all" %>
   <%= javascript_include_tag 'application.js' %>
-  <%#= javascript_include_tag 'jquery.form.js' %>
-  <!--
-  <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
-  -->
   <%= javascript_include_tag 'main.js' %>
   <%= stylesheet_link_tag "as_overrides" %>
   <%= csrf_meta_tags %>
@@ -21,7 +17,7 @@
   <div class="contentHolder" id="contentHolder">
     <%= yield %>
   </div>
-  <%#= render :partial=>'/members/shared/footer' %>
+  <%= render :partial=>'layouts/footer' %>
 </div>
 </body>
 </html>

@@ -1,4 +1,16 @@
 module ApplicationHelper
+  
+  def date_picker
+    html = "<div class='datepicker-wrapper'>"
+    html << "<label class='calendar' for='start_date'>Start Date:</label>"
+    html << "<input type='text' class='datepicker' id='start_date' name='start_date' />"
+    html << "<p class=''></p>"
+    html << "<label class='calendar' for='end_date'>End Date:</label>"
+    html << "<input type='text' class='datepicker' id='end_date' name='end_date' />"
+    html << "</div>"
+    html.html_safe
+  end
+  
   def format_seconds(total_seconds)
     seconds = total_seconds % 60
     minutes = (total_seconds / 60) % 60

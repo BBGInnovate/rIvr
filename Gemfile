@@ -21,6 +21,7 @@ gem 'doorkeeper', '~> 0.6.7'
 gem 'rest-client'
 gem 'nokogiri'
 gem "file-column", "~> 0.3.2"
+gem 'gmaps4rails'
 
 # Gems used only for assets and not required
 # in production environments by default.

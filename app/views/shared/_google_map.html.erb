@@ -1,0 +1,19 @@
+<style>
+	.gmaps4rails_map {
+		width: 100%;
+		height: 600px;
+	}
+</style>
+<% data = []
+   Branch.where("is_active=1 AND latitude is not null").each do |b|
+     data << {"description"=>"", "title"=>"", 
+       "lat"=> "#{b.latitude}", "lng"=>"#{b.longitude}", "picture"=> "assets/radio-wave.png",
+       "width"=> "50", "height"=> "35" }
+   end
+%>
+
+<%= gmaps({
+ "map_options" => {"type" => "ROADMAP", "center_latitude" =>32.930011, "center_longitude" => 43.417969, "zoom" => 3, "auto_adjust" => false},
+ "markers" => {"data" => "#{data.to_json}"}
+ })
+%>

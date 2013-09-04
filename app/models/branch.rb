@@ -2,10 +2,16 @@ require 'builder'
 require 'open-uri'
 
 class Branch< ActiveRecord::Base
+  acts_as_gmappable
   self.table_name = "branches"
   attr_accessor :vote_result
 
+#  has_and_belongs_to_many :users
+  
   belongs_to :country, :foreign_key=>"country_id"
+  
+  has_many :alerted_messages
+  
   has_many :voting_sessions do
     def latest
       last
@@ -35,7 +41,7 @@ class Branch< ActiveRecord::Base
     end
 
     ## return total listening time in second for the time interval
-    def listened(start_date=nil, end_date=nil)
+    def listened_length(start_date=nil, end_date=nil)
       # start_date, end_date must be format Time.now.to_s(:db)
       start_date = 1.month.ago.to_s(:db) if !start_date
       end_date = Time.now.to_s(:db) if !end_date
@@ -164,7 +170,8 @@ class Branch< ActiveRecord::Base
     end
   end
   has_many :entries do
-    def recorded(start_date=nil, end_date=nil)
+    # return number of recorded messages in seconds
+    def total_message_length(start_date=nil, end_date=nil)
       start_date = 1.month.ago.to_s(:db) if !start_date
       end_date = Time.now.to_s(:db) if !end_date
       total_seconds = where(:created_at=>start_date..end_date).
@@ -173,6 +180,14 @@ class Branch< ActiveRecord::Base
       # AppliactionHelper#format_seconds(total_seconds)
     end
 
+    # return number of total caller recorded messages for this branch
+    def total_messages(start_date=nil, end_date=nil)
+      start_date = 1.month.ago.to_s(:db) if !start_date
+      end_date = Time.now.to_s(:db) if !end_date
+      numbers = where(:created_at=>start_date..end_date).
+        select("count(entries.id) AS total").last.total
+    end
+        
     # allow from dropbox or static rss, depending on configuration
     def forum_messages(limit=10)
       brch = proxy_association.owner
@@ -263,11 +278,12 @@ class Branch< ActiveRecord::Base
     end
   end
 
+  # in seconds
   def self.recorded(start_date=nil, end_date=nil)
     start_date = 1.month.ago.to_s(:db) if !start_date
     end_date = Time.now.to_s(:db) if !end_date
     Entry.where(:created_at=>start_date..end_date).select("branch_id, cast(sum(length) AS SIGNED) AS total").
-    group(:branch_id)
+       group(:branch_id)
   end
 
   def self.constant_iter(&block)

@@ -7,6 +7,8 @@ class User < ActiveRecord::Base
   # include Authorization::StatefulRoles
   include Authorization::AasmRoles
 
+#  has_and_belongs_to_many :branches
+  
 #  set_table_name 'assets'
 
   validates :login, :presence   => true,
