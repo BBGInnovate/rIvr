@@ -304,8 +304,35 @@ function getwith(to, options) {
 	myForm.submit();
 	document.body.removeChild(myForm);
 }
-function dump() {
-}
+
+// used in _google_map.html.erb
+var updateLatLonFields = function(lat, lon) {
+  lat = lat.toFixed(8);
+  lon = lon.toFixed(8);
+  document.getElementById("latlon").innerHTML=lat+','+lon;
+};
+var googleMapCallback = function() {
+  var crosshairShape = {coords:[0,0,0,0],type:'rect'};
+  var marker = new google.maps.Marker({
+      map: Gmaps.map.map,
+      // icon: 'assets/crosshair.gif',
+      icon: new google.maps.MarkerImage('assets/crosshair.gif', null, null, new google.maps.Point(10,10)),
+      shape: crosshairShape
+      });
+   marker.bindTo('position', Gmaps.map.map, 'center');
+         
+   google.maps.event.addListener(Gmaps.map.serviceObject, 'center_changed', function(event){
+     // alert(event.toSource()) 
+     // Gmaps.map.map.setCenter(event.latLng);
+     var center = Gmaps.map.map.getCenter();
+     updateLatLonFields(center.lat(), center.lng());
+   });
+   google.maps.event.addListener(Gmaps.map.serviceObject, "zoom_changed", function() {
+     var center = Gmaps.map.map.getCenter();
+     updateLatLonFields(center.lat(), center.lng());
+   });
+};
+
 (function($) {
 	$.fn
 			.extend({

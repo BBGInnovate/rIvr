@@ -3,17 +3,43 @@
 		width: 100%;
 		height: 600px;
 	}
+div#ft {
+    border-top: 2px solid black;
+}
+div#ft p {
+    width: 500px;
+    margin: 1em auto;
+}
+
 </style>
+
 <% data = []
    Branch.where("is_active=1 AND latitude is not null").each do |b|
      data << {"description"=>"", "title"=>"", 
        "lat"=> "#{b.latitude}", "lng"=>"#{b.longitude}", "picture"=> "assets/radio-wave.png",
        "width"=> "50", "height"=> "35" }
    end
+  
 %>
 
 <%= gmaps({
- "map_options" => {"type" => "ROADMAP", "center_latitude" =>32.930011, "center_longitude" => 43.417969, "zoom" => 3, "auto_adjust" => false},
- "markers" => {"data" => "#{data.to_json}"}
+ "map_options" => {:raw => '{scaleControl:true}', "key"=>"AIzaSyCV9RHwmQvNTaEkpeVAZhg5hwDmd7x6Ed8","type" => "ROADMAP", "center_latitude" =>32.930011, "center_longitude" => 43.417969, "zoom" => 3, "auto_adjust" => false},
+ "markers" => {"data" => "#{data.to_json}"},
+ "" => {}
  })
 %>
+
+<div id="ft">
+  <p><strong>Latitude, Longitude:</strong> <span id="latlon"></span></p>
+</div>
+
+<script>
+
+</script>
+<script>
+jQuery(document).ready(function() {
+	  Gmaps.map.callback = function() {
+			   googleMapCallback();
+  };
+});
+</script>
