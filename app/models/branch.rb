@@ -31,7 +31,6 @@ class Branch< ActiveRecord::Base
           end
         end
         if !!listen_ended
-          puts "STARTED:ENDED #{listen_started} : #{listen_ended}"
           session_listen_time += (listen_ended.to_i - listen_started.to_i)
           listen_ended = nil
           listen_started = nil

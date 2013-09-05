@@ -28,20 +28,21 @@ var datePicker = {
 }
 
 var homePage = {
-    init : function() {
+    anchorId : null,
+    init : function(content_id) {
+      homePage.anchorId = content_id;
       jQuery("body").on('click', ".left-nav", function(e) {
-        var name = this.id;
-        var url = '/'+name;
-        window.location = url;
-        /*
-        var data = {};
+        // var name = this.id;
+        // var url = '/'+name;
+        var url = $(this).attr("data-url");
+        //window.location = url;
+        var data = {ajax: 1};
         jQuery.get(url, data, homePage.update, 'html');
         return false
-        */
       });
     },
     update : function(data) {
-      $('#content').html(data);
+      $('#'+homePage.anchorId).html(data);
     }
 }
 var monitor = {

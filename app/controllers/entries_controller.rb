@@ -57,6 +57,7 @@ class EntriesController < ApplicationController
 #               :inline => false
     
   end
+  
   def display?(record=nil)
     if record
       !!record.public_url

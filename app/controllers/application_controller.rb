@@ -1,5 +1,11 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
+  
+  layout :choose_layout
+  def choose_layout
+    !params[:ajax] ? "application" : nil
+  end
+    
   ActiveScaffold.set_defaults do |conf|
     conf.list.per_page = 40
   end
