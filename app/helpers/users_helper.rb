@@ -1,5 +1,12 @@
 module UsersHelper
-  
+  def role_form_column(record, input_name)
+    if User===record
+       options = [['Branch', 'branch'],['Region', 'region'], ['Admin', 'admin']]
+        select_tag input_name, options_for_select(options, record.role)
+      else
+        super
+      end
+  end
   #
   # Use this to wrap view elements that the user can't access.
   # !! Note: this is an *interface*, not *security* feature !!

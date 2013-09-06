@@ -2,15 +2,72 @@ require 'builder'
 require 'open-uri'
 
 class Branch< ActiveRecord::Base
-  acts_as_gmappable :process_geocoding => false
+  acts_as_gmappable :process_geocoding => true
   self.table_name = "branches"
   attr_accessor :vote_result
 
+  has_one :health
+#  include HealthHelper
+  
+  def gmaps4rails_infowindow
+    if unhealth?
+      img = 'assets/red.png'
+      klass  = "red-light"
+    else
+      img = 'assets/green.png'
+      klass = "green-light"
+    end  
+    img_tag = %{<img class="#{klass}" width="15" height="15" src="#{img}" />}
+    
+    htm = "<span class=\"my-tooltip\"><b>#{self.name.titleize}</b> <br/> #{self.country.name} </span><br/>"
+    htm << "<span class=\"my-tooltip\">#{entries.last.created_at.to_s(:db)} </span><br/>"
+    htm << "<span class=\"my-tooltip\">IVR #: #{self.ivr_call_number} </span><br/>"
+    htm << "<span class=\"my-tooltip\">POC:  #{self.contact}</span><br/>"
+    htm << "<span class=\"my-tooltip\">Health: #{img_tag}</span> <br/>"
+
+     htm.html_safe
+  end
+      
+  def gmaps4rails_title
+     self.name
+  end
+  
+  
+  def message_time_span
+    # if not defined return 7 days
+     read_attribute(:message_time_span) || 7
+  end
+    
+  def self.message_time_span
+     o = Option.find_by_name(:message_time_span)
+     if o
+       o.value.to_i
+     else
+       7
+     end
+  end
+    
+  def contact
+    read_attribute(:contact) ||  'undefined'
+  end
+  def ivr_call_number
+    read_attribute(:ivr_call_number) || 'undefined'
+  end
+  
+  def self.top_activity
+    Event.select("branch_id, max(created_at) as created_at").
+      group(:branch_id).order("created_at desc").limit(3)
+  end
 #  has_and_belongs_to_many :users
   
   belongs_to :country, :foreign_key=>"country_id"
   
-  has_many :alerted_messages
+  def unhealth?
+    return true if !self.health
+    self.health.last_event < self.health.no_activity.hours.ago
+  end
+  
+  has_many :alerted_messages 
   
   has_many :voting_sessions do
     def latest

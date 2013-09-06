@@ -31,7 +31,7 @@ var homePage = {
     anchorId : null,
     init : function(content_id) {
       homePage.anchorId = content_id;
-      jQuery("body").on('click', ".left-nav", function(e) {
+      jQuery("body").on('click', ".left-nav-bar", function(e) {
         // var name = this.id;
         // var url = '/'+name;
         var url = $(this).attr("data-url");

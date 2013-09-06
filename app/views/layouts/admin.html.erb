@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>BBG IVR</title>
+  <!-- <META HTTP-EQUIV="refresh" CONTENT="60" /> -->
+  <%= stylesheet_link_tag    "application", :media => "all" %>
+  <%= javascript_include_tag 'application.js' %>
+  <%#= javascript_include_tag 'main.js' %>
+  <%#= stylesheet_link_tag "as_overrides" %>
+  <%= csrf_meta_tags %>
+  <%= yield :head %>
+</head>
+<body>
+<div class="overBg">
+  <%= render :partial=>'layouts/header' %>
+  <div class="clear"></div>
+		<div class="left-sidebar">
+			 <%= render :partial=>'layouts/side_nav' %>
+		</div>
+  <div class="contentHolder" id="contentHolder">
+   <p class="notice"><%= notice %></p>
+   <p class="alert"><%= alert %></p>
+
+  	 <div class="content" id="content">
+    <%= yield %>
+				</div>
+  </div>
+		<div class="clear"></div>
+  <%= render :partial=>'layouts/footer' %>
+</div>
+<script>
+  jQuery(document).ready(function () { 
+     homePage.init("content");
+  });
+</script>
+</body>
+</html>

@@ -50,9 +50,10 @@ module HealthHelper
   end
   def status_column(record, column=nil)
     if record.kind_of? Health
-      seconds = (Time.now.to_i - record.last_event.to_i)
-      hours = seconds/3600.0
-      if hours > record.no_activity
+#      seconds = (Time.now.to_i - record.last_event.to_i)
+#      hours = seconds/3600.0
+#      if hours > record.no_activity
+      if record.last_event < record.no_activity.hours.ago
         "<img class='red-light' width='25' src='assets/red.png' />".html_safe
       else
         "<img class='green-light' width='25' src='assets/green.png' />".html_safe

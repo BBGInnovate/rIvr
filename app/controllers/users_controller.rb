@@ -1,29 +1,33 @@
 class UsersController < ApplicationController
   # Be sure to include AuthenticationSystem in Application Controller instead
-  include AuthenticatedSystem
+#  include AuthenticatedSystem
   
   # Protect these actions behind an admin login
   # before_filter :admin_required, :only => [:suspend, :unsuspend, :destroy, :purge]
-  before_filter :find_user, :only => [:suspend, :unsuspend, :destroy, :purge]
+#  before_filter :find_user, :only => [:suspend, :unsuspend, :destroy, :purge]
   
-
+  skip_filter :authenticate_user!
+  active_scaffold :user do |config|
+    config.columns = [:email, :role,:password, :password_confirmation, :created_at, :updated_at]
+    config.list.columns.exclude [:password, :password_confirmation]
+  end
   # render new.rhtml
-  def new
-    @user = User.new
-  end
- 
-  def create
-    logout_keeping_session!
-    @user = User.new(params[:user])
-    @user.register! if @user && @user.valid?
-    success = @user && @user.valid?
-    if success && @user.errors.empty?
-      redirect_back_or_default('/', :notice => "Thanks for signing up!  We're sending you an email with your activation code.")
-    else
-      flash.now[:error]  = "We couldn't set up that account, sorry.  Please try again, or contact an admin (link is above)."
-      render :action => 'new'
-    end
-  end
+#  def new
+#    @user = User.new
+#  end
+# 
+#  def create
+#    logout_keeping_session!
+#    @user = User.new(params[:user])
+#    @user.register! if @user && @user.valid?
+#    success = @user && @user.valid?
+#    if success && @user.errors.empty?
+#      redirect_back_or_default('/', :notice => "Thanks for signing up!  We're sending you an email with your activation code.")
+#    else
+#      flash.now[:error]  = "We couldn't set up that account, sorry.  Please try again, or contact an admin (link is above)."
+#      render :action => 'new'
+#    end
+#  end
 
   def activate
     logout_keeping_session!

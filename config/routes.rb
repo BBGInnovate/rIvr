@@ -1,4 +1,7 @@
 TestIvr::Application.routes.draw do
+  devise_for :users
+#  devise_for :admins, :controllers => { :sessions => "admins/sessions" }
+    
   use_doorkeeper
 
   root :to => "home#index"
@@ -19,17 +22,28 @@ TestIvr::Application.routes.draw do
       get :forum_feed
     end
   end
-  resources :users
-  resource :session, :only => [:new, :create, :destroy]
-  match 'signup' => 'users#new', :as => :signup
-  match 'register' => 'users#create', :as => :register
-  match 'login' => 'sessions#new', :as => :login
-  match 'logout' => 'sessions#destroy', :as => :logout
-  match '/activate/:activation_code' => 'users#activate', :as => :activate, :activation_code => nil
-  match 'login' => 'sessions#new', :as => :login
-  match 'logout' => 'sessions#destroy', :as => :logout
-  match 'signup' => 'users#new', :as => :signup
-  match 'activate/:activation_code' => 'users#activate', :as => :activate, :activation_code => nil
+  resources :users do
+    as_routes
+  end
+#  
+#  namespace :admin do
+#     # Directs /admin/products/* to Admin::ProductsController
+#     # (app/controllers/admin/products_controller.rb)
+#     resources :users do
+#       as_routes
+#     end
+#  end
+#    
+#  resource :session, :only => [:new, :create, :destroy]
+#  match 'signup' => 'users#new', :as => :signup
+#  match 'register' => 'users#create', :as => :register
+#  match 'login' => 'sessions#new', :as => :login
+#  match 'logout' => 'sessions#destroy', :as => :logout
+#  match '/activate/:activation_code' => 'users#activate', :as => :activate, :activation_code => nil
+#  match 'login' => 'sessions#new', :as => :login
+#  match 'logout' => 'sessions#destroy', :as => :logout
+#  match 'signup' => 'users#new', :as => :signup
+#  match 'activate/:activation_code' => 'users#activate', :as => :activate, :activation_code => nil
 
   resources :home do
      get :index

@@ -38,6 +38,13 @@ class Stat
       end
       len
     end
+     
+  def number_of_calls
+    numbers = Event.where(:created_at=>started..ended).
+       select("branch_id, count(distinct session_id) as total").
+       group(:branch_id)
+    set_hash(numbers)
+   end
       
     # for active branches
     # in seconds

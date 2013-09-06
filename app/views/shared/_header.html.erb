@@ -1,8 +1,16 @@
 <nav>						
 <ul>
-<li><a href="#">x Messages</a></li>
-<li><a href="#">x Alerts</a></li>
-<li><a href="#">x Minutes Listened</a></li>
+<% 
+   started = Branch.message_time_span.days.ago.to_s(:db)
+   ended = Time.now.to_s(:db)
+   alerts = Stat.new(started, ended).alerted[:total]
+   messages = Stat.new(started, ended).messages[:total]
+   calls = Stat.new(started, ended).number_of_calls[:total]
+%>
+<li><a ><%= calls %> Number of Calls</a></li>
+<li class="left-nav-bar" data-url="/entries"><a ><%= messages %> Messages</a></li>
+<li class="left-nav-bar" data-url="/health"><a ><%= alerts %> Alerts</a></li>
+
 </ul>
 </nav>
 <h2>BRANCH CALLER AND ACTIVITY</h2>

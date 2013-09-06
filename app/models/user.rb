@@ -1,36 +1,42 @@
 require 'digest/sha1'
 
 class User < ActiveRecord::Base
-  include Authentication
-  include Authentication::ByPassword
-  include Authentication::ByCookieToken
-  # include Authorization::StatefulRoles
-  include Authorization::AasmRoles
+  # Include default devise modules. Others available are:
+  # :token_authenticatable, :confirmable,
+  # :lockable, :timeoutable and :omniauthable
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :trackable, :validatable
+
+  # Setup accessible (or protected) attributes for your model
+  attr_accessible :email, :role, :password, :password_confirmation, :remember_me
+#  include Authentication
+#  include Authentication::ByPassword
+#  include Authentication::ByCookieToken
+#  # include Authorization::StatefulRoles
+#  include Authorization::AasmRoles
 
 #  has_and_belongs_to_many :branches
-  
-#  set_table_name 'assets'
-
-  validates :login, :presence   => true,
-                    :uniqueness => true,
-                    :length     => { :within => 3..40 },
-                    :format     => { :with => Authentication.login_regex, :message => Authentication.bad_login_message }
-
-  validates :name,  :format     => { :with => Authentication.name_regex, :message => Authentication.bad_name_message },
-                    :length     => { :maximum => 100 },
-                    :allow_nil  => true
-
-  validates :email, :presence   => true,
-                    :uniqueness => true,
-                    :format     => { :with => Authentication.email_regex, :message => Authentication.bad_email_message },
-                    :length     => { :within => 6..100 }
-
-  
+#
+#  validates :login, :presence   => true,
+#                    :uniqueness => true,
+#                    :length     => { :within => 3..40 },
+#                    :format     => { :with => Authentication.login_regex, :message => Authentication.bad_login_message }
+#
+#  validates :name,  :format     => { :with => Authentication.name_regex, :message => Authentication.bad_name_message },
+#                    :length     => { :maximum => 100 },
+#                    :allow_nil  => true
+#
+#  validates :email, :presence   => true,
+#                    :uniqueness => true,
+#                    :format     => { :with => Authentication.email_regex, :message => Authentication.bad_email_message },
+#                    :length     => { :within => 6..100 }
+#
+#  
 
   # HACK HACK HACK -- how to do attr_accessible from here?
   # prevents a user from submitting a crafted form that bypasses activation
   # anything else you want your user to change should be added here.
-  attr_accessible :login, :email, :name, :password, :password_confirmation
+#  attr_accessible :login, :email, :name, :password, :password_confirmation
 
 
 
@@ -54,12 +60,13 @@ class User < ActiveRecord::Base
     write_attribute :email, (value ? value.downcase : nil)
   end
 
-  protected
-    
-  def make_activation_code
-        self.deleted_at = nil
-        self.activation_code = self.class.make_token
+  def is_admin?
+    self.role=='admin'
   end
-
+  
+  def recently_activated?
+    updated_at < 5.minutes.ago
+  end
+  protected
 
 end

@@ -70,7 +70,7 @@ class HealthController < ApplicationController
         b = Health.find_by_event_id e[0]
         if b && act
           b.update_attributes :event_id=>e[0], :last_event=>e[3], :event=>act.name
-        elsif act
+        elsif act && act.id != Action.ping_server
           Health.create :branch_id=>e[1], :event_id=>e[0], :last_event=>e[3], :event=>act.name
         end
       end
