@@ -1,0 +1,26 @@
+<h2>Top Activity</h2>
+<table border="0" cellspacing="0" cellpadding="0">
+	 <% Branch.top_activity.each do |e| %>
+  <tr>
+    <td class="flag">
+      <img src="<%=e.branch.country_flag_url || 'assets/images/flag-tanzania.png' %>" width="35" height="34" alt="Tanzania flag">
+    </td>
+    <td class="country">
+      <%= e.branch.country.name %>
+    </td>
+    <td class="phone">
+      <%= e.branch.ivr_call_number %>
+    </td>
+    <td class="message">
+      <%= e.branch.entries.total_messages %>
+    </td>
+    <td class="alert">
+    	 <% started = e.branch.message_time_span.days.ago.beginning_of_day.to_s(:db) 
+         ended = Time.now.to_s(:db)
+       %>
+      <%= Stat.new(started, ended).alerted[e.branch.id] %>
+    </td>
+  </tr>
+  <tr>
+  <% end %>
+</table>

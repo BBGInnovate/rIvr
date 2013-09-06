@@ -1,0 +1,36 @@
+<div id="assignCharity" style="">
+  <h1>Assign Multiple Charities to a Member</h1>
+  <form>
+    <div class="charitySpacing">
+      <div class="fleft">
+        <label for="select-from">
+          Available charities
+        </label>
+        <%= select_tag :avail_charities, options_for_select(Charity.all(:conditions=>"is_active=1").map{|x| [x.name, x.id] }.sort(), @charities), :tabindex=>4,:multiple => true, :size=>5,:id => 'select-from',:class=>"multiselect" %>
+      </div>
+      <div id="controlCharity" class="fleft">
+        <button type="button" id="btn-add">
+          Add &raquo;
+        </button>
+        <button type="button" id="btn-remove">
+          &laquo; Remove
+        </button>
+      </div>
+      <div class="fleft">
+        <label for="select-to">
+          Charities assigned to member
+        </label>
+        <input type="hidden" name="user_id" id="user_id"  value="<%= @user.id %>" />
+        <%= select_tag :charities, options_for_select(@charities.map{|x| [x.name, x.id] }.sort(), @charities), :tabindex=>4,:multiple => true, :size=>5,:id => 'select-to',:class=>"multiselect" %>
+      </div>
+    </div>
+    <div class="clear">
+    </div>
+    <div class="fright actionbuttonSpacing">
+      <input type="reset" id="cancel" value="Cancel" />
+      <input type="submit" id="submit" value="Save" />
+    </div>
+    <div class="clear">
+    </div>
+  </form>
+</div>

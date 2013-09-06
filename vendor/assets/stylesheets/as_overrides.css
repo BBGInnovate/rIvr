@@ -46,10 +46,15 @@ padding: 10px 30px 5px 30px;
 .map_container {
 	width: auto;
 }
+/*
 #as_entries-active-scaffold {
 	 width: 800px;
 		margin: 0 auto; 
-		border: 1px solid yellow;
+		
+} */
+#content .active-scaffold {
+	 width: 1010px;
+		margin: 10px 0 0 20px; 
 }
 
 .left-sidebar {
@@ -279,6 +284,20 @@ input.btnAction:hover {
 a.go-template {
 	display: none;
 }
+
+/******* liwen added ******/
+.my-tooltip {
+  line-height: 20px;
+  vertical-align:middle
+}
+
+img.red-light, img.green-light {
+	vertical-align:middle
+}
+.left-nav-bar:hover {
+  cursor: pointer; 
+}
+
 /*
 a.soundcloud:hover {
   background-color:yellow;

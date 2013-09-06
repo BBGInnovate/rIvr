@@ -1,0 +1,266 @@
+/*
+1. Main Body and Text Styles
+2. Sidebar navigation
+3. Home page styles
+3a. Branch Info Box 
+3b. Top Activity Box
+4. Moderation page styles
+4a. Search results box
+
+
+*/
+
+
+
+/* 1. Main Structure and Text Styles */
+html {height:100%;}
+body {
+	margin:0;
+	font:12px/15px "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+	color:#8a8a8a;
+	min-width:1000px;
+	background:#fff;
+	height:100%;
+}
+a { text-decoration: none; }
+a:hover { text-decoration: underline; }
+#wrapper {
+	position: relative;
+	min-height: 100%;
+	/*overflow: hidden;*/
+	background: url(images/bg-wrapper.png) repeat-y;
+}
+
+h2 {
+	font-size: 24px;
+	text-transform: uppercase;
+	text-align: left;
+}
+
+.module {
+	margin: 0 0 0 100px;
+}
+
+
+
+/*2. Sidebar navigation*/
+#sidebar {
+	float:left;
+	margin: 0;
+	width:100px;
+	padding:0;
+}
+#sidebar ul {
+	list-style:none;
+	margin:0px;
+	padding:0px;
+	position:relative;
+	font:bold 11px/13px Arial, Helvetica, sans-serif;
+	width: 100px;
+}
+#sidebar ul li {
+	vertical-align: top;
+	margin: 0;
+	padding: 0;
+	position: relative;
+}
+
+#sidebar ul li a.login.on, #sidebar ul li a.login:hover { background: url(images/icons-nav-sprite.png) -100px -90px no-repeat; }
+#sidebar ul li a.logo.on, #sidebar ul li a.logo:hover { background: url(images/icons-nav-sprite.png) -100px 0px no-repeat; }
+#sidebar ul li a.moderation.on, #sidebar ul li a.moderation:hover { background: url(images/icons-nav-sprite.png) -100px -180px no-repeat; }
+#sidebar ul li a.branch-configuration.on, #sidebar ul li a.branch-configuration:hover { background: url(images/icons-nav-sprite.png) -100px -270px no-repeat; }
+#sidebar ul li a.analytics.on, #sidebar ul li a.analytics:hover { background: url(images/icons-nav-sprite.png) -100px -360px no-repeat; }
+#sidebar ul li a.health-check.on, #sidebar ul li a.health-check:hover { background: url(images/icons-nav-sprite.png) -100px -450px no-repeat; }
+
+#sidebar ul li a.on { background: url(images/icons-nav-sprite.png) 0 -90 no-repeat; }
+#sidebar ul li a.logo { background: url(images/icons-nav-sprite.png) 0 0px no-repeat; }
+#sidebar ul li a.moderation { background: url(images/icons-nav-sprite.png) 0 -180px no-repeat; }
+#sidebar ul li a.branch-configuration { background: url(images/icons-nav-sprite.png) 0 -270px no-repeat; }
+#sidebar ul li a.analytics { background: url(images/icons-nav-sprite.png) 0 -360px no-repeat; }
+#sidebar ul li a.health-check { background: url(images/icons-nav-sprite.png) 0 -450px no-repeat; }
+
+#sidebar ul li a {
+	vertical-align: top;
+	height: 70px;
+	display: block;
+	overflow: hidden;
+	text-align: center;
+	color: #fff;
+	text-decoration: none;
+	padding: 10px;
+}
+
+
+
+/*3. Home page styles*/
+.controls {
+	padding: 20px 13px 0 34px;
+	background: #E2EEF6;
+	height: 70px;
+}
+.controls h2 {
+	margin: 18px 0 0 0;
+}
+
+.controls nav { float: right; }
+.controls nav ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.controls nav li {
+	float: left;
+	margin: 5px 10px 0 0;
+	position: relative;
+}
+.controls nav a {
+	float: left;
+	border: 1px solid #dde2e8;
+	background: #fff;
+	-webkit-border-radius: 1px 1px 0 0;
+	-moz-border-radius: 1px 1px 0 0;
+	border-radius: 1px 1px 0 0;
+	color: #1f252a;
+	font-size: 13px;
+	text-decoration: none;
+	padding: 12px;
+	text-align: center;
+	margin-left: 10px;
+}
+
+
+/*3a. Branch Info Box - This box currently has no specific location and can be moved anywhere to correspond to map points*/
+.branch-info-box {
+	width: 275px;
+	margin: 0;
+	background: #eee;
+	color: #333;
+}
+
+.branch-info-box .content {
+	padding: 10px;	
+}
+.branch-info-box h3 {
+	margin: 0;
+	padding: 8px;
+	display: block;
+	color: #fff;
+	background: #666;
+	font-size: 16px;
+}
+
+.branch-info-box h4 {
+	font-size: 14px;
+	margin: 0;
+	padding: 0;	
+}
+
+.branch-info-box .map {
+	float: right;
+	margin: 5px 10px 10px 10px;
+}
+
+.branch-info-box ul {
+	font-size: 13px;
+	line-height: 17px;	
+	margin: 5px 0 0;
+	padding: 0 0 0 16px;
+}
+
+/*3b. Top Activity Box*/
+.activity {
+	margin: 20px 0 60px 60px;
+}
+
+.activity table {
+	background: #eee;
+	border-top: 1px solid #ccc;	
+	width: 400px;
+}
+
+.activity table td {
+	padding: 4px 4px 4px 10px;	
+	border-bottom: 1px solid #ccc;	
+	font-size: 14px;
+}
+
+.activity table td.country { padding-left: 5px; font-size: 16px; color: #666; }
+.activity table td.flag { width: 35px; }
+.activity table td.phone { background: url(images/icons-home.png) 0 10px no-repeat; padding-left: 25px; }
+.activity table td.message { background: url(images/icons-home.png) 0 -30px no-repeat; padding-left: 30px; }
+.activity table td.alert { background: url(images/icons-home.png) 0 -75px no-repeat; padding-left: 30px; }
+
+
+ 
+
+
+
+/*4. Moderation page styles*/
+.module.moderation { padding: 20px; }
+.module.moderation h2 { margin: 0; }
+
+.moderation-tools {
+	padding: 15px;
+	width: 600px;
+	margin: 60px auto;
+	text-align: center;
+	overflow: auto;
+}
+
+.moderation-tools p { margin-top: 0; font-size: 14px; text-align: left; color: #666; }
+
+.moderation-tools ul {
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+}
+
+.moderation-tools ul li {
+	margin: 0 10px 0 0;
+	padding: 0;
+	list-style-type: none;
+	float: left;
+	text-align: center;
+	background-color: #fff;
+	font-size: 18px;
+	border-top: 2px solid #ccc;
+	border-right: 1px solid #ccc;
+	border-left: 1px solid #ccc;
+	color: #ccc;
+}
+.moderation-tools ul li.TabbedPanelsTabSelected {
+	background-color: #ccc;	
+	color: #666;
+}
+.moderation-tools ul li a {
+	width: 103px;
+	height: 73px;
+	display: block;
+	padding-top: 8px;
+}
+
+.moderation-tools ul li a:hover {
+	border: 4px solid #333;
+	width: 95px;
+	height: 69px;
+	padding-top: 4px;
+}
+
+.moderation-tools a.listen { background: url(images/icons-moderation.png) 25px 30px no-repeat; }
+.moderation-tools a.publish { background: url(images/icons-moderation.png) 25px -55px no-repeat; }
+.moderation-tools a.syndicate { background: url(images/icons-moderation.png) 25px -135px no-repeat; }
+.moderation-tools a.listen:hover { background: url(images/icons-moderation.png) 21px 26px no-repeat; }
+.moderation-tools a.publish:hover { background: url(images/icons-moderation.png) 21px -59px no-repeat; }
+.moderation-tools a.syndicate:hover { background: url(images/icons-moderation.png) 21px -139px no-repeat; }
+
+.moderation-tools a.play img{ background: url(images/icons-moderation.png) -14px -260px no-repeat; }
+
+.moderation-tools a.play.on img{ background: url(images/icons-moderation.png) -14px -230px no-repeat; }
+
+
+/*4a. Search results box*/
+.search-results-box {
+		
+}
+
+
