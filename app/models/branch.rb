@@ -10,22 +10,13 @@ class Branch< ActiveRecord::Base
 #  include HealthHelper
   
   def gmaps4rails_infowindow
-    if unhealth?
-      img = 'assets/red.png'
-      klass  = "red-light"
-    else
-      img = 'assets/green.png'
-      klass = "green-light"
-    end  
-    img_tag = %{<img class="#{klass}" width="15" height="15" src="#{img}" />}
-    
-    htm = "<span class=\"my-tooltip\"><b>#{self.name.titleize}</b> <br/> #{self.country.name} </span><br/>"
+    htm = "<span class=\"my-tooltip\"><b>#{self.name.titleize}</b> <br/>"
+    htm << "<b>#{self.country.name}</b></span><br/>"
     htm << "<span class=\"my-tooltip\">#{entries.last.created_at.to_s(:db)} </span><br/>"
     htm << "<span class=\"my-tooltip\">IVR #: #{self.ivr_call_number} </span><br/>"
     htm << "<span class=\"my-tooltip\">POC:  #{self.contact}</span><br/>"
-    htm << "<span class=\"my-tooltip\">Health: #{img_tag}</span> <br/>"
-
-     htm.html_safe
+    htm << "<span class=\"my-tooltip\">Health: #{health_image}</span> <br/>"
+    htm.html_safe
   end
       
   def gmaps4rails_title
@@ -65,6 +56,16 @@ class Branch< ActiveRecord::Base
   def unhealth?
     return true if !self.health
     self.health.last_event < self.health.no_activity.hours.ago
+  end
+  def health_image
+    if unhealth?
+      img = 'assets/red.png'
+      klass  = "red-light"
+    else
+      img = 'assets/green.png'
+      klass = "green-light"
+    end  
+    img_tag = %{<img class="#{klass}" width="15" height="15" src="#{img}" />}
   end
   
   has_many :alerted_messages 

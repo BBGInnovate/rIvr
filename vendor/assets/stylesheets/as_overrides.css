@@ -297,6 +297,15 @@ img.red-light, img.green-light {
 .left-nav-bar:hover {
   cursor: pointer; 
 }
+.controls nav .last-days {
+    color: #1F252A;
+    float: left;
+    font-size: 13px;
+    margin-left: 10px;
+    padding: 12px;
+    text-align: center;
+    text-decoration: none;
+}
 
 /*
 a.soundcloud:hover {

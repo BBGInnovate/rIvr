@@ -63,7 +63,7 @@ jQuery(document).ready(function() {
             position: myLatlng,
             map: Gmaps.map.map,
 												icon: "assets/radio-wave.png",
-            title: '<%= b.gmaps4rails_infowindow %>'
+            title: '<%#= b.gmaps4rails_infowindow %>'
         });
         google.maps.event.addListener(marker<%=i%>, 'click', function() {
            infowindow<%=i%>.open(Gmaps.map.map,marker<%=i%>);
