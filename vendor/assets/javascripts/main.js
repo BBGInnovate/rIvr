@@ -27,6 +27,21 @@ var datePicker = {
 	}
 }
 
+var autoRefreshHeader = {
+    init : function() {
+      var header_refresh = setInterval(
+        function(){
+           jQuery.get("/home/header",{ajax: 1}, autoRefreshHeader.update, 'html');
+        }, 30000); // refresh every 30000 milliseconds
+    },
+    update : function(data) {
+      var obj = jQuery.parseJSON(data);
+      $('#alerts').html(obj.alerts + ' Alerts');
+      $('#calls').html(obj.calls + ' Number of Calls');
+      $('#messages').html(obj.messages+' Messages');
+      $('.activity').html(obj.activity);
+    },
+}
 var homePage = {
     anchorId : null,
     init : function(content_id) {

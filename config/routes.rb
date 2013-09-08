@@ -47,6 +47,9 @@ TestIvr::Application.routes.draw do
 
   resources :home do
      get :index
+     collection do
+       get :header
+     end
   end
     
   resources :actions do
