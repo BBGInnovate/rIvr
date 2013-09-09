@@ -1,6 +1,6 @@
 class AddTimeSpanOptions < ActiveRecord::Migration
   def up
-    Option.create :name=>'message_time_span', :value=>'7', :branch_id=>0
+    Option.create :name=>'message_time_span', :value=>'7', :branch_id=>0, :description=>'value is number of days'
   end
 
   def down
