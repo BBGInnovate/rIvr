@@ -2,6 +2,7 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
   
 #  before_filter :authenticate_user!
+  before_filter :init
   
   layout :choose_layout
   def choose_layout
@@ -40,5 +41,13 @@ class ApplicationController < ActionController::Base
     rescue
       return false
     end
+  end
+  
+  def init
+       started = Branch.message_time_span.days.ago.to_s(:db)
+       ended = Time.now.to_s(:db)
+       @alerts = Stat.new(started, ended).alerted
+       @messages = Stat.new(started, ended).messages
+       @calls = Stat.new(started, ended).number_of_calls
   end
 end

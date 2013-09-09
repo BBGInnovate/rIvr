@@ -21,6 +21,7 @@ module ApplicationHelper
     if !record.kind_of?(Branch)
     id = record.branch_id rescue 0
       options = Branch.where("is_active=1").map{|b| [b.name, b.id]}
+      options.unshift ["None","0"]
       select_tag 'record[branch_id]', options_for_select(options, id), :style=>''
     else
         super
