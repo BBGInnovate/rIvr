@@ -27,7 +27,7 @@ module ConfigureHelper
   def render_action_link(link, record = nil, options = {})
     if record.kind_of?(Configure) && !!options[:for]
       record = options[:for] if !record
-      link.parameters[:branch_id] = record.branch.id if !!record.respond_to?(:branch)
+      link.parameters[:branch_id] = record.branch_id if !!record.respond_to?(:branch_id)
     end
     super
   end
