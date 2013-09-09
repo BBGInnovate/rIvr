@@ -31,6 +31,7 @@ class Stat
       set_hash(numbers)
     end
 
+    # total listening time for branches
     def listened_length
       len = 0
       Branch.where(:is_active=>true).all.each do |b|
@@ -45,7 +46,34 @@ class Stat
        group(:branch_id)
     set_hash(numbers)
    end
-      
+   
+  # call_times[branch_id][:seconds] = total call duration for each branch
+  # call_times[branch_id][:rows] = total call number for each branch
+  # call_times[:total] = total call duration for all branches
+  # call_times[:average] = ave call duration
+  def call_times
+    events = Event.where(:created_at=>started..ended).
+         select("session_id, branch_id, created_at")
+    hsh = {}
+    total = 0
+    len  = 0
+    tmps = events.group_by{|e| e.branch_id}
+    tmps.keys.each do |b_id|
+      hsh[b_id] = {:seconds=>0, :rows=>0} 
+    end 
+    subs = events.group_by{|e| e.session_id}
+    subs.keys.each do | session_id |
+      e = subs[session_id]
+      len = e.last.created_at.to_i - e.first.created_at.to_i
+      hsh[e.last.branch_id][:seconds] += len
+      total += len
+      hsh[e.last.branch_id][:rows] += e.size
+    end
+    ave_call_time = total / subs.keys.size  
+    hsh[:total] = total
+    hsh[:average] = ave_call_time
+  end
+       
     # for active branches
     # in seconds
     # message_length[:total] #=> total message length for all

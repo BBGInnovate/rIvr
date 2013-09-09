@@ -13,9 +13,9 @@ module HomeHelper
       htm<<"<td class='alert left-nav-bar' data-url='/health'>"
 
       if e.branch.unhealth?
-        htm<<"<img class='red-light' width='15' height='15' src='assets/red.png' />"
+        htm<<"<img class='red-light' width='15' height='15' src='/assets/red.png' />"
       else
-        htm<<"<img class='red-light' width='15' height='15' src='assets/red.png' />"
+        htm<<"<img class='red-light' width='15' height='15' src='/assets/red.png' />"
       end  
       htm<<"</td>"
       htm<<"</tr>"

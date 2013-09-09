@@ -59,10 +59,10 @@ class Branch< ActiveRecord::Base
   end
   def health_image
     if unhealth?
-      img = 'assets/red.png'
+      img = '/assets/red.png'
       klass  = "red-light"
     else
-      img = 'assets/green.png'
+      img = '/assets/green.png'
       klass = "green-light"
     end  
     img_tag = %{<img class="#{klass}" width="15" height="15" src="#{img}" />}
@@ -96,25 +96,42 @@ class Branch< ActiveRecord::Base
       end
       session_listen_time
     end
-
+    # listened[:total] == total listening in seconds
+    # listened[:average] == ave listening in seconds
+    # listened[:number_of_calls] == number of calls for listening
+    def listened(start_date=nil, end_date=nil)
+      start_date = 1.month.ago.to_s(:db) if !start_date
+      end_date = Time.now.to_s(:db) if !end_date
+      my_events = where(:created_at=>start_date..end_date).
+         where("action_id in (#{Action.begin_listen},#{Action.end_listen})").
+         select("session_id, branch_id, created_at").all
+           
+      sessions = my_events.group_by{|e| e.session_id}
+      total_seconds = 0
+      session_number = sessions.keys.size
+      sessions.keys.each do |session_d|
+        session_rows=sessions[session_id].value
+        total_seconds += get_length(session_rows)
+      end
+      ave = total_seconds / sessions.keys.size
+      hsh={:total=>total_seconds, 
+           :number_of_calls=>sessions.keys.size,
+           :average=>ave}
+    end
     ## return total listening time in second for the time interval
     def listened_length(start_date=nil, end_date=nil)
       # start_date, end_date must be format Time.now.to_s(:db)
       start_date = 1.month.ago.to_s(:db) if !start_date
       end_date = Time.now.to_s(:db) if !end_date
-      sessions = where(:created_at=>start_date..end_date).
+      my_events = where(:created_at=>start_date..end_date).
         where("action_id in (#{Action.begin_listen},#{Action.end_listen})").
-          select("distinct session_id")
+          select("session_id, branch_id, created_at").all
      
-      # get all rows for those session_ids
-      rows = where(["session_id in (?) AND action_id in (#{Action.begin_listen},#{Action.end_listen})",
-          sessions.map{|s| s.session_id}]).order("created_at asc").all
-    
-      # rows = b.events.where("session_id in ('7cf02b767c6bd573ac8bdb73bcab72d1')")
-        
+      sessions = my_events.group_by{|e| e.session_id}
       total_seconds = 0
-      sessions.each do |session|
-        session_rows=rows.select{|r| r.session_id == session.session_id}.compact
+      session_number = sessions.keys.size
+      sessions.keys.each do |session_d|
+        session_rows=sessions[session_id].value
         total_seconds += get_length(session_rows)
       end
       total_seconds

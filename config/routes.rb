@@ -5,6 +5,7 @@ TestIvr::Application.routes.draw do
   use_doorkeeper
 
   root :to => "home#index"
+  resources :reports 
   resources :api do
     collection do
       post :feed
@@ -14,6 +15,7 @@ TestIvr::Application.routes.draw do
       post :prompt
     end
   end
+  
   resources :branch
   resources :templates do
     collection do

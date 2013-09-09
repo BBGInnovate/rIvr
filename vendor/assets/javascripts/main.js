@@ -299,6 +299,24 @@ var branchManage = {
 	}
 }
 
+var submitReport = {
+	init : function() {
+		jQuery("#report-logout").on('click', "#report-submit", function(e) {
+			var branch_id=$('#branch_id').val();
+			var url = '/reports';
+			var data = {
+				"branch_id[]" : branch_id,
+				start_date: $('#start_date').val(),
+				end_date: $('#end_date').val(),
+			};
+			jQuery.post(url, data, function(data) {
+				$('#report-detail').show();
+				$('#report-detail').html(data)
+			});
+		});
+	}
+}
+
 function blinkeffect(selector) {
 	$(selector).fadeOut('slow', function() {
 		$(this).fadeIn('slow', function() {
