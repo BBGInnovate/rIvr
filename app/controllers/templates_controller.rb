@@ -1,7 +1,7 @@
 class TemplatesController < ApplicationController
   #  doorkeeper_for :create
   skip_before_filter :verify_authenticity_token, :only => [:create]
-  layout 'application'
+  layout 'branch'
   
   def index
     @branch_name = params[:branch] || 'oddi'

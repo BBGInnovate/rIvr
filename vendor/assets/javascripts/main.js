@@ -245,15 +245,18 @@ var branchManage = {
 		});
 		jQuery("#branch").on(
 				'click',
-				"input[name='forum_type']",
+				".TabbedPanelsTab, input[name='forum_type']",
 				function(e) {
-					var forum_type = this.value;
+				  // var forum_type = this.value;
+					var forum_type = this.id;
+		      jQuery(".TabbedPanelsTab").removeClass('TabbedPanelsTabSelected');
+		      jQuery("#" + forum_type).addClass('TabbedPanelsTabSelected');
+		      
 					branch_id = jQuery("#record_id").val();
 					if (branch_id == '0') {
 						jQuery('#return-msg').html('Please select a branch')
 						return false;
 					}
-
 					var url = '/branch/' + branch_id;
 					var data = {
 						forum_type : forum_type
@@ -282,6 +285,8 @@ var branchManage = {
 	updateForumType : function(data) {
 		var obj = jQuery.parseJSON(data);
 		if (obj.forum.length>0) {
+		  jQuery(".TabbedPanelsTab").removeClass('TabbedPanelsTabSelected');
+		  jQuery("#" + obj.forum).addClass('TabbedPanelsTabSelected');
 		  jQuery("#forum_type_" + obj.forum).prop('checked', true);
 		  jQuery('#go-template').attr('href', "/templates?branch=" + obj.branch);
 		  jQuery('#go-template').show();
@@ -290,7 +295,8 @@ var branchManage = {
 		    jQuery('#go-template-result').show();
 		  }
 		} else {
-		  jQuery("[id*='forum_type_']").prop('checked', false);
+		  // jQuery("[id*='forum_type_']").prop('checked', false);
+		  jQuery(".TabbedPanelsTab").removeClass('TabbedPanelsTabSelected');
 		  jQuery("[id^='go-template']").hide();
 		}
 	},

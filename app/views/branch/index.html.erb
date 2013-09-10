@@ -1,20 +1,19 @@
-<div id="branch" class="float-left"> 
-  <input type="hidden" name="todo" value="" />
-  <% options = Branch.where("is_active=1").map{|b| [b.name, b.id]}
-     options.unshift ["--Select Branch--","0"] %>
-  <p>Select Branch</p>
-  <%= select_tag 'record[id]', options_for_select(options, '0'), :style=>'' %>
-  <p>  
-  <p>
-    <%= submit_tag 'Create Branch', :id=>"create", :class=>"btnAction" %>
-  </p>
-  <p>
-  <%= radio_button_tag 'forum_type', 'report' %>&nbsp;Report
-  <%= radio_button_tag 'forum_type', 'bulletin' %>&nbsp;Bulletin Board
-		<%= radio_button_tag 'forum_type', 'vote' %>&nbsp;Vote/Poll
-
-  </p>
-  <p id="return-msg" class="notice"></p>
+<div id="branch" class="module branch-configuration">
+  <h2>Branch Configuration</h2>
+  <div class="select-branch">
+    <h4>Select Branch</h4>
+    <form action="" method="get">
+						<% options = Branch.where("is_active=1").map{|b| [b.name, b.id]}
+         options.unshift ["--Select Branch--","0"] %>
+      <%= select_tag 'record[id]', options_for_select(options, '0'), :style=>'' %>
+    </form>
+				<%= submit_tag 'Create New Branch', :id=>"create", :class=>"create-branch ZbtnAction" %>
+  </div>
+		<div id="new-branch" class="float-left">
+  
+  </div>
+		
+		<p id="return-msg" class="notice"></p>
   <p>
   <a id="go-template" class="go-template" href="/templates">Edit Forum</a>
 		</p>
@@ -22,13 +21,39 @@
 			<% warn = "Creating a Forum Result template indicates the Vote/Poll is ended. Continue?" %>
 		<a id="go-template-result" class="go-template" onclick="return confirm('<%= warn %>')" href="/templates">Edit Forum Result</a>
   </p>
-</div>
-<div id="new-branch" class="float-left">
-  
-</div>
 
+
+  <div id="TabbedPanels1" class="TabbedPanels">
+    <ul class="TabbedPanelsTabGroup">
+      <li id="report" class="TabbedPanelsTab listen" tabindex="0">
+        <a href="#">Report</a>
+      </li>
+      <li id="vote" class="TabbedPanelsTab publish" tabindex="0">
+        <a href="#">Participate</a>
+      </li>
+      <li id="bulletin" class="TabbedPanelsTab syndicate" tabindex="0">
+        <a href="#">Ask the Community</a>
+      </li>
+    </ul>
+				<!--
+    <div class="TabbedPanelsContentGroup">
+      <div class="TabbedPanelsContent">
+        Report
+      </div>
+      <div class="TabbedPanelsContent">
+        Participate
+      </div>
+      <div class="TabbedPanelsContent">
+        Ask the Community
+      </div>
+    </div>
+				-->
+  </div>
+</div>
+</div>
 <script>
-  jQuery(document).ready(function () { 
-    branchManage.init();
+  jQuery(document).ready(function(){
+      branchManage.init();
+      // var TabbedPanels1 = new Spry.Widget.TabbedPanels("TabbedPanels1");
   });
 </script>
