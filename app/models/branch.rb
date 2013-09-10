@@ -52,6 +52,18 @@ class Branch< ActiveRecord::Base
     Event.select("branch_id, max(created_at) as created_at").
       group(:branch_id).order("created_at desc").limit(3)
   end
+  
+  def forum_type_ui
+      case self.forum_type
+      when 'vote'
+        'Participate'
+      when 'bulletin'
+        'Ask the community'
+      else
+        self.forum_type.titleize
+      end
+  end
+    
 #  has_and_belongs_to_many :users
   
   belongs_to :country, :foreign_key=>"country_id"

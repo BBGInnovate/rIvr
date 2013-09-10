@@ -224,6 +224,7 @@ var branchManage = {
 			var branch_id = this.value;
 			var url = '/branch/' + branch_id;
 			var data = {};
+			jQuery('#return-msg').html('');
 			jQuery.get(url, data, branchManage.updateForumType, 'html');
 		});
 		jQuery("#frm-new-branch").on('click', "#save", function(e) {
@@ -270,7 +271,7 @@ var branchManage = {
 					jQuery.get(url, data, function(data) {
 						var obj = jQuery.parseJSON(data);
 						jQuery('#return-msg').html(
-								"Forum Type changed to " + obj.forum.titleize());
+								"Forum Type changed to " + obj.forum_ui.titleize());
 						jQuery('#go-template').show();
 						jQuery('#go-template').attr('href',"/templates?branch=" + obj.branch);
 						if (forum_type=="poll" || forum_type=="vote") {

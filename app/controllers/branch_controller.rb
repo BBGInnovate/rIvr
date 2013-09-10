@@ -13,7 +13,7 @@ class BranchController < ApplicationController
       @branch.save
      # render :text=>branch.forum_type and return 
     end
-    text=%{{"forum":"#{@branch.forum_type}", "branch":"#{@branch.name}"}}
+    text=%{{"forum":"#{@branch.forum_type}","forum_ui":"#{@branch.forum_type_ui}", "branch":"#{@branch.name}"}}
     render :text =>text ,:content_type=>'application/text',:layout=>false and return
 
   end

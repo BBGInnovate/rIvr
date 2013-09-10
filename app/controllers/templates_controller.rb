@@ -165,14 +165,7 @@ class TemplatesController < ApplicationController
     end
   end
   def forum_type(branch)
-    case branch.forum_type
-    when 'vote'
-      'Participate'
-    when 'bulletin'
-      'Ask the community'
-    else
-      t.titleize
-    end
+    branch.forum_type_ui
   end
   helper_method :forum_type
   
