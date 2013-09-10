@@ -206,6 +206,12 @@ var reportUpload = {
 
 var branchManage = {
 	init : function() {
+	  var branch_id = $("#record_id").val()
+	  if (branch_id > 0 ) {
+	    var url = '/branch/' + branch_id;
+      var data = {};
+      jQuery.get(url, data, branchManage.updateForumType, 'html');
+	  };
 		jQuery("#branch").on('click', "#create", function(e) {
 			var name = this.id;
 			var url = '/branch/new';

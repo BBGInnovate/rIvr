@@ -1,9 +1,9 @@
 <div id="forum-template" class="float-left">
-  <h2><%= @branch.forum_type.titleize %></h2>
+	 <span class="back-button"><a href="/branch?branch=<%=@branch_name%>">Back To Branch Configure</a></span>
+  <h2><%= forum_type(@branch) %></h2>
   <input type="hidden" name="branch" id="branch-name" value="<%=@branch_name%>" />
   <!-- <div id="introduction" class="square">Intro</div> -->
   <%= render :partial => @temp_partial %>
-
 </div>
 <div id="forum-upload" class="float-left">
   

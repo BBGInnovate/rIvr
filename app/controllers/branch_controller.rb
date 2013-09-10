@@ -1,6 +1,10 @@
 class BranchController < ApplicationController
   def index
-    @branch = nil
+    if params[:branch]
+      @branch = Branch.find_by_name params[:branch]
+    else
+      @branch = nil
+    end
   end
   def show
     @branch= Branch.find_me(params[:id])

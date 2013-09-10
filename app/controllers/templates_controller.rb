@@ -15,7 +15,7 @@ class TemplatesController < ApplicationController
       @headline="Headline News"
       @goodbye="Goodbye"
     elsif @branch.forum_type == 'bulletin'
-      @question="Bulletin Board"
+      @question="Ask the community"
       @listen_bulletin="Listen Message"
       @record_bulletin="Record Message"
     elsif @branch.forum_type == 'poll'
@@ -28,7 +28,7 @@ class TemplatesController < ApplicationController
       if params[:result].to_i == 1
         @question="Results"
       else
-        @question="Vote/Poll"
+        @question="Participate"
       end  
     end
     @temp_partial = @branch.forum_type
@@ -65,14 +65,14 @@ class TemplatesController < ApplicationController
       @headline="Headline News"
       @goodbye="Goodbye"
     elsif branch.forum_type == 'bulletin'
-      @question="Bulletin Board"
+      @question="Ask the community"
       @listen_bulletin="Listen Message"
       @record_bulletin="Record Message"
     elsif branch.forum_type == 'vote'
       if params[:result].to_i == 1
         @question="Results"
       else
-        @question="Vote/Poll"
+        @question="Participate"
       end  
     end
 #    if !!@template && !!@template.dropbox_file
@@ -164,4 +164,16 @@ class TemplatesController < ApplicationController
             
     end
   end
+  def forum_type(branch)
+    case branch.forum_type
+    when 'vote'
+      'Participate'
+    when 'bulletin'
+      'Ask the community'
+    else
+      t.titleize
+    end
+  end
+  helper_method :forum_type
+  
 end

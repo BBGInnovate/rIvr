@@ -41,18 +41,6 @@ class Branch< ActiveRecord::Base
      end
   end
     
-  def forum_type
-    t = read_attribute(:forum_type) 
-    case t
-    when 'vote'
-      'Participate'
-    when 'bulletin'
-      'Ask the community'
-    else
-      t
-    end
-  end
-  
   def contact
     read_attribute(:contact) ||  'undefined'
   end

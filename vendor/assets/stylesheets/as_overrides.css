@@ -250,6 +250,7 @@ input.btnAction:hover {
   height: 100px;
   line-height: 100px;
   margin: 0 20px 10px 0;
+		font-size: 24px;
 }
 #forum-upload {
   width: 480px;
@@ -323,7 +324,10 @@ img.red-light, img.green-light {
 .TabbedPanels ul li {
     border: 1px solid #CCCCCC;
 }
-
+.back-button {
+	 margin: 20px 0 0 0;
+	 font-size: 15px;
+}
 /*
 a.soundcloud:hover {
   background-color:yellow;
