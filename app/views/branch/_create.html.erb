@@ -12,6 +12,22 @@
   <label for="branch_name">Name </label>
   <%= f.text_field :name, :placeholder=>"myBranch" %>
   <p></p>
+		<label for="country_flag_url">Country Flag URL </label>
+  <%= f.text_field :country_flag_url, :placeholder=>"" %>
+  <p></p>
+		<label for="latitide">Latitude</label>
+  <%= f.text_field :latitude, :placeholder=>"" %>
+  <p></p>
+		<label for="longitude">Longitude </label>
+  <%= f.text_field :longitude, :placeholder=>"" %>
+  <p></p>
+		<label for="contact">Contact </label>
+  <%= f.text_field :contact, :placeholder=>"" %>
+  <p></p>
+		<label for="ivr_call_number">IVR Call Number </label>
+  <%= f.text_field :ivr_call_number, :placeholder=>"" %>
+  <p></p>
+		
   <label for="branch_forum_type">Forum&nbsp;Type </label>
   <% options = forum_options %>
   <%= f.select :forum_type, options_for_select(options, 0), :style=>'' %>
