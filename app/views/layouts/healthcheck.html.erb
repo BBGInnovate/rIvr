@@ -17,35 +17,27 @@
         <%= render :partial=>'shared/side_nav' %>
       </nav>
       <!-- End Left side nav --><!--Module is the container class of the right content area -->
-      <div class="module">
-      	
-							<% if @controller == 'home' %>
-        <!--Start Branch Caller and Activity Area-->
+      <div class="module health">
+        <!--Start Branch Caller and Activity Area--
         <div class="controls">
-          <%= render :partial=>'shares/header' %>
+          <%#= render :partial=>'shared/header' %>
         </div>
-        <!--End Branch Caller and Activity Area-->
-								<% elsif @controller == 'healthcheck' %>
-								   <%= render :partial=>'remote_desktop'%>
-								<% end %>
+        --End Branch Caller and Activity Area-->
+								<%= render :partial=>'remote_desktop'%> 
 								<!-- Put your map tool here. -->
 								<div class="content" id="content">
-									<p class="notice">
-          <%= notice %>
-         </p>
-         <p class="alert">
-          <%= alert %>
-        </p>
+          <p class="alert"><%= alert %></p>
+								  <h2>Health Check</h2>
+										  
           <%= yield %>
         </div>
 								
-								<% if @controller == 'home' %>
+								
 								<!-- Start Activity area. This area set to have a top margin of 20px. -->
         <div class="activity">
-           <%= render :partial=>'shared/activity' %>			
+           <%#= render :partial=>'activity' %>
         </div>
         <!-- End Activity area -->
-								<% end %>
       </div>
       <!-- End Module -->
     </div>

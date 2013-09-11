@@ -9,6 +9,8 @@ class Health< ActiveRecord::Base
   # # this command will run at 12:05, 1:05, etc.
   # 5 * * * * export RAILS_ENV=staging && cd /data/ivr/current && rails runner  "Health.send_notification" >/dev/null 2>&1
   def self.send_notification
+    Health.populate
+    
     sms_fu = SMSFu::Client.configure(:delivery => :action_mailer)
     Health.all.each do |h|
       next if !h.last_event
@@ -16,6 +18,11 @@ class Health< ActiveRecord::Base
       hours = seconds/3600.to_i
       minutes = (seconds/60 - hours * 60).to_i
       if h.send_alarm && ( seconds > h.no_activity*3600)
+        branch = Branch.find_by_id h.branch_id
+        if branch
+          branch.status = "No Activity"
+          branch.save
+        end
         message = "Branch #{h.branch.name}: No Activity For #{hours} hours and #{minutes} minutes"
         if h.deliver_method == "email"
           if h.email
@@ -43,6 +50,29 @@ class Health< ActiveRecord::Base
      self.send_alarm && (mail || text)
   end
   
+  
+  def self.populate
+        sql = "SELECT t1.id, branch_id, action_id, created_at FROM events as t1 JOIN (SELECT MAX(id) id FROM events WHERE action_id != #{Action.ping_server} GROUP BY branch_id) as t2 ON t1.id = t2.id;"
+        events1 = Health.connection.execute sql
+        # next to find ping server event
+        sql2 = "SELECT t1.id, branch_id, action_id, created_at FROM events as t1 JOIN (SELECT MAX(id) id FROM events WHERE action_id = #{Action.ping_server} GROUP BY branch_id) as t2 ON t1.id = t2.id;"
+        events2 = Health.connection.execute sql2
+        events = events1.to_a + events2.to_a
+        actions = Action.all
+        Health.truncate
+        events.each do |e|
+          br  = Branch.find_me e[1]
+          next if (!br || !br.is_active)
+          act = actions.select{|a| a.id==e[2]}[0]
+          b = Health.find_by_event_id e[0]
+          if b && act
+            b.update_attributes :event_id=>e[0], :last_event=>e[3], :event=>act.name
+          elsif act && act.id != Action.ping_server
+            Health.create :branch_id=>e[1], :event_id=>e[0], :last_event=>e[3], :event=>act.name
+          end
+        end
+ end
+      
   def self.truncate
       connection.execute "truncate table #{table_name}"
   end

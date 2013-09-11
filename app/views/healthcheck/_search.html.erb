@@ -1,0 +1,55 @@
+<!--Analytics and health care search results box-->
+<div class="search-results">
+  <h3>Find Branch</h3>
+  <form action="">
+    <input name="branch[search]" type="radio" value="country" checked>
+    <label>
+      Country
+    </label>
+    <input name="branch[search]" type="radio" value="name">
+    <label>
+      Branch Name
+    </label>
+    <input name="branch[search]" type="radio" value="status">
+    <label>
+      Status
+    </label>
+    <input name="search_term" type="text" value="Search"><input name="search" type="button" value="Search">
+  </form>
+  <table>
+    <thead>
+      <tr>
+        <th>
+          Branch Name
+        </th>
+        <th>
+          Status
+        </th>
+        <th>
+          Country/Location
+        </th>
+        <th>
+          Contact
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+    	<% @branches.each do |branch|%>
+      <tr>
+        <td>
+          <%= branch.name%>
+        </td>
+        <td>
+          <%= branch.health_image.html_safe %>
+        </td>
+        <td>
+          <%= branch.country.name%>
+        </td>
+        <td>
+          <%= branch.contact%>
+        </td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+ </div><!-- End Analytics and health care search results box --> 

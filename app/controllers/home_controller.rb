@@ -3,6 +3,8 @@ class HomeController < ApplicationController
   include HomeHelper
 
   def index
+#    puts "AAAAA " +request.inspect
+#    puts "BBBBB " + request.filtered_parameters['controller']
     started = Branch.message_time_span.days.ago.to_s(:db)
     ended = Time.now.to_s(:db)
     @alerts = Stat.new(started, ended).alerted

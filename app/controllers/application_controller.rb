@@ -49,5 +49,7 @@ class ApplicationController < ActionController::Base
        @alerts = Stat.new(started, ended).alerted
        @messages = Stat.new(started, ended).messages
        @calls = Stat.new(started, ended).number_of_calls
+       @controller = request.filtered_parameters['controller']
+       puts "AAAAA #{@controller}"
   end
 end

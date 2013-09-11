@@ -50,9 +50,9 @@ var homePage = {
         // var name = this.id;
         // var url = '/'+name;
         var url = $(this).attr("data-url");
-        //window.location = url;
-        var data = {ajax: 1};
-        jQuery.get(url, data, homePage.update, 'html');
+        window.location = url;
+        // var data = {ajax: 1};
+        // jQuery.get(url, data, homePage.update, 'html');
         return false
       });
     },
@@ -224,6 +224,7 @@ var branchManage = {
 			var branch_id = this.value;
 			var url = '/branch/' + branch_id;
 			var data = {};
+			// reset the notice msg
 			jQuery('#return-msg').html('');
 			jQuery.get(url, data, branchManage.updateForumType, 'html');
 		});

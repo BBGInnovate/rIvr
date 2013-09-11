@@ -74,13 +74,10 @@ class Branch< ActiveRecord::Base
   end
   def health_image
     if unhealth?
-      img = '/assets/red.png'
-      klass  = "red-light"
+      %{<img class="red-light" width="15" height="15" src="/assets/red.png" />}
     else
-      img = '/assets/green.png'
-      klass = "green-light"
+      %{<img src="/assets/images/icon-analytics.png" width="23" height="21" alt="radio signal" />}
     end  
-    img_tag = %{<img class="#{klass}" width="15" height="15" src="#{img}" />}
   end
   
   has_many :alerted_messages 
