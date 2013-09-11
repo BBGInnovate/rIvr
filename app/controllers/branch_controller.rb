@@ -19,9 +19,13 @@ class BranchController < ApplicationController
   end
   def new
       flash[:notice] = nil
-      @branch = Branch.new
+      if params[:branch_id]
+        @branch = Branch.find_by_id(params[:branch_id]) || @branch = Branch.new
+      else
+        @branch = Branch.new
+      end
       render :layout=>false # 'templates'
-    end
+  end
   
     def create
       temp = params[:branch]

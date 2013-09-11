@@ -1,5 +1,5 @@
 <div id="template-popup" class="template-popup">
-<h2>Create Branch</h2>
+<h2 id="create-branch">Create Branch</h2>
 <%= form_for @branch, :url=> "/branch", :html => {:method=>'post',:multipart => true, :id=>"frm-new-branch"} do |f| %>
 <div class="inputSpacing">
   <div class='error'>
@@ -27,7 +27,9 @@
 		<label for="ivr_call_number">IVR Call Number </label>
   <%= f.text_field :ivr_call_number, :placeholder=>"" %>
   <p></p>
-		
+		<label for="client_ip_address">Client IP Address </label>
+  <%= f.text_field :client_ip_address, :placeholder=>"" %>
+  <p></p>
   <label for="branch_forum_type">Forum&nbsp;Type </label>
   <% options = forum_options %>
   <%= f.select :forum_type, options_for_select(options, 0), :style=>'' %>

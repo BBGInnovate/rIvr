@@ -1,0 +1,105 @@
+<style>
+  .error {
+  padding: 10px 0 12px 20px;
+  display: block;
+  font-size: 12px;
+  color:red;
+  display: block;
+}
+
+@-moz-document url-prefix() {	
+	#reports .btnWrapper #format-html {
+		width: 177px;
+	}
+}
+</style>
+
+<section>
+  <div id="reports">
+    <div id="reportGenerate" class="section1">
+      <div class="innerPadd">
+		<div class="error">
+		  <%= flash[:error] %>
+		</div>
+        <h1 class="innerTitle"><span class="color1">reports</span> center</h1>
+        <h2 class="btnAction"><%= @charity.name %></h2>
+        <% form_tag("#{@path}", :method => :get) do %>
+           <%= hidden_field_tag "authenticity_token", "#{form_authenticity_token}" %>
+           <input type="hidden" id='charity' name='charity' value="<%= @charity.id %>" />
+          <div class="inputSpacing singleLine">
+            <label for="txtDateStart">
+              Select Report Start Date:
+            </label>
+            <input type="text" name="start_date" id="start_date" value="<%= @start_date.strftime('%m/%d/%Y')%>" class="inpBorder radius inputType" />
+
+            <div class="clear">
+            </div>
+          </div>
+          <div class="inputSpacing singleLine">
+            <label for="txtDateStart">
+              Select Report End Date:
+            </label>
+            <input type="text" name="end_date" id="end_date" value="<%= @end_date.strftime('%m/%d/%Y')%>" class="inpBorder radius inputType" />
+
+            <div class="clear">
+            </div>
+          </div>
+
+          <div class="btnWrapper">
+            <input type="submit" id="format-csv" class="btnAlt" value="Export to CSV" />
+            <input type="submit" id="format-html" class="btnAlt" value="View HTML Version" />
+          </div>
+        <% end %>
+      </div>
+    </div>
+    <div id="reportRev" class="section2">
+      <div class="innerPadd">
+        <h1>revenue report</h1>
+        <h2><%= @charity.name %></h2>
+        <div id="reportList1" class="list">
+          <div class="col1">
+            <span>Total Donations to Date:</span>
+          </div>
+          <div class="col2">
+            <span><%= @charity.donations[0] %></span>
+          </div>
+          <div class="clear">
+          </div>
+        </div>
+        <div id="reportList2" class="list">
+          <div class="col1">
+            <span>Total Donations this Month:</span>
+          </div>
+          <div class="col2">
+            <span><%= @charity.donations[1] %></span>
+          </div>
+          <div class="clear">
+          </div>
+        </div>
+        <div id="reportList3" class="list">
+          <div class="col1">
+            <span>Total Number of Donations:</span>
+          </div>
+          <div class="col2">
+            <span><%= @charity.donations[2] %></span>
+          </div>
+          <div class="clear">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="clear">
+    </div>
+  </div>
+</section>
+<script type="text/javascript">
+  jQuery(document).ready( function() {
+    $("#start_date,#end_date").datepicker({
+      showOn: 'button',
+      buttonImage: '/images/members/iconCalendar.png',
+      buttonImageOnly: true
+    });
+    submitCharityReport.init();
+    // cancelCharityReport.init();
+  });
+</script>

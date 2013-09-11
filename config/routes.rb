@@ -5,7 +5,12 @@ TestIvr::Application.routes.draw do
   use_doorkeeper
 
   root :to => "home#index"
-  resources :healthcheck
+  resources :healthcheck do
+    collection do
+      get :search
+      get :branch
+    end
+  end
   
   resources :reports 
   resources :api do

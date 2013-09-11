@@ -60,6 +60,38 @@ var homePage = {
       $('#'+homePage.anchorId).html(data);
     }
 }
+var search = {
+    init : function(content_id) {
+      jQuery("body").on('click', "input[name='search']", function(e) {
+        var op = jQuery('input:radio[name="branch[search]"]:checked').val();
+        var term = jQuery('input[name="term"]').val();
+        var data = {ajax: 1, search_for: op, term: term};
+        var url = "/healthcheck/search"
+        jQuery.get(url, data, search.update, 'html');
+        return false
+      });
+      jQuery("body").on('change', "#remote-desktop-select", function(e) {
+        var branch_id = this.value;
+        var data = {ajax: 1, branch_id: branch_id};
+        var url = "/healthcheck/branch"
+        jQuery.get(url, data,search.remoteDesktop, 'html');
+        return false
+      });
+    },
+    update : function(data) {
+      $('#search-results-id').html(data);
+    },
+    remoteDesktop : function(data) {
+      var radios = $("input[name='remote-desktop']");
+      if (data.length>6) {
+        $('#ip-address').text(data); 
+        radios[0].checked = true;
+      } else {
+         $('#ip-address').text('');
+         radios[1].checked = true;
+      }
+    }
+}
 var monitor = {
 	init : function() {
 		var v = jQuery("#record_deliver_method").val();
@@ -205,6 +237,7 @@ var reportUpload = {
 }
 
 var branchManage = {
+  branchAction : '',
 	init : function() {
 	  var branch_id = $("#record_id").val()
 	  if (branch_id > 0 ) {
@@ -215,13 +248,27 @@ var branchManage = {
 		jQuery("#branch").on('click', "#create", function(e) {
 			var name = this.id;
 			var url = '/branch/new';
-			var data = {};
+			var branch_id = $("#record_id").val();
+			var data={};
+	    if (branch_id > 0 ) {
+	      branchManage.branchAction = 'Edit Branch'
+			  data = {branch_id: branch_id}
+	    } else {
+	      branchManage.branchAction = 'Create Branch'
+	    }
 			jQuery.get(url, data, branchManage.update, 'html');
 			jQuery('#new-branch').show();
 			return false
 		});
 		jQuery("#branch").on('change', "#record_id", function(e) {
 			var branch_id = this.value;
+			if (branch_id==0) {
+			  $('#create').val('Create Branch');
+			  $(".TabbedPanelsTab").removeClass('TabbedPanelsTabSelected');
+			  $('#go-template').hide();
+			  $('#new-branch').hide();
+			  return false;
+			}
 			var url = '/branch/' + branch_id;
 			var data = {};
 			// reset the notice msg
@@ -291,6 +338,7 @@ var branchManage = {
 		});
 	},
 	updateForumType : function(data) {
+	  $('#create').val('Edit Branch');
 		var obj = jQuery.parseJSON(data);
 		if (obj.forum.length>0) {
 		  jQuery(".TabbedPanelsTab").removeClass('TabbedPanelsTabSelected');
@@ -310,6 +358,7 @@ var branchManage = {
 	},
 	update : function(data) {
 		jQuery("#new-branch").html(data);
+		$('#create-branch').html(branchManage.branchAction)
 	}
 }
 

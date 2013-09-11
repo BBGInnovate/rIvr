@@ -328,6 +328,14 @@ img.red-light, img.green-light {
 	 margin: 20px 0 0 0;
 	 font-size: 15px;
 }
+/* remote desktop */
+#remote-desktop-select {
+	 width: auto;
+		margin: 0 0 10px 0;
+}
+input[type=submit]:hover {
+  cursor: pointer; 
+}
 /*
 a.soundcloud:hover {
   background-color:yellow;

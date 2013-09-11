@@ -1,0 +1,23 @@
+<%= link_to_function("Print", "javascript:print()", :class=>"print-it") %>
+<a href="javascript:void(0);" class="back-it print-it">Back</a>
+<div class="center">
+<div class='font-big bold header-blue'><%= @klass.report_name %></div>
+<% end_date = (Time.now.zone=='UTC') ? @end_date : (@end_date-1.day) %>
+<div class='font-big bold header-blue'>From <%= @start_date.strftime('%Y-%m-%d') %> To <%= end_date.strftime('%Y-%m-%d') %></div>
+</div>
+<div id="table-wrapper">
+	<% if @klass.name =~ /BillingStatement/ %>
+     <% @n_data = billing_statement_helper(@data) %>
+     <% if @n_data.empty? %>
+       <%= table_helper @klass, @n_data, @elements %>
+     <% else %>
+       <% @n_data.each do |data| %>
+         <%= table_helper @klass, data, @elements %>
+       <% end %>
+     <% end %>
+	<% else %>
+	   <%= table_helper @klass, @data, @elements %>
+	<% end %>
+</div>
+
+

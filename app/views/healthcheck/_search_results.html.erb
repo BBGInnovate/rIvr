@@ -1,0 +1,16 @@
+<% @branches.each do |branch|%>
+      <tr>
+        <td>
+          <%= branch.name%>
+        </td>
+        <td>
+          <%= branch.health_image.html_safe %>
+        </td>
+        <td>
+          <%= branch.country.name%>
+        </td>
+        <td>
+          <%= branch.contact%>
+        </td>
+      </tr>
+<% end %>

@@ -14,7 +14,8 @@
     <label>
       Status
     </label>
-    <input name="search_term" type="text" value="Search"><input name="search" type="button" value="Search">
+    <input name="term" type="text" placeholder="Search Term">
+				<input name="search" type="button" value="Search">
   </form>
   <table>
     <thead>
@@ -33,23 +34,9 @@
         </th>
       </tr>
     </thead>
-    <tbody>
-    	<% @branches.each do |branch|%>
-      <tr>
-        <td>
-          <%= branch.name%>
-        </td>
-        <td>
-          <%= branch.health_image.html_safe %>
-        </td>
-        <td>
-          <%= branch.country.name%>
-        </td>
-        <td>
-          <%= branch.contact%>
-        </td>
-      </tr>
-    <% end %>
+    <tbody id="search-results-id">
+    	<%= render :partial=>'search_results' %>
     </tbody>
   </table>
  </div><!-- End Analytics and health care search results box --> 
+	

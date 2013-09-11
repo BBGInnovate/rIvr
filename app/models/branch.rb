@@ -60,7 +60,7 @@ class Branch< ActiveRecord::Base
       when 'bulletin'
         'Ask the community'
       else
-        self.forum_type.titleize
+        !!self.forum_type ? self.forum_type.titleize : ''
       end
   end
     

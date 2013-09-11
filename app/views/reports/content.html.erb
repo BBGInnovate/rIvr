@@ -1,0 +1,35 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:og="http://ogp.me/ns#" xmlns:fb="http://www.facebook.com/2008/fbml">
+<head profile="http://www.w3.org/2005/10/profile">
+<title></title>
+<meta name="robots" content="noindex,nofollow">
+<%= stylesheet_link_tag "/stylesheets/report/report.css", :media => 'all' %>
+<%= stylesheet_link_tag('/stylesheets/report/print.css', :media => :print) %>
+<script type="text/javascript" src="/javascripts/members/jquery-1.9.1.min.js"></script>
+<%= javascript_include_tag 'members/application.js' %>
+</head>
+<body>
+<%= hidden_field_tag :billing, @billing %>
+<%= hidden_field_tag :org, @organization %>
+<%= hidden_field_tag :start_date, @start_date.strftime('%m/%d/%Y') %>
+<%= hidden_field_tag :end_date, @end_date.strftime('%m/%d/%Y') %>
+<%= hidden_field_tag :charity, @charity_id %>
+<%= hidden_field_tag :transaction_type, @transaction_type %>
+<%= hidden_field_tag "authenticity_token", "#{form_authenticity_token}" %>
+		
+<div id="report-wrapper">
+<% if @klass.name =~ /AchTransaction/ 
+     #placeholder in case future change needed
+     html = render(:partial => 'transaction')
+   else
+     html = render(:partial => 'transaction')
+   end %>
+<%= html %>
+</div>
+<script type="text/javascript">
+  jQuery(document).ready( function() {
+    submitCharityReport.init();
+  });
+</script>
+</body>
+</html>
+

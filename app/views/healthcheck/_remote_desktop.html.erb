@@ -2,12 +2,20 @@
 <div class="remote-desktop">
   <h4>Remote Desktop</h4>
   <form action="" method="get">
+  	 <% options = Branch.where("is_active=1").map{|b| [b.name, b.id]}
+      options.unshift ["--Select Branch","-1"] %>
+    <%= select_tag 'branch', options_for_select(options, 0), :id=>'remote-desktop-select' %>
     <label>
-      <input name="remote-desktop" type="radio" id="remote-desktop_0" value="yes" checked> Yes
+      <input name="remote-desktop" type="radio" id="remote-desktop_0" value="yes" /> Yes
     </label>
-    <br>
     <label>
-      <input type="radio" name="remote-desktop" value="no" id="remote-desktop_1">No
+      <input type="radio" name="remote-desktop" value="no" id="remote-desktop_1"  />No
     </label>
   </form>
+		<br/>Client IP:
+		<br/><span id="ip-address"></span>
 </div><!--End Remote Desktop Area-->
+<div>
+	
+	
+</div>
