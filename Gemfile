@@ -24,6 +24,7 @@ gem "file-column", "~> 0.3.2"
 gem 'gmaps4rails'
 # gem "rails3-restful-authentication", "~> 3.0.1"
 gem 'devise', "~> 3.1.0"
+gem 'kaminari'
 
 # Gems used only for assets and not required
 # in production environments by default.
