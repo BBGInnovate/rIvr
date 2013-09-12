@@ -53,17 +53,31 @@ class Branch< ActiveRecord::Base
       group(:branch_id).order("created_at desc").limit(3)
   end
   
+  def self.forum_type_ui(forum_type)
+      case forum_type
+      when 'vote'
+        'Vote or Poll (Engage)'
+      when 'bulletin'
+        'Ask the community (Connect)'
+      when 'report'
+        'News Report (inform)'
+      else
+        ''
+      end
+  end
   def forum_type_ui
       case self.forum_type
       when 'vote'
-        'Participate'
+        'Vote or Poll (Engage)'
       when 'bulletin'
-        'Ask the community'
+        'Ask the community (Connect)'
+      when 'report'
+        'News Report (inform)'
       else
-        !!self.forum_type ? self.forum_type.titleize : ''
+        ''
       end
   end
-    
+  
 #  has_and_belongs_to_many :users
   
   belongs_to :country, :foreign_key=>"country_id"
