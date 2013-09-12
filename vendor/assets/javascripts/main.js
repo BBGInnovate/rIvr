@@ -61,7 +61,7 @@ var homePage = {
     }
 }
 var search = {
-    init : function(content_id) {
+    init : function() {
       jQuery("body").on('click', "input[name='search']", function(e) {
         var op = jQuery('input:radio[name="branch[search]"]:checked').val();
         var term = jQuery('input[name="term"]').val();
@@ -90,6 +90,23 @@ var search = {
          $('#ip-address').text('');
          radios[1].checked = true;
       }
+    }
+}
+var searchEntry = {
+    init : function() {
+      jQuery("body").on('click', "input[name='search']", function(e) {
+        var op = jQuery('input:radio[name="moderation"]:checked').val();
+        var date = jQuery('input[name="date"]').val();
+        var branch = jQuery('input[name="branch"]').val();
+        var location = jQuery('input[name="location"]').val();
+        var data = {ajax: 1, search_for: op, date: date, branch:branch,location:location};
+        var url = "/moderation/search"
+        jQuery.get(url, data, searchEntry.update, 'html');
+        return false
+      });
+    },
+    update : function(data) {
+      $('#search-results-id').html(data);
     }
 }
 var monitor = {

@@ -151,6 +151,15 @@ class EntriesController < ApplicationController
     
   protected
 
+  # Overrides the standard delete functionality for ActiveScaffold so that 
+  # records are removed by being marked as "Inactive" rather than being 
+  # physically deleted.
+  def do_destroy
+    @record = Entry.find_by_id(params[:id])
+    @record.is_active = false
+    self.successful = @record.save
+  end
+      
   def contenttype(file)
     arr = file.split(".")
     if arr.last == "wav"

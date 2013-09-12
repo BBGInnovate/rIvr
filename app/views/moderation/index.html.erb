@@ -1,0 +1,68 @@
+<style>
+	.ui-datepicker-trigger {
+    vertical-align: middle;
+    line-height: 24px;
+    margin-left: 5px;
+    width: 20px;
+    height: 20px;
+  }
+  input[type="text"] {
+    width: 60px;
+  }
+  button {
+      padding: 3px;
+      display: inline-block;
+      cursor: pointer;
+      font: 16px / 18px Arial, Helvetica, sans-serif;
+      color: #fff;
+      background-color: #ccc;
+      border-radius: 5px;
+      box-shadow: #999 1px 1px 3px;
+      border: 1px solid white;
+      text-shadow: 1px -1px 2px #aaa9a9 !important;
+  }
+  
+  button:hover {
+      color: #666;
+  }
+		
+.mbMiniPlayer.mySkin table span.map_play{border-left:1px solid #333333;}
+.mbMiniPlayer.mySkin table span.map_volume{border-right:1px solid #000000;}
+.mbMiniPlayer.mySkin table span.map_volume.mute{color: #cccccc;}
+.mbMiniPlayer.mySkin .map_download{color: #e5ac24;}
+.mbMiniPlayer.mySkin .map_download:hover{color: #000000;}
+.mbMiniPlayer.mySkin table span{color: #fbcc28;text-shadow: 1px -1px 1px #000!important;}
+.mbMiniPlayer.mySkin table span{color: #fbcc28;}
+.mbMiniPlayer.mySkin table {border: 1px solid #fbcc28 !important;}
+.mbMiniPlayer.mySkin table span.map_title{color: #000; text-shadow:none!important}
+</style>
+<h2>Moderation</h2>
+<h3>Moderate Messages</h3>
+<div id="TabbedPanels1" class="TabbedPanels moderation-tools">
+  <ul class="TabbedPanelsTabGroup">
+    <li class="TabbedPanelsTab listen" tabindex="0">
+      <a href="#" class="listen">Listen</a>
+    </li>
+    <li class="TabbedPanelsTab publish" tabindex="0">
+      <a href="#" class="publish">Publish</a>
+    </li>
+    <li class="TabbedPanelsTab syndicate" tabindex="0">
+      <a href="#" class="syndicate">Syndicate</a>
+    </li>
+  </ul>
+  <div class="TabbedPanelsContentGroup">
+    <div class="TabbedPanelsContent listen">
+      <%= render :partial=>'listen' %>
+    </div>
+    <div class="TabbedPanelsContent publish">
+      <%= render :partial=>'publish' %>
+    </div>
+    <div class="TabbedPanelsContent syndicate">
+      <%= render :partial=>'syndicate' %>
+    </div>
+  </div>
+</div>
+<!-- Start Search results box. --><!-- This box can be modified and used in other sections of the site. A form is used so that the radio buttons and search feature can work, but the functionality of the search feature is left up to Liwen to accomplish. --><!--Moderation search results box-->
+<%= render :partial=>'search' %>
+
+<!-- End Moderation search results box -->

@@ -17,7 +17,7 @@
         <%= render :partial=>'shared/side_nav' %>
       </nav>
       <!-- End Left side nav --><!--Module is the container class of the right content area -->
-      <div class="module">
+      <div class="module <%= @controller %>">
       	
 							<% if @controller == 'home' %>
         <!--Start Branch Caller and Activity Area-->

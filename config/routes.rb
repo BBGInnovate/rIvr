@@ -11,7 +11,13 @@ TestIvr::Application.routes.draw do
       get :branch
     end
   end
-  
+  resources :moderation do
+      collection do
+        get :search
+        get :branch
+      end
+  end
+    
   resources :reports 
   resources :api do
     collection do

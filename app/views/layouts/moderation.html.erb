@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<head>
+	<meta charset="utf-8">
+	<title>BBG IVR: Moderation</title>
+	<%= stylesheet_link_tag    "application", :media => "all" %>
+ <%= javascript_include_tag 'application.js' %>
+ <%#= javascript_include_tag 'main.js' %>
+ <%= stylesheet_link_tag "all" %>
+	
+	<%= stylesheet_link_tag "SpryTabbedPanels.css" %>
+	<%= javascript_include_tag 'SpryTabbedPanels.js' %>
+	<%= stylesheet_link_tag "SpryTabbedPanels.css" %>
+	<script src="/jquery.mb.miniAudioPlayer-1.7.1/inc/jquery.jplayer.min.js?body=1" type="text/javascript"></script>
+	<script src="/jquery.mb.miniAudioPlayer-1.7.1/inc/jquery.mb.miniPlayer.js?body=1" type="text/javascript"></script>
+ <link href="/jquery.mb.miniAudioPlayer-1.7.1/css/miniplayer.css?body=1" media="screen" rel="stylesheet" type="text/css" />
+	<%= csrf_meta_tags %>
+ <%= yield :head %>
+</head>
+<body>
+    <div id="wrapper">
+    
+    <!-- Start Left side nav -->
+    	<nav id="sidebar">
+        <%= render :partial=>'shared/side_nav' %>
+		  	</nav><!-- End Left side nav -->
+
+      <!--Module is the container class of the right content area. I've added the moderation class to this div in case there are specific styles we need to add for these screens only. -->            
+		   <div class="module <%= @controller %>">
+         <div class="content" id="content">
+									<p class="notice">
+          <%= notice %>
+         </p>
+         <p class="alert">
+          <%= alert %>
+        </p>
+          <%= yield %>
+        </div>
+	  </div><!-- End Module --> 
+
+	</div><!-- End Wrapper --> 
+
+<!--This is the script to make the tabs work. It must be included right before the end body tag.-->
+<script type="text/javascript">
+  var TabbedPanels1 = new Spry.Widget.TabbedPanels("TabbedPanels1");
+		jQuery(document).ready(function(){
+			 searchEntry.init();
+    $(".audio").mb_miniPlayer({
+       width:240,
+       inLine:false,
+       id3:true
+    });
+				/*
+				$( "#start_date" ).datepicker({
+      dateFormat: "yy-mm-dd",
+      changeMonth: true,
+      changeYear: true,
+      showButtonPanel: true,
+      minDate: new Date(2013, 0, 1),
+      maxDate: '+1Y',
+      showOn: 'button',
+      buttonImageOnly: true,
+      buttonImage: 'assets/calendar.gif' });
+    $( "#end_date" ).datepicker({
+      dateFormat: "yy-mm-dd",
+      changeMonth: true,
+      changeYear: true,
+      minDate: new Date(2013, 0, 1),
+      maxDate: '+1Y',
+      showOn: 'both',
+      buttonImageOnly: true,
+      buttonImage: 'assets/calendar.gif'}); */
+  });
+</script>
+</body>
+</html>
