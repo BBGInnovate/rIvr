@@ -1,40 +1,67 @@
 class ModerationController < ApplicationController
   #  doorkeeper_for :create
   skip_before_filter :verify_authenticity_token, :only => [:create]
-
+  skip_before_filter :init
   #rails g kaminari:config
+  
+  # to deal with "HEAD true" request
+  def dummy
+    if request.head?
+        head :created
+    else
+        Rails.logger.info "Derp #{request.method}"
+    end
+  end
+  
   def index
+    @controller = request.filtered_parameters['controller']
     p = params[:page] || 1
     @entries = Entry.joins(:branch).where("branches.is_active=1").
-    order("id desc").page(p)
+    order("id desc").page(p).per(10)
+    
+    @results = @entries
   end
 
   def search
     search_for = params[:search_for]
-    date = params[:date]
-    started = Date.parse(date).beginning_of_day.to_s(:db)
-    ended = Date.parse(date).end_of_day.to_s(:db)
-    
+    start_date = params[:start_date]
+    end_date = params[:end_date]
+    forum_type = params[:forum_type]
     branch = params[:branch]
     location = params[:location]
-    conditions = ""
-    if date.size > 0
-      conditions << "events.created_at between '#{started}' AND '#{ended}'"
+     
+    p = params[:page] || 1
       
+    @entries_query = Entry.includes([:branch=>:country]).where("branches.is_active=1")
+
+    if !!start_date && !!end_date
+      conditions["entries.created_at"] = start_date..end_date
+      @entries_query = @entries_query.where("entries.created_at"=>start_date..end_date)
     end
+    if !!forum_type
+      conditions["entries.forum_type in (?)", forum_type]
+      @entries_query = @entries_query.where(["entries.forum_type in (?)", forum_type])
+    end
+    if !!branch
+       @entries_query = @entries_query.where(["branches.name like ? ", branch])
+    end
+    if !!location
+      @entries_query = @entries_query.where(["countries.name like ? ", location])
+    end   
     
     case search_for
     when 'incoming'
-      @entries = Entry.includes(:country).where(:is_active=>true).
-      where("countries.name like '%#{term}%'").all
+      @results = @entries_query.
+         where("entries.is_private=1").page(p).per(10)
     when 'published'
-      @entries = Entry.includes(:country).where(:is_active=>true).
-      where("branches.name like '%#{term}%'").all
+      @results = @entries_query.
+         where("entries.is_private=0").page(p).per(10)
     when 'deleted'
-      @enries = Entry.includes(:country).where(:is_active=>true).
-      where("branches.status like '%#{term}%'").all
+      @results = @entries_query.
+         where("entries.is_active=0").page(p)
     end
-    render :partial=>'search_results', :layout=>false, :content_type=>'text'
-
+#    headers["Content-Type"] = 'text/javascript'
+#    render :partial=>'paginate', :layout=>false, :content_type => 'text/javascript'
+    render :partial=>'search_results', :layout=>false, :content_type => 'text'
   end
 end

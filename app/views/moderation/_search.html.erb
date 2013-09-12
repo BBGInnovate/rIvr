@@ -1,51 +1,35 @@
 <div class="search-results">
   <h3>Find Messages</h3>
   <form action="">
-    <input name="moderation" type="radio" value="incoming" checked>
+    <input name="moderation" type="radio" value="incoming" checked />
     <label>
       Incoming
     </label>
-    <input name="moderation" type="radio" value="published">
+    <input name="moderation" type="radio" value="published" />
     <label>
       Published
     </label>
-    <input name="moderation" type="radio" value="deleted">
+    <input name="moderation" type="radio" value="deleted" />
     <label>
       Deleted
     </label>
     <hr/><h3>Filter by</h3>
-				<!--
-    <input name="date" type="text" placeholder="<%= Time.now.to_s(:db)[0..9] %>">
-				-->
-				
 				<p><label for="start_date">From:</label>
 				  <input type="text" class="datepicker" id="start_date" name="start_date" />
-      <label for="end_date">To:</label>
+      <span for="end_date">&nbsp;To:</span>
 				  <input type="text" class="datepicker" id="end_date" name="end_date" />
+						<span for="forum_type">&nbsp;Forum Type:</span>
+				  <%= select_tag 'forum_type', options_for_select(forum_options, 0), :size=>4,:multiple=>'multiple' %>
     </p>
+				<h3>&nbsp;</h3>
+				<p>
+				<label for="branch">Branch:</label>
 				<input name="branch" type="text" placeholder="Branch">
+				<label for="start_date">&nbsp;Location:</label>
 				<input name="location" type="text" placeholder="Location">
 				<input name="search" type="button" value="Filter">
+				</p>
   </form>
-  <table>
-    <thead>
-      <tr>
-        <th>
-          Message
-        </th>
-        <th>
-          Branch
-        </th>
-        <th>
-          Country/Location
-        </th>
-        <th>
-          Contact
-        </th>
-      </tr>
-    </thead>
-    <tbody id="search-results-id">
-      <%= render :partial=>'search_results' %>
-    </tbody>
-  </table>
+  <div id="search-results-id"><%= render :partial=>'search_results' %></div>
 </div>
+

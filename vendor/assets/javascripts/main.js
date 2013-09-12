@@ -93,13 +93,33 @@ var search = {
     }
 }
 var searchEntry = {
+    checked : null,
     init : function() {
-      jQuery("body").on('click', "input[name='search']", function(e) {
-        var op = jQuery('input:radio[name="moderation"]:checked').val();
-        var date = jQuery('input[name="date"]').val();
-        var branch = jQuery('input[name="branch"]').val();
-        var location = jQuery('input[name="location"]').val();
-        var data = {ajax: 1, search_for: op, date: date, branch:branch,location:location};
+      
+      $("body").on('click', ".pagination a", function(e) {
+        data = searchEntry.getData();
+        data.page=$(this).text();
+        var op = $('input:radio[name="moderation"]:checked').val();
+        data.search_for = op;
+        var url = "/moderation/search"
+        jQuery.get(url, data, searchEntry.update, 'html');
+        return false
+      }); 
+      
+      $("body").on('click', "input:radio[name='moderation']", function(e) {
+         data = searchEntry.getData();
+         data.search_for = this.value;
+         var op = $('input:radio[name="moderation"]:checked').val();
+         var data = {};
+         data.search_for = op;
+         var url = "/moderation/search"
+         jQuery.get(url, data, searchEntry.update, 'html');
+         return true
+      });
+      $("body").on('click', "input[name='search']", function(e) {
+        data = searchEntry.getData();
+        var op = $('input:radio[name="moderation"]:checked').val();
+        data.search_for = op;
         var url = "/moderation/search"
         jQuery.get(url, data, searchEntry.update, 'html');
         return false
@@ -107,6 +127,27 @@ var searchEntry = {
     },
     update : function(data) {
       $('#search-results-id').html(data);
+    },
+    getData : function() {
+      var start_date = $("#start_date").val();
+      var end_date = $("#end_date").val();
+      var forum_type = $("#forum_type").val();
+      var branch = $('input[name="branch"]').val();
+      var location = $('input[name="location"]').val();
+      //var op = $('input:radio[name="moderation"]:checked').val();
+      var data = {};
+      //data.search_for = op;
+      if (start_date.length>0)
+        data.start_date = start_date;
+      if (end_date.length>0)
+        data.end_date = end_date;
+      if (forum_type!=null && forum_type.length>0)
+        data["forum_type[]"] = forum_type;
+      if (branch.length>0)
+        data.branch = branch;
+      if (location.length>0)
+        data.location = location;
+      return data;
     }
 }
 var monitor = {

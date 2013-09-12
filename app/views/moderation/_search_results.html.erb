@@ -1,14 +1,43 @@
-<tr>
-        <td>
-          <a href="#" class="play"><img src="assets/images/icon-blank.png" alt="Play"></a>
-        </td>
-        <td>
-          VOA Africa
-        </td>
-        <td>
-          Zimbabwe
-        </td>
-        <td>
-          John Smith 202-455-8989
-        </td>
+<table id="search-results-id">
+<% if @results.size > 0 %>
+<%= paginate @results %>
+<thead>
+      <tr>
+        <th>Message</th>
+        <th>Branch</th>
+        <th>Country/Location</th>
+        <th>Contact</th>
       </tr>
+</thead>
+<tbody>
+<% @results.each do |e| %>
+<tr>
+   <td>
+  <a id='<%=e.id%>' class="audio2 {ogg:'http://www.miaowmusic.com/ogg/Miaow-02-Hidden.ogg',autoplay:false, inLine:true}"
+       href='/entries/<%=e.id%>/play'><%= e.dropbox_file %></a>
+   </td>
+   <td>
+      <%= e.branch.name %>
+   </td>
+   <td>
+      <%= e.branch.country.name %>
+   </td>
+   <td>
+      <%= e.branch.contact %>
+   </td>
+</tr>
+<% end %>
+</tbody>
+</table>
+<script>
+jQuery(document).ready(function(){
+    $('.audio2').mb_miniPlayer({
+       width:240,
+       inLine:false,
+       id3:true
+    });
+});
+</script>
+<% else %>
+
+<% end %>

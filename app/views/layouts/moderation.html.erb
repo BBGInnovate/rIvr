@@ -43,13 +43,13 @@
 <script type="text/javascript">
   var TabbedPanels1 = new Spry.Widget.TabbedPanels("TabbedPanels1");
 		jQuery(document).ready(function(){
+			 homePage.init("content");
 			 searchEntry.init();
     $(".audio").mb_miniPlayer({
        width:240,
        inLine:false,
        id3:true
     });
-				/*
 				$( "#start_date" ).datepicker({
       dateFormat: "yy-mm-dd",
       changeMonth: true,
@@ -59,7 +59,7 @@
       maxDate: '+1Y',
       showOn: 'button',
       buttonImageOnly: true,
-      buttonImage: 'assets/calendar.gif' });
+      buttonImage: '/assets/calendar.gif' });
     $( "#end_date" ).datepicker({
       dateFormat: "yy-mm-dd",
       changeMonth: true,
@@ -68,7 +68,7 @@
       maxDate: '+1Y',
       showOn: 'both',
       buttonImageOnly: true,
-      buttonImage: 'assets/calendar.gif'}); */
+      buttonImage: '/assets/calendar.gif'}); 
   });
 </script>
 </body>

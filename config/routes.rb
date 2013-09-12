@@ -5,6 +5,10 @@ TestIvr::Application.routes.draw do
   use_doorkeeper
 
   root :to => "home#index"
+  
+  match '/true' => 'moderation#dummy'
+  match '/moderation/true' => 'moderation#dummy'
+  
   resources :healthcheck do
     collection do
       get :search
