@@ -336,6 +336,11 @@ img.red-light, img.green-light {
 input[type=submit]:hover {
   cursor: pointer; 
 }
+/* override all.css */
+.branch-configuration .TabbedPanels ul li a {
+    height: 45px;
+}
+
 /*
 a.soundcloud:hover {
   background-color:yellow;
