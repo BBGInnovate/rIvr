@@ -17,11 +17,71 @@ class ModerationController < ApplicationController
     @controller = request.filtered_parameters['controller']
     p = params[:page] || 1
     @entries = Entry.joins(:branch).where("branches.is_active=1").
+    where(:is_private=>true, :is_active=>true).
     order("id desc").page(p).per(10)
     
+    @syndicated = Entry.joins(:branch).where("branches.is_active=1").
+        joins(:soundkloud).
+        order("id desc").page(p).per(10)
+        
     @results = @entries
   end
 
+  def edit
+    if params[:cancel]
+      redirect_to "/moderation" and return
+    end
+    
+    id = params[:id]
+    @entry = Entry.find_by_id id
+    
+    if (params[:syndicate].to_i == 1) || params[:soundcloud]
+      upload_soundlcloud
+      render :action=>'soundcloud', :layout=>false, :content_type=>'text' and return
+    elsif params[:publish].to_i == 1
+      if publish_dropbox
+        @entry.save
+        txt="{\"error\":\"info\",\"message\":\"Published to Dropbox\"}"
+      else
+        txt="{\"error\":\"error\",\"message\":\"#{@entry.errors.full_messages.first}\"}"
+      end
+      render :text=>txt,:layout=>false, :content_type=>'text' and return
+    elsif params[:delete].to_i == 1
+      @entry.is_active = 0
+      @entry.save!
+      txt="{\"error\":\"info\",\"message\":\"Message deleted\"}"
+      render :text=>txt,:layout=>false, :content_type=>'text' and return
+    else
+      txt="{\"error\":\"error\",\"message\":\"Not know what to do \"}"
+      render :text=>txt,:layout=>false, :content_type=>'text' and return
+    end
+  end
+  
+  def publish_dropbox
+    @entry.to_dropbox_public
+  end
+  
+  def upload_soundlcloud
+    if @entry.soundkloud
+       @soundcloud = @entry.soundkloud
+    else
+       @soundcloud = Soundkloud.new
+    end
+    @result = nil
+    s = params[:soundcloud]
+    if s
+       @soundcloud.title = s[:title]
+       @soundcloud.genre = s[:genre]
+       @soundcloud.description=s[:description]
+       if @soundcloud.valid?
+         @result = @entry.to_soundcloud @soundcloud
+       else
+         @result = @soundcloud.errors.full_messages
+       end
+      puts "AAAAAA #{@result}"
+    end
+  end
+  
   def search
     search_for = params[:search_for]
     start_date = params[:start_date]

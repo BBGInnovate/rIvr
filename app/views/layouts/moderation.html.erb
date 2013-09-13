@@ -10,9 +10,13 @@
 	<%= stylesheet_link_tag "SpryTabbedPanels.css" %>
 	<%= javascript_include_tag 'SpryTabbedPanels.js' %>
 	<%= stylesheet_link_tag "SpryTabbedPanels.css" %>
+
 	<script src="/jquery.mb.miniAudioPlayer-1.7.1/inc/jquery.jplayer.min.js?body=1" type="text/javascript"></script>
 	<script src="/jquery.mb.miniAudioPlayer-1.7.1/inc/jquery.mb.miniPlayer.js?body=1" type="text/javascript"></script>
- <link href="/jquery.mb.miniAudioPlayer-1.7.1/css/miniplayer.css?body=1" media="screen" rel="stylesheet" type="text/css" />
+	<link href="/jquery.mb.miniAudioPlayer-1.7.1/css/miniplayer.css?body=1" media="screen" rel="stylesheet" type="text/css" />
+	<%#= javascript_include_tag 'jquery.leanModal.min.js' %>
+	<%#= javascript_include_tag 'jquery.simplemodal.js' %>
+
 	<%= csrf_meta_tags %>
  <%= yield :head %>
 </head>
@@ -44,11 +48,13 @@
   var TabbedPanels1 = new Spry.Widget.TabbedPanels("TabbedPanels1");
 		jQuery(document).ready(function(){
 			 homePage.init("content");
+				loadSoundCloud.init();
+				// contact.init();
 			 searchEntry.init();
     $(".audio").mb_miniPlayer({
        width:240,
        inLine:false,
-       id3:true
+       id3:false
     });
 				$( "#start_date" ).datepicker({
       dateFormat: "yy-mm-dd",

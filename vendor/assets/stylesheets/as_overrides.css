@@ -336,6 +336,97 @@ img.red-light, img.green-light {
 input[type=submit]:hover {
   cursor: pointer; 
 }
+/* moderation search */
+.color-red {
+	 color: red;
+}
+.color-green {
+	 color: green;
+}
+.publish-syndicate {
+	 display: inline-block;
+		margin: 0 0 0 10px;
+}
+.publish-syndicate a:hover {
+  cursor: pointer;
+}
+.ui-datepicker-trigger {
+      vertical-align: middle;
+      line-height: 24px;
+      margin-left: 5px;
+      width: 20px;
+      height: 20px;
+  }
+  
+  .moderation input[type="text"], select {
+      width: 70px;
+  }
+  
+  .moderation select {
+      height: 50px;
+      width: 200px;
+      vertical-align: middle
+  }
+  
+  button {
+      padding: 3px;
+      display: inline-block;
+      cursor: pointer;
+      font: 16px / 18px Arial, Helvetica, sans-serif;
+      color: #fff;
+      background-color: #ccc;
+      border-radius: 5px;
+      box-shadow: #999 1px 1px 3px;
+      border: 1px solid white;
+      text-shadow: 1px -1px 2px #aaa9a9 !important;
+  }
+  
+  button:hover {
+      color: #666;
+  }
+  
+  .moderation label {
+      display: inline-block;
+      width: 50px;
+  }
+  
+  .mbMiniPlayer.mySkin table span.map_play {
+      border-left: 1px solid #333333;
+  }
+  
+  .mbMiniPlayer.mySkin table span.map_volume {
+      border-right: 1px solid #000000;
+  }
+  
+  .mbMiniPlayer.mySkin table span.map_volume.mute {
+      color: #cccccc;
+  }
+  
+  .mbMiniPlayer.mySkin .map_download {
+      color: #e5ac24;
+  }
+  
+  .mbMiniPlayer.mySkin .map_download:hover {
+      color: #000000;
+  }
+  
+  .mbMiniPlayer.mySkin table span {
+      color: #fbcc28;
+      text-shadow: 1px -1px 1px #000 !important;
+  }
+  
+  .mbMiniPlayer.mySkin table span {
+      color: #fbcc28;
+  }
+  
+  .mbMiniPlayer.mySkin table {
+      border: 1px solid #fbcc28 !important;
+  }
+  
+  .mbMiniPlayer.mySkin table span.map_title {
+      color: #000;
+      text-shadow: none !important
+  }
 /* override all.css */
 .branch-configuration .TabbedPanels ul li a {
     height: 50px;

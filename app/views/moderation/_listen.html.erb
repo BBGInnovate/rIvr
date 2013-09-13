@@ -1,9 +1,13 @@
 <% @entries.each do |e| %>
   <%= e.branch.name %> <%= e.created_at.to_s(:db) %>
-  <a id="<%=e.id%>" class="audio {ogg:'http://www.miaowmusic.com/ogg/Miaow-02-Hidden.ogg',autoplay:false, inLine:true}"
+  <a id="<%=e.id%>" class="audio {ogg:'http://www.miaowmusic.com/ogg/Miaow-07-Bubble.ogg', downloadable:false,autoplay:false, inLine:true}"
        href="/entries/<%=e.id%>/play"><%= e.dropbox_file %></a>
 		<button onclick="$('#<%=e.id%>').mb_miniPlayer_stop()">stop</button>
   <button onclick="$('#<%=e.id%>').mb_miniPlayer_play()">play</button>
-  <br/>
+		<span title="Make Dropbox file public" class="publish-syndicate"><a id='P<%= e.id %>' data-url="/moderation/<%= e.id %>/edit/?publish=1">Publish</a></span>
+		<span title="Syndicate Dropbox file to SoundCloud" class="publish-syndicate"><a id='S<%= e.id %>' data-url="/moderation/<%= e.id %>/edit/?syndicate=1">Syndicate</a></span>
+  <span title="Delete this message" class="publish-syndicate"><a id='P<%= e.id %>' data-url="/moderation/<%= e.id %>/edit/?delete=1">Delete</a></span>
+  
+		<br/>
 <% end %>
 <%= paginate @entries %>

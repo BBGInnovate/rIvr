@@ -57,6 +57,66 @@ class Entry< ActiveRecord::Base
       self.save
     end
   end
+  def to_dropbox_public
+    # Public/#{self.branch} folder will be created if not exixts
+    ds = DropboxSession.last
+    if !!ds
+      client = get_dropbox_session
+      if self.forum_type=='bulletin'
+        to = "Public/#{self.branch.name}/#{self.forum_type}/#{self.dropbox_file}"
+        file_url = DROPBOX.public_dir + "/#{self.branch.name}/#{self.forum_type}/#{self.dropbox_file}"
+      else
+        to = "Public/#{self.branch.name}/#{self.dropbox_file}"
+        file_url = DROPBOX.public_dir + "/#{self.branch.name}/#{self.dropbox_file}"
+      end
+      from = file_path
+      begin
+        self.public_url = file_url
+        content = client.copy(from, to)
+        self.is_private = 0
+        return true
+      rescue Exception => msg 
+        if msg.kind_of? Dropbox::FileNotFoundError
+          self.public_url = nil
+          self.is_private = true
+          self.errors[:base] << "Dropbox file not found: /#{self.branch.name}/#{self.dropbox_file}. You should delete this record." 
+        end
+        logger.debug "Error copy #{from} #{to} : #{msg}"
+        return false
+      end
+    end
+  end
+  def to_soundcloud(soundcloud)
+    # return if !self.public_url
+    client = Soundcloud.new(:access_token => SOUNDCLOUD.access_token)
+    begin
+      # :duration=>self.length ? self.length*1000 : nil,
+      track = client.post('/tracks', :track=>{
+        :title => soundcloud.title,
+        :description=>soundcloud.description,
+        :downloadable => true,
+        :sharing=>'public',
+        :track_type=>'bbg',
+        :types=>"bbg",
+        :label_name=>SOUNDCLOUD.upload_by,
+        :genre=>soundcloud.genre,
+        :tag_list=>self.dropbox_dir.sub("/",' '),
+        :asset_data   => dropbox_file_content
+      })
+      puts "NNNN #{track.id}"
+      if track.id
+        soundcloud.track_id = track.id
+        soundcloud.url = track.permalink_url
+        soundcloud.entry_id = self.id
+        soundcloud.save
+      end
+      return soundcloud.url
+    rescue
+       logger.warn "Entry#to_soundcloud #{$!.message}"
+       return "#{$!.message}"
+    end
+  end
+  
   def copy_to_public
     # Public/#{self.branch} folder will be created if not exixts
     ds = DropboxSession.last
@@ -246,4 +306,25 @@ class Entry< ActiveRecord::Base
   
 protected
 
+  def dropbox_file_content
+    ds = DropboxSession.last
+    if !!ds
+      dropbox_session = Dropbox::Session.new(DROPBOX.consumer_key, DROPBOX.consumer_secret)
+      dropbox_session.set_access_token ds.token, ds.secret
+      dropbox_session.mode = :dropbox
+      # mime_type posted by IVR system may not be correct
+      if self.forum_type=='bulletin'
+        dir = "/bulletin"
+      else
+        dir = ''
+      end
+      meta = dropbox_session.metadata("bbg/#{self.branch.name}#{dir}/#{self.dropbox_file}")
+      self.mime_type = meta.mime_type
+      self.size = meta.bytes
+      self.save
+      content = dropbox_session.download("bbg/#{self.branch.name}#{dir}/#{self.dropbox_file}")
+    else
+      nil 
+    end
+  end
 end

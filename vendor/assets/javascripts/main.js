@@ -1,6 +1,6 @@
 var datePicker = {
   options : {
-  	  dateFormat: "yy-mm-dd",
+  	dateFormat: "yy-mm-dd",
     changeMonth: true,
     changeYear: true,
     showButtonPanel: true,
@@ -92,15 +92,15 @@ var search = {
       }
     }
 }
+
 var searchEntry = {
     checked : null,
     init : function() {
-      
       $("body").on('click', ".pagination a", function(e) {
         data = searchEntry.getData();
         data.page=$(this).text();
-        var op = $('input:radio[name="moderation"]:checked').val();
-        data.search_for = op;
+        //var op = $('input:radio[name="moderation"]:checked').val();
+        //data.search_for = op;
         var url = "/moderation/search"
         jQuery.get(url, data, searchEntry.update, 'html');
         return false
@@ -108,18 +108,17 @@ var searchEntry = {
       
       $("body").on('click', "input:radio[name='moderation']", function(e) {
          data = searchEntry.getData();
-         data.search_for = this.value;
-         var op = $('input:radio[name="moderation"]:checked').val();
-         var data = {};
-         data.search_for = op;
+         //data.search_for = this.value;
+         //var op = $('input:radio[name="moderation"]:checked').val();
+         //data.search_for = op;
          var url = "/moderation/search"
          jQuery.get(url, data, searchEntry.update, 'html');
          return true
       });
       $("body").on('click', "input[name='search']", function(e) {
         data = searchEntry.getData();
-        var op = $('input:radio[name="moderation"]:checked').val();
-        data.search_for = op;
+        //var op = $('input:radio[name="moderation"]:checked').val();
+        //data.search_for = op;
         var url = "/moderation/search"
         jQuery.get(url, data, searchEntry.update, 'html');
         return false
@@ -134,9 +133,9 @@ var searchEntry = {
       var forum_type = $("#forum_type").val();
       var branch = $('input[name="branch"]').val();
       var location = $('input[name="location"]').val();
-      //var op = $('input:radio[name="moderation"]:checked').val();
+      var op = $('input:radio[name="moderation"]:checked').val();
       var data = {};
-      //data.search_for = op;
+      data.search_for = op;
       if (start_date.length>0)
         data.start_date = start_date;
       if (end_date.length>0)
@@ -150,6 +149,104 @@ var searchEntry = {
       return data;
     }
 }
+/** modal window ***/
+var loadSoundCloud = {
+    entry_id : 0,
+    modalId : 'modal-window',
+    init : function() {
+      $("body").on('click','.publish-syndicate a', function(e) {
+        loadSoundCloud.entry_id=this.id;
+        $(this).css({
+          "cursor" : "wait"
+        });
+        var url= $(this).attr("data-url");
+        if ( loadSoundCloud.entry_id.charAt(0) == 'P')
+          jQuery.get(url, {}, loadSoundCloud.updated, 'html')
+        else
+          jQuery.get(url, {}, loadSoundCloud.change, 'html')
+          
+        return false;
+      });
+      $('body').on('click', "#soundcloud-upload #submit", function(e) {
+        var url="/moderation/" + loadSoundCloud.entry_id.match(/\d+/) + "/edit";
+        
+        dropbox_url = $('#soundcloud_url').val();
+        title = $('#soundcloud_title').val();
+        genre = $('#soundcloud_genre').val();
+        description = $('#soundcloud_description').val();
+        data={};
+        data["soundcloud[title]"]=title;
+        data["soundcloud[url]"]=dropbox_url;
+        data["soundcloud[genre]"]=genre;
+        data["soundcloud[description]"]=description; 
+        jQuery.get(url, data, loadSoundCloud.change, 'html');
+        return false;
+      });
+      $('body').on('click','input[name="cancel"]', function(e) {
+        $('#'+loadSoundCloud.modalId).hide();
+      });
+
+    },
+    change : function(data) {
+      $('.publish-syndicate a').css({
+        "cursor" : "pointer"
+      });
+      var o = jQuery('#'+loadSoundCloud.modalId)
+      o.html(data);
+      loadSoundCloud.openModal(loadSoundCloud.modalId, loadSoundCloud.entry_id);
+    },
+    updated : function(data) {
+      $('.publish-syndicate a').css({
+        "cursor" : "pointer"
+      });
+      var obj = jQuery.parseJSON(data);
+      my = jQuery("#publish-to-dropbox")
+      my.html(obj.message);
+      if (obj.error == 'error')
+        my.addClass('color-red');
+      else
+        my.addClass('color-green');
+         
+      my.fadeIn("fast").delay(3000).fadeOut("slow");
+    },
+    openModal : function (modal_id, anchor_id) {
+      // modal_id modal window placeholder id
+      // anchor_id element id, click which trigers the modal window
+      var modalID = "#" + modal_id;
+      var anchorID = "#" + anchor_id;
+      // get how many pixels that the calling link is from the top of the page -- to be used later.
+      var anchorOffset = Math.floor(jQuery(anchorID).offset().top);
+      
+      // get the modal window's height + padding top + padding bottom
+      var modalHeight = Math.floor(jQuery(modalID).height());
+      // the modal's width is based off width of the site area, rather than being set off of another value
+      // sitewidth - modal padding left - modal padding right - 20 ... dropping any hanging decimals
+      var modalWidth = 506;
+      
+      // set the modal's width, to overwrite any CSS sizes
+      jQuery(modalID).css('width', modalWidth);
+      //now that the modal width is based off of the sitewidth, instead of other numbers, re-evaluate to get the width + padding (similiar to the height)
+      modalWidth = Math.floor(jQuery(modalID).width());
+      var windowWidth = jQuery(window).width();
+      // find the new left for the modal window
+      var newLeft = Math.floor((windowWidth - modalWidth) / 2);
+      // set the new left
+      jQuery(modalID).css('left', newLeft);
+      // instead of using the top of the screen to determine where the modal goes, we're using the offset position of the link that calls the function
+      // for the user to see the pop-up they need to click the link
+      // so to ensure that the user sees the modal it will appear above the link.
+      // This is taking the offset position of the link - half the modal window's height.  So in theory, the modal window's center will be right above the calling link.
+      var newTop = anchorOffset - Math.floor(modalHeight / 2);
+      // set the new top
+      jQuery(modalID).css('top', newTop);
+      // fade the modal window in
+      jQuery(modalID).fadeIn();
+    }
+  }
+
+
+/******/
+
 var monitor = {
 	init : function() {
 		var v = jQuery("#record_deliver_method").val();
