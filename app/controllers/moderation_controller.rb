@@ -14,10 +14,14 @@ class ModerationController < ApplicationController
   end
   
   def index
+    uri = request.env['REQUEST_URI']
+    uri.slice!(request.path)
+    Entry.request_url = uri
+    
     @controller = request.filtered_parameters['controller']
     p = params[:page] || 1
     @entries = Entry.joins(:branch).where("branches.is_active=1").
-    where(:is_private=>true, :is_active=>true).
+    where(:is_active=>true).
     order("id desc").page(p).per(10)
     
     @syndicated = Entry.joins(:branch).where("branches.is_active=1").
@@ -26,7 +30,10 @@ class ModerationController < ApplicationController
         
     @results = @entries
     if params[:ajax]
+      # request from paginate in listen, syndicate  page
       render :partial=>params[:partial], :layout=>false, :content_type=>'text' and return
+    else
+      # normal index request
     end
   end
 

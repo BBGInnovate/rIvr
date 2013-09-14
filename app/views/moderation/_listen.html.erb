@@ -4,8 +4,10 @@
        href="/entries/<%=e.id%>/play"><%= e.dropbox_file %></a>
 		<button onclick="$('#<%=e.id%>').mb_miniPlayer_stop()">stop</button>
   <button onclick="$('#<%=e.id%>').mb_miniPlayer_play()">play</button>
-		<span title="Make Dropbox file public" class="publish-syndicate"><a id='P<%= e.id %>' data-url="/moderation/<%= e.id %>/edit/?publish=1">Publish</a></span>
-		<span title="Syndicate Dropbox file to SoundCloud" class="publish-syndicate"><a id='S<%= e.id %>' data-url="/moderation/<%= e.id %>/edit/?syndicate=1">Syndicate</a></span>
+		<% title1 = !!e.is_private ? 'Message is public' : 'Make Dropbox file public' %>
+		<% title2 = !!e.soundkloud ? 'Message is in SoundCloud' : 'Syndicate Dropbox file to SoundCloud' %>
+		<span title="<%= title1 %>" class="publish-syndicate"><a id='P<%= e.id %>' data-url="/moderation/<%= e.id %>/edit/?publish=1">Publish</a></span>
+		<span title="<%= title2 %>" class="publish-syndicate"><a id='S<%= e.id %>' data-url="/moderation/<%= e.id %>/edit/?syndicate=1">Syndicate</a></span>
   <span title="Delete this message" class="publish-syndicate"><a id='P<%= e.id %>' data-url="/moderation/<%= e.id %>/edit/?delete=1">Delete</a></span>
   
 		<br/>

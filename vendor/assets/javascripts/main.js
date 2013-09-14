@@ -102,6 +102,7 @@ var searchEntry = {
         searchEntry.parent_id = $(this).closest("div").attr("id");
         if (searchEntry.parent_id=='search-results-id') {
            data = searchEntry.getData();
+           url = url.replace('moderation','moderation/search')
         } else if (searchEntry.parent_id=='listen') {
            data = {"partial":"listen", "ajax":1};
         } else if (searchEntry.parent_id=='syndicate') {
@@ -175,7 +176,9 @@ var loadSoundCloud = {
       });
       $('body').on('click', "#soundcloud-upload #submit", function(e) {
         var url="/moderation/" + loadSoundCloud.entry_id.match(/\d+/) + "/edit";
-        
+        $(this).css({
+          "cursor" : "wait"
+        });
         dropbox_url = $('#soundcloud_url').val();
         title = $('#soundcloud_title').val();
         genre = $('#soundcloud_genre').val();

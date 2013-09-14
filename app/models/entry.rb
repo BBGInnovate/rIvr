@@ -9,6 +9,8 @@ class Entry< ActiveRecord::Base
   has_one :soundkloud, :foreign_key=>"entry_id"
   belongs_to :branch
   
+  cattr_accessor :request_url
+  
   HUMANIZED_COLUMNS = {:size=>"Size (bytes)"}
 
   def self.human_attribute_name(attribute, options = {})
@@ -91,12 +93,14 @@ class Entry< ActiveRecord::Base
     client = Soundcloud.new(:access_token => SOUNDCLOUD.access_token)
     begin
       # :duration=>self.length ? self.length*1000 : nil,
-      
-      if !!self.public_url 
-        content = open(self.public_url)
-      else
-        content = open("http://localhost:3000/entries/#{self.id}/play")  # dropbox_file_content
-      end
+      puts "EEEE #{Entry.request_url}/entries/#{self.id}/play"
+#      if !!self.public_url 
+#        content = open(self.public_url)
+#      else
+        raw_content = dropbox_file_content
+        f = File.open('/tmp/'+self.dropbox_file, 'wb') {|f| f.write(raw_content) }
+        content_file = File.open('/tmp/'+self.dropbox_file, 'rb')
+#      end
       track = client.post('/tracks', :track=>{
         :title => soundcloud.title,
         :description=>soundcloud.description,
@@ -107,8 +111,9 @@ class Entry< ActiveRecord::Base
         :label_name=>SOUNDCLOUD.upload_by,
         :genre=>soundcloud.genre,
         :tag_list=>self.dropbox_dir.sub("/",' '),
-        :asset_data => content
+        :asset_data => content_file
       })
+      content_file.close
       puts "NNNN #{track.id}"
       if track.id
         soundcloud.track_id = track.id
@@ -314,6 +319,7 @@ protected
 
   def dropbox_file_content
     ds = DropboxSession.last
+    content = nil
     if !!ds
       dropbox_session = Dropbox::Session.new(DROPBOX.consumer_key, DROPBOX.consumer_secret)
       dropbox_session.set_access_token ds.token, ds.secret
@@ -330,13 +336,12 @@ protected
       self.save
       begin
         content = dropbox_session.download("bbg/#{self.branch.name}#{dir}/#{self.dropbox_file}")
-        
-        content
       rescue
         puts "ERROR dropbox_file_content #{$!}"
       end
     else
       nil 
     end
+    content
   end
 end
