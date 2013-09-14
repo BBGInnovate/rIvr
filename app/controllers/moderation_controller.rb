@@ -20,17 +20,18 @@ class ModerationController < ApplicationController
     
     @controller = request.filtered_parameters['controller']
     p = params[:page] || 1
+    # this is for listen content
     @entries = Entry.joins(:branch).where("branches.is_active=1").
     where(:is_active=>true).
     order("id desc").page(p).per(10)
-    
+    # this is for syndicated content
     @syndicated = Entry.joins(:branch).where("branches.is_active=1").
         joins(:soundkloud).
         order("id desc").page(p).per(10)
         
-    @results = @entries
+    @results = @entries # this is for initial search_results content
     if params[:ajax]
-      # request from paginate in listen, syndicate  page
+      # request from paginate links in listen, syndicate  page
       render :partial=>params[:partial], :layout=>false, :content_type=>'text' and return
     else
       # normal index request
