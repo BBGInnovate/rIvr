@@ -111,8 +111,9 @@ var searchEntry = {
         jQuery.get(url, data, searchEntry.update, 'html');
         return false
       }); 
-      
+      // for search click radio buttons
       $("body").on('click', "input:radio[name='moderation']", function(e) {
+         searchEntry.parent_id = "search-results-id";
          data = searchEntry.getData();
          //data.search_for = this.value;
          //var op = $('input:radio[name="moderation"]:checked').val();
@@ -121,7 +122,9 @@ var searchEntry = {
          jQuery.get(url, data, searchEntry.update, 'html');
          return true
       });
+      // for search Filter link
       $("body").on('click', "input[name='search']", function(e) {
+        searchEntry.parent_id = "search-results-id";
         data = searchEntry.getData();
         //var op = $('input:radio[name="moderation"]:checked').val();
         //data.search_for = op;

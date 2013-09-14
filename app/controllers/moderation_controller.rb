@@ -29,7 +29,11 @@ class ModerationController < ApplicationController
         joins(:soundkloud).
         order("id desc").page(p).per(10)
         
-    @results = @entries # this is for initial search_results content
+    # this is for initial search_results content corresponding to Incoming radio
+    # button is checked
+    @results = Entry.joins(:branch).where("branches.is_active=1").
+       where(:is_active=>true,:is_private=>true).
+       order("id desc").page(p).per(10)
     if params[:ajax]
       # request from paginate links in listen, syndicate  page
       render :partial=>params[:partial], :layout=>false, :content_type=>'text' and return
@@ -106,11 +110,9 @@ class ModerationController < ApplicationController
     @entries_query = Entry.includes([:branch=>:country]).where("branches.is_active=1")
 
     if !!start_date && !!end_date
-      conditions["entries.created_at"] = start_date..end_date
       @entries_query = @entries_query.where("entries.created_at"=>start_date..end_date)
     end
     if !!forum_type
-      conditions["entries.forum_type in (?)", forum_type]
       @entries_query = @entries_query.where(["entries.forum_type in (?)", forum_type])
     end
     if !!branch
