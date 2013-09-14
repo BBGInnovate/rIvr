@@ -25,6 +25,9 @@ class ModerationController < ApplicationController
         order("id desc").page(p).per(10)
         
     @results = @entries
+    if params[:ajax]
+      render :partial=>params[:partial], :layout=>false, :content_type=>'text' and return
+    end
   end
 
   def edit
@@ -78,7 +81,7 @@ class ModerationController < ApplicationController
        else
          @result = @soundcloud.errors.full_messages
        end
-      puts "AAAAAA #{@result}"
+      puts "A upload_soundlcloud #{@result}"
     end
   end
   

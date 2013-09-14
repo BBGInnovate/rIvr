@@ -95,13 +95,18 @@ var search = {
 
 var searchEntry = {
     checked : null,
+    parent_id : null,
     init : function() {
-      $("body").on('click', ".pagination a", function(e) {
-        data = searchEntry.getData();
-        data.page=$(this).text();
-        //var op = $('input:radio[name="moderation"]:checked').val();
-        //data.search_for = op;
-        var url = "/moderation/search"
+      $("body").on('click', ".pagination a", function(e) { 
+        var url =$(this).attr('href');
+        searchEntry.parent_id = $(this).closest("div").attr("id");
+        if (searchEntry.parent_id=='search-results-id') {
+           data = searchEntry.getData();
+        } else if (searchEntry.parent_id=='listen') {
+           data = {"partial":"listen", "ajax":1};
+        } else if (searchEntry.parent_id=='syndicate') {
+           data = {"partial":"syndtcate", "ajax":1};
+        }
         jQuery.get(url, data, searchEntry.update, 'html');
         return false
       }); 
@@ -125,7 +130,7 @@ var searchEntry = {
       });
     },
     update : function(data) {
-      $('#search-results-id').html(data);
+      $('#'+searchEntry.parent_id).html(data);
     },
     getData : function() {
       var start_date = $("#start_date").val();
@@ -135,6 +140,7 @@ var searchEntry = {
       var location = $('input[name="location"]').val();
       var op = $('input:radio[name="moderation"]:checked').val();
       var data = {};
+      data.ajax=1;
       data.search_for = op;
       if (start_date.length>0)
         data.start_date = start_date;

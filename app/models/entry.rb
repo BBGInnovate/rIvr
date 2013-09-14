@@ -91,6 +91,12 @@ class Entry< ActiveRecord::Base
     client = Soundcloud.new(:access_token => SOUNDCLOUD.access_token)
     begin
       # :duration=>self.length ? self.length*1000 : nil,
+      
+      if !!self.public_url 
+        content = open(self.public_url)
+      else
+        content = open("http://localhost:3000/entries/#{self.id}/play")  # dropbox_file_content
+      end
       track = client.post('/tracks', :track=>{
         :title => soundcloud.title,
         :description=>soundcloud.description,
@@ -101,7 +107,7 @@ class Entry< ActiveRecord::Base
         :label_name=>SOUNDCLOUD.upload_by,
         :genre=>soundcloud.genre,
         :tag_list=>self.dropbox_dir.sub("/",' '),
-        :asset_data   => dropbox_file_content
+        :asset_data => content
       })
       puts "NNNN #{track.id}"
       if track.id
@@ -322,7 +328,13 @@ protected
       self.mime_type = meta.mime_type
       self.size = meta.bytes
       self.save
-      content = dropbox_session.download("bbg/#{self.branch.name}#{dir}/#{self.dropbox_file}")
+      begin
+        content = dropbox_session.download("bbg/#{self.branch.name}#{dir}/#{self.dropbox_file}")
+        
+        content
+      rescue
+        puts "ERROR dropbox_file_content #{$!}"
+      end
     else
       nil 
     end
