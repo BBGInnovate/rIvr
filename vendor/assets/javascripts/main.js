@@ -102,7 +102,7 @@ var searchEntry = {
         searchEntry.parent_id = $(this).closest("div").attr("id");
         if (searchEntry.parent_id=='search-results-id') {
            data = searchEntry.getData();
-           url = url.replace('moderation','moderation/search')
+           url = url.replace('moderation?','moderation/search?')
         } else if (searchEntry.parent_id=='listen') {
            data = {"partial":"listen", "ajax":1};
         } else if (searchEntry.parent_id=='syndicate') {

@@ -4,6 +4,7 @@
 <thead>
       <tr>
         <th>Message</th>
+								<th>Date</th>
         <th>Branch</th>
         <th>Country/Location</th>
         <th>Contact</th>
@@ -18,6 +19,9 @@
    </td>
    <td>
       <%= e.branch.name %>
+   </td>
+			<td>
+      <%= e.created_at.to_s(:db) %>
    </td>
    <td>
       <%= e.branch.country.name %>

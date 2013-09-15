@@ -93,7 +93,6 @@ class Entry< ActiveRecord::Base
     client = Soundcloud.new(:access_token => SOUNDCLOUD.access_token)
     begin
       # :duration=>self.length ? self.length*1000 : nil,
-      puts "EEEE #{Entry.request_url}/entries/#{self.id}/play"
 #      if !!self.public_url 
 #        content = open(self.public_url)
 #      else
@@ -114,7 +113,6 @@ class Entry< ActiveRecord::Base
         :asset_data => content_file
       })
       content_file.close
-      puts "NNNN #{track.id}"
       if track.id
         soundcloud.track_id = track.id
         soundcloud.url = track.permalink_url
