@@ -14,8 +14,12 @@
 <%  @syndicated.each do |e| %>
 <tr>
    <td>
-  <a id='<%=e.id%>' class="audio3 {ogg:'http://www.miaowmusic.com/ogg/Miaow-02-Hidden.ogg',autoplay:false, inLine:true}"
+   	<% if e.dropbox_file_exists? %>
+      <a id='<%=e.id%>' class="audio3 {ogg:'/entries/<%=e.id%>/play',autoplay:false, inLine:true}"
        href='<%=e.soundkloud.url %>'><%= e.soundkloud.url %></a>
+				<% else %>
+				   <%= "#{e.dropbox_file} Not Found" %>
+				<% end %>
    </td>
    <td>
       <%= e.branch.name %>

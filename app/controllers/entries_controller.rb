@@ -104,7 +104,7 @@ class EntriesController < ApplicationController
       meta = dropbox_session.metadata("bbg/#{e.branch.name}/#{e.dropbox_file}")
       e.mime_type = meta.mime_type
       e.size = meta.bytes
-      e.save
+ #     e.save
       
       content = dropbox_session.download("bbg/#{e.branch.name}/#{e.dropbox_file}")
       send_data content,

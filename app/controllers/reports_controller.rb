@@ -23,7 +23,7 @@ class ReportsController < ApplicationController
     @start_date = started
     @end_date = ended
     if request.post?
-      @branches = Branch.includes(:country).where(:is_active=>true).select("country_id,id, name").all
+      @branches = Branch.includes(:country).where(:is_active=>true).select("country_id, contries.id, contries.name, branches.name").all
       @stats = Stat.new(started, ended)
       # @alerts = @stats.alerted
       @messages = @stats.messages

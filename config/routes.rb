@@ -9,6 +9,8 @@ TestIvr::Application.routes.draw do
   match '/true' => 'moderation#dummy'
   match '/moderation/true' => 'moderation#dummy'
   
+  resources :analytics
+  
   resources :healthcheck do
     collection do
       get :search

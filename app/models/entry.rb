@@ -18,6 +18,33 @@ class Entry< ActiveRecord::Base
     attribute.to_s.gsub(/_id$/, "").gsub(/_/, " ").capitalize
   end
 
+  def dropbox_file_exists?
+#    if self.forum_type=='bulletin'  
+#      f = "#{DROPBOX.home}/bbg/#{self.branch.name}/#{self.forum_type}/#{self.dropbox_file}"
+#    else
+      f = "#{DROPBOX.home}/bbg/#{self.branch.name}/#{self.dropbox_file}"
+#    end
+    return File.exists?(f)
+    
+#    dir = "/system/#{self.branch.name.downcase}"
+#    system_dir = "#{Rails.root}/public/#{dir}"
+#    if !File.exists?("#{system_dir}")
+#      FileUtils.mkdir_p "#{system_dir}"
+#    end
+#    url = "#{dir}/#{self.dropbox_file}"
+#    system_path = "#{Rails.root}/public#{url}"
+#    if !File.exists?("#{system_path}")
+#      raw_content = dropbox_file_content
+#      if !!raw_content
+#        f = File.open("#{system_path}", 'wb') {|f| f.write(raw_content) }
+#        url = "#{dir}/#{self.dropbox_file}"
+#      else
+#        url = nil
+#      end
+#    end
+#    url
+  end
+  
   # return hash table key=branch_id, value=number of messages
   # hsh[:total] = sum of all messages
   # for all active branches
@@ -83,7 +110,7 @@ class Entry< ActiveRecord::Base
           self.is_private = true
           self.errors[:base] << "Dropbox file not found: /#{self.branch.name}/#{self.dropbox_file}. You should delete this record." 
         end
-        logger.debug "Error copy #{from} #{to} : #{msg}"
+        logger.debug "to_dropbox_public Error copy #{from} #{to} : #{msg}"
         return false
       end
     end
@@ -155,7 +182,7 @@ class Entry< ActiveRecord::Base
           self.is_private = true
           self.errors[:base] << "Dropbox file not found: /#{self.branch.name}/#{self.dropbox_file}. You should delete this record." 
         end
-        logger.debug "Error copy #{from} #{to} : #{msg}"
+        logger.debug "copy_to_public Error copy #{from} #{to} : #{msg}"
         # do nothing
       end
     end
@@ -328,11 +355,12 @@ protected
       else
         dir = ''
       end
-      meta = dropbox_session.metadata("bbg/#{self.branch.name}#{dir}/#{self.dropbox_file}")
-      self.mime_type = meta.mime_type
-      self.size = meta.bytes
-      self.save
       begin
+        meta = dropbox_session.metadata("bbg/#{self.branch.name}#{dir}/#{self.dropbox_file}")
+        myentry = Entry.find_by_id self.id  # self is a readonly record
+        myentry.mime_type = meta.mime_type
+        myentry.size = meta.bytes
+        myentry.save
         content = dropbox_session.download("bbg/#{self.branch.name}#{dir}/#{self.dropbox_file}")
       rescue
         puts "ERROR dropbox_file_content #{$!}"
