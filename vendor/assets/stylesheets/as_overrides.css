@@ -336,6 +336,42 @@ img.red-light, img.green-light {
 input[type=submit]:hover {
   cursor: pointer; 
 }
+
+/* report page */
+.separator {
+	 width: 1em;
+	 height: 1em;
+}
+.report {
+	 margin: 0 0 0 20px;
+}
+.report label {
+  width: 110px;
+  vertical-align: top;
+  display: inline-block;
+}
+.report input, .report select {
+  width: 200px;
+}
+.report select {
+  height: 50px;
+}
+
+.report input[type='radio'] {
+  width: 20px;
+}
+.report input[type='button'] {
+  width: 100px;
+}
+
+.report input.btnAction {
+    float: none;
+    font-size: 14px;
+				with: 40px;
+    height: 31px;
+    margin: 10px 0 5px 20px;
+}
+
 /* moderation search */
 .color-red {
 	 color: red;
@@ -427,6 +463,9 @@ input[type=submit]:hover {
       color: #000;
       text-shadow: none !important
   }
+		
+
+
 /* override all.css */
 .branch-configuration .TabbedPanels ul li a {
     height: 50px;

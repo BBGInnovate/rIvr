@@ -1,4 +1,5 @@
-require 'iconv'
+# require 'iconv'
+require 'csv'
 
 class ReportsController < ApplicationController
 #   before_filter :login_required
@@ -7,10 +8,8 @@ class ReportsController < ApplicationController
   # BOM = "\377\376" # Byte Order Mark
 #  before_filter :stats_lookup
 #  layout false
-
-
-  
   def init
+    @controller = request.filtered_parameters['controller']
     @title = I18n.t('pages.admin_charities.title')
     @report_name = "Activity Reports"
     if params[:start_date]
@@ -23,11 +22,14 @@ class ReportsController < ApplicationController
     @start_date = started
     @end_date = ended
     if request.post?
-      @branches = Branch.includes(:country).where(:is_active=>true).select("country_id, contries.id, contries.name, branches.name").all
+      # @branches = Branch.includes(:country).where(:is_active=>true).select("country_id, contries.id, contries.name, branches.name").all
+      
+      @branches = Branch.where(["id in (?)", params[:branch_id]])
+      
       @stats = Stat.new(started, ended)
       # @alerts = @stats.alerted
       @messages = @stats.messages
-      # @calls = @stats.number_of_calls
+      @calls = @stats.number_of_calls
       @call_times = @stats.call_times
       @listened = @stats.listened
      end
@@ -45,13 +47,11 @@ class ReportsController < ApplicationController
   end
   
   def index
-    puts "AAAA " + params.inspect
-
     render :layout=>false, :content_type=>'text/html'
   end
   
   def create
-    render :text=>'AAAAAA', :content_type=>'text'
+    content
   end
   
   def branch_report_title
@@ -67,18 +67,20 @@ class ReportsController < ApplicationController
   end
     
   def branch_report_rows
-    @rows = {}
+    @rows = []
     @branches.each do | b |
       row = {}
       row['Branch Name'] = b.name
       row['Date'] = Time.now.to_s(:db)
-      row['Number of Callers'] = @calls[b.id]
+      row['Number of Callers'] = @calls[b.id][:total]
       row['Average time listening'] = @listened[b.id][:average]
-      row['Average total call time'] = @call_times[:b.id][:average]
+      row['Average total call time'] = @call_times[b.id][:average]
       row['Number of Messages Left'] = @messages[b.id][:total]
       row['Country'] = b.country.name
       @rows << row
     end
+    puts "RRRR #{@rows.size}"
+    @rows
   end
       
   def content
@@ -108,20 +110,23 @@ class ReportsController < ApplicationController
   end
 
   def send_content(filename)
-    get_data
-    content = @template.csv_helper(@data, @elements)
-    send_data content, :filename => filename
+    content = CSV.generate(:col_sep => ",") do |csv|
+      csv << branch_report_title
+      branch_report_rows.each do | row |
+        csv << [row['Branch Name'], row['Date'],row['Number of Callers'],
+        row['Average time listening'],row['Average total call time'],
+        row['Number of Messages Left'],row['Country'] ]
+      end
+    end
+    bom = "\377\376" # Byte Order Mark
+    content = content.encode('UTF-8', :invalid => :replace, :replace => '').encode('UTF-8')  
+    puts "AAAAA #{content.inspect}"
+    send_data content, :filename => filename,
+      :type => 'text/csv; charset=iso-8859-1; header=present'
   end
   
   def get_data
-    range = "events.created_at #{(@start_date..@end_date).to_s(:db)}"
-    conditions = [range]
 
-    @data = klass.all(:include=>[:customer, :charity, :secondary_transaction],
-       :conditions => conditions, :order=>order_by)
-
-    table_elements
-    @data
   end
 
  def order_by

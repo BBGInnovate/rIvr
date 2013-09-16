@@ -1,83 +1,76 @@
 <head>
-<script>
-$(function() {
-$( "#start_date" ).datepicker({
-   dateFormat: "yy-mm-dd",
-   changeMonth: true,
-   changeYear: true,
-   showButtonPanel: true,
-   minDate: new Date(2013, 0, 1),
-   maxDate: '+1Y',
-   showOn: 'button',
-   buttonImageOnly: true,
-   buttonImage: '/assets/calendar.gif' });
-$( "#end_date" ).datepicker({
-   dateFormat: "yy-mm-dd",
-   changeMonth: true,
-   changeYear: true,
-   minDate: new Date(2013, 0, 1),
-   maxDate: '+1Y',
-   showOn: 'both',
-   buttonImageOnly: true,
-   buttonImage: '/assets/calendar.gif'});
-});
-</script>
-<style>
-  .ui-datepicker-trigger {
-    vertical-align: middle;
-    line-height: 24px;
-    margin-left: 5px;
-    width: 20px;
-    height: 20px;
-  }
-  
-</style>
+  <script>
+    $(function(){
+        $("#start_date").datepicker({
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true,
+            minDate: new Date(2013, 0, 1),
+            maxDate: '+1Y',
+            showOn: 'button',
+            buttonImageOnly: true,
+            buttonImage: '/assets/calendar.gif'
+        });
+        $("#end_date").datepicker({
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true,
+            minDate: new Date(2013, 0, 1),
+            maxDate: '+1Y',
+            showOn: 'both',
+            buttonImageOnly: true,
+            buttonImage: '/assets/calendar.gif'
+        });
+    });
+  </script>
+  <style>
+    .ui-datepicker-trigger {
+        vertical-align: middle;
+        line-height: 24px;
+        margin-left: 5px;
+        width: 20px;
+        height: 20px;
+    }
+  </style>
 </head>
 <div id="report-form-wrapper">
-<div class="transaction-report">
-<p class="p-gray"><%= @report_name %></p>
-<p id="error" class="p-red"><%= @error %></p>
+  <div class="report">
+    <h2><%= @report_name %></h2>
+    <p id="error" class="error">
+      <%= @error %>
+    </p>
+    <%= form_tag("/reports", :method => :post, :id=>"post-report") do %>
+    <%= hidden_field_tag "authenticity_token", "#{form_authenticity_token}" %>
 
-<%= form_tag("/reports/create", :method => :post, :id=>"post-report") do %>
-<%= hidden_field_tag "authenticity_token", "#{form_authenticity_token}" %>
+				<label for="branch_id">Select Branch</label>
+    <% options = Branch.where("is_active=1").map{|b| [b.name, b.id]} 
+         id=0 
+    %>
+    <%= select_tag 'branch_id', options_for_select(options, id), { :multiple => true, :size => 5 } %>
+    <div class="separator"></div>
+    <label for="start_date">Start Date:</label>
+    <input type="text" class="datepicker" id="start_date" name="start_date" />
+    <div class="separator"></div>
+    <label for="end_date">End Date:</label>
+    <input type="text" class="datepicker" id="end_date" name="end_date" />
+    <div class="separator"></div>
+    <label>Format</label>
+    <% fmt = params[:format] || 'csv' %>
+    <%= radio_button_tag 'format', 'csv', fmt=='csv' %>&nbsp;CVS<%= radio_button_tag 'format', 'html', fmt=='html' %>&nbsp;HTML
+    <div class="separator"></div>
 
-<div style="clear:both;"></div>   
+    <input type="button" value="Cancel" id="report-cancel" class="btnAction" />
+		<input type="button" value="Submit" id="report-submit" class="btnAction" />
+    <% end %>
+  </div>
 
-<div class="label">&nbsp;</div>
-<div class="date-pick">
-  Select Branch
-	<% options = Branch.where("is_active=1").map{|b| [b.name, b.id]}
-     id=0 
-   %>
-  <%= select_tag 'branch_id', options_for_select(options, id), { :multiple => true, :size => 5 } %>
 </div>
-<div style="clear: both;"></div>
-<div class="label">Date Range<span class="from"> From</span></div>
-<div class="date-pick">
-  <label for="start_date">Start Date:</label> <input type="text" class="datepicker" id="start_date" name="start_date" />
-  <br/>
-  <label for="end_date">  End Date:</label><input type="text" class="datepicker" id="end_date" name="end_date" />
-</div>
-<div style="clear: both;"></div>
-
-<div class="label">Format</div>
-<div class="date-pick">
-	<% fmt = params[:format] || 'csv' %>
-  <%= radio_button_tag 'format', 'csv', fmt=='csv' %>&nbsp;CVS
-	<%= radio_button_tag 'format', 'html', fmt=='html' %>&nbsp;HTML
-</div>
-
-<div style="clear:both;"></div>   
-<% end %>
-</div>
-<div id="report-logout">
-   <input type="button" value="Cancel" id="report-cancel" class="square" />
-	 <input type="button" value="Submit" id="report-submit" class="square" />
-</div>
+<div id="report-results">
+	
 </div>
 <script type="text/javascript">
-  jQuery(document).ready( function() {
-	  submitReport.init();
-	});
+  jQuery(document).ready(function(){
+      report.init();
+  });
 </script>
-

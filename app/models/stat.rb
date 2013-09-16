@@ -3,9 +3,9 @@ class Stat
   
   # Syntax: Stat.new('2013-08-01','2013-09-1').alerted
   # class << self
-    attr_accessor :started, :ended
+    attr_accessor :started, :ended, :branch_ids
     
-    def initialize(start_date=nil, end_date=nil)
+    def initialize(start_date=nil, end_date=nil, branches=[])
       # start_date, end_date must be format Time.now.to_s(:db)
       # Time.now.beginning_of_month
       if !!start_date
@@ -18,14 +18,19 @@ class Stat
       else
         @ended = Time.now.to_s(:db)
       end
+      @branch_ids = branches
     end
     
     # for active branches
     # alerted[:total] #=> total number of alerts for all
     # alerted[branch_id] #=> number of alerts for the branch
     def alerted
-      numbers = AlertedMessage.joins(:branch).where("branches.is_active=1").
-      where(:created_at=>started..ended).
+      if branch_ids.size == 0
+        numbers = AlertedMessage.joins(:branch).where("branches.is_active=1")
+      else
+        numbers = AlertedMessage.joins(:branch).where(["branches.id in (?)", branch_ids])
+      end
+      numbers = numbers.where(:created_at=>started..ended).
       select("branch_id, count(alerted_messages.id) AS total").
       group(:branch_id)
       set_hash(numbers)
@@ -34,9 +39,13 @@ class Stat
   # listened[:average] == ave listening in seconds
   # listened[:number_of_calls] == number of calls for listening
   def listened
-     hsh = {:total=>0}
-     my_events = Event.joins(:branch).where("branches.is_active=1").
-     where("events.created_at"=>started..ended).
+    hsh = {:total=>0}
+    if branch_ids.size == 0
+      my_events = Event.joins(:branch).where("branches.is_active=1")
+    else
+      my_events = Event.joins(:branch).where(["branches.id in (?)"], branch_ids)
+    end
+    my_events = my_events.where("events.created_at"=>started..ended).
         where("action_id in (#{Action.begin_listen},#{Action.end_listen})").
         select("session_id, events.branch_id, events.action_id, events.created_at").all
 
@@ -56,11 +65,16 @@ class Stat
       hsh[b.branch_id][:number_of_calls] += 1
     end
     branches.each do |b|
-      hsh[b.branch_id][:average] = hsh[b.branch_id][:total]/hsh[b.branch_id][:number_of_calls]
+      if hsh[b.branch_id][:number_of_calls]>0
+        hsh[b.branch_id][:average] = hsh[b.branch_id][:total]/hsh[b.branch_id][:number_of_calls]
+      else
+        hsh[b.branch_id][:average] = 0
+      end
     end
-    ave = hsh[:total] / sessions.keys.size
+    ave = sessions.keys.size>0 ? (hsh[:total] / sessions.keys.size) : 0
     hsh[:number_of_calls]=sessions.keys.size
     hsh[:average]=ave
+    hsh
   end
 
     # total listening time for branches
@@ -105,10 +119,11 @@ class Stat
     tmps.keys.each do |b_id|
       hsh[b_id][:average] = hsh[b_id][:total]/hsh[b_id][:rows]
     end 
-    ave_call_time = total / subs.keys.size  
+    ave_call_time = subs.keys.size>0 ? (total / subs.keys.size) : 0
     hsh[:total] = total
     hsh[:rows] = subs.keys.size
     hsh[:average] = ave_call_time
+    hsh
   end
        
     # for active branches
@@ -131,7 +146,7 @@ class Stat
       where("entries.created_at"=>started..ended).
       select("branch_id, count(entries.id) AS total").
       group(:branch_id)
-      set_hash(numbers)
+      hsh = set_hash(numbers)
     end
 
     protected
@@ -140,7 +155,8 @@ class Stat
       hsh = {}
       total = 0
       input_array.each do | n |
-        hsh[n.branch_id] = n.total
+        hsh[n.branch_id] = {} if !hsh[n.branch_id]
+        hsh[n.branch_id][:total] = n.total
         total += n.total
       end
       hsh[:total] = total
