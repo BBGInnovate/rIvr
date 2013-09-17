@@ -12,7 +12,6 @@ module EntriesHelper
 #    dropbox_session.set_access_token ds.token, ds.secret
 #    dropbox_session.mode = :dropbox
 #    link = dropbox_session.link(record.file_path)
-#    User.logger.debug "AAAAA #{link.inspect}"
 #    link_to record.dropbox_file, link, :target => '_blank'
 #    
     link_to record.dropbox_file, play_entry_path(record), :target => '_blank'

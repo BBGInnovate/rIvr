@@ -23,8 +23,7 @@ TestIvr::Application.routes.draw do
         get :branch
       end
   end
-    
-  resources :reports 
+
   resources :api do
     collection do
       post :feed

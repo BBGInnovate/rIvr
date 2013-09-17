@@ -64,13 +64,16 @@ var report = {
     init : function() {
       $("body").on('click', "#report-submit", function(e) {
         var br = $('#branch_id').val();
+        if (br == null) {
+         // $('#error').html("Must select a Branch");
+         // return false;
+          $('#branch_id option').attr('selected', true);
+          br = $('#branch_id').val();
+        }
         var start_date = $('#start_date').val();
         var end_date = $('#end_date').val();
         $('#error').html('');
-        if (br == null) {
-          $('#error').html("Must select a Branch");
-          return false;
-        }
+        
         if (start_date.length==0 || end_date.length==0 ) {
           $('#error').html("Must select a Start Date and End Date");
           return false;
@@ -78,19 +81,12 @@ var report = {
         var fmt = $("input:radio[name='format']:checked").val();
         var data = {ajax: 1, "branch_id[]": br, start_date: start_date,
             end_date: end_date, format: fmt};
-        var url = "/reports/"
+        var url = "/analytics/"
         if (fmt=='csv') {
           $('#post-report').submit();   
         } else {
           $.post(url, data, report.update, 'html');
         }
-        return false
-      });
-      jQuery("body").on('change', "#remote-desktop-select", function(e) {
-        var branch_id = this.value;
-        var data = {ajax: 1, branch_id: branch_id};
-        var url = "/healthcheck/branch"
-        jQuery.get(url, data,search.remoteDesktop, 'html');
         return false
       });
     },
