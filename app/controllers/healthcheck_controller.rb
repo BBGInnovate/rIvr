@@ -31,7 +31,7 @@ class HealthcheckController < ApplicationController
   
   def search
     search_for = params[:search_for]
-    term = params[:term]
+    term = params[:term].downcase
     case search_for
     when 'country'
       @branches = Branch.includes(:country).where(:is_active=>true).
@@ -40,8 +40,14 @@ class HealthcheckController < ApplicationController
       @branches = Branch.includes(:country).where(:is_active=>true).
         where("branches.name like '%#{term}%'").all
     when 'status'
-      @branches = Branch.includes(:country).where(:is_active=>true).
-        where("branches.status like '%#{term}%'").all   
+      @branches = Branch.includes(:country).where(:is_active=>true).all
+      if ['bad','error','no activity'].include?(term)
+        @branches = @branches.select{|b| b.unhealth?}
+      else
+        @branches = @branches.select{|b| !b.unhealth?}
+      end
+#      @branches = Branch.includes(:country).where(:is_active=>true).
+#        where("branches.status like '%#{term}%'").all   
     end
     render :partial=>'search_results', :layout=>false, :content_type=>'text'
   end
