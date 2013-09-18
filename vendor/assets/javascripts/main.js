@@ -50,26 +50,24 @@ var Modal = {
 }
 var datepickerConfigure = {
   init : function() {
-    
+    /*
     $('#Astart_date').datetimepicker({
       controlType: 'select',
       dateFormat: "yy-mm-dd",
       timeFormat: 'hh:mm tt',
     });
-    
-    $("#start_date").datepicker({
-      dateFormat: "yy-mm-dd",
+    */
+    $("#start_date, #end_date").datepicker({
+      	dateFormat: "yy-mm-dd",
       changeMonth: true,
       changeYear: true,
-      timeFormat: 'hh:mm',
-      showSecond: false,
-      showButtonPanel: true,
       minDate: new Date(2013, 0, 1),
       maxDate: '+1Y',
-      showOn: 'button',
+      showOn: 'both',
       buttonImageOnly: true,
       buttonImage: '/assets/calendar.gif'
     });
+    /*
     $("#end_date").datepicker({
       dateFormat: "yy-mm-dd",
       changeMonth: true,
@@ -79,7 +77,7 @@ var datepickerConfigure = {
       showOn: 'both',
       buttonImageOnly: true,
       buttonImage: '/assets/calendar.gif'
-    });
+    }); */
   }, 
 }
 var datePicker = {
@@ -146,9 +144,9 @@ var homePage = {
 }
 var report = {
     init : function() {
-    	  $("body").on('click', ".start_date", function(e) {
-    		  $('#start_date').keypress();
-    	  });
+    	  //$("body").on('click', ".start_date", function(e) {
+    		  // $('#start_date').keypress();
+    	  //});
       	$("body").on('click', "#report-cancel", function(e) {
       		$('#branch_id option').attr('selected', false);
       		$('#start_date').val('');
