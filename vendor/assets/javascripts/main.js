@@ -1,12 +1,62 @@
+var Modal = {
+		css : function() {
+			var newRule = ".helpPopUp {background: none repeat scroll 0 0 #FFFFFF;border: 1px solid #CFE8F5;";
+			newRule = newRule +"border-radius: 11px 11px 11px 11px;padding: 20px;position: absolute;";
+			newRule = newRule +"text-align: center;min-height: 360px;display: none}";
+			$("style").append(newRule);
+		},
+		open : function (modal_id, anchor_id) {
+			Modal.css();
+      // modal_id modal window placeholder id
+      // anchor_id element id, click which trigers the modal window
+      var modalID = "#" + modal_id;
+      var anchorID = "#" + anchor_id;
+      // get how many pixels that the calling link is from the top of the page -- to be used later.
+      var anchorOffset = Math.floor(jQuery(anchorID).offset().top);
+      var mymodal = $(modalID);
+      
+      // get the modal window's height + padding top + padding bottom
+      var modalHeight = Math.floor(mymodal.height());
+      // the modal's width is based off width of the site area, rather than being set off of another value
+      // sitewidth - modal padding left - modal padding right - 20 ... dropping any hanging decimals
+      // var modalWidth = 506;
+      var c = mymodal.children('div')[0]
+      // we have pre-define the width of the content div 
+      // which is inserted into the modal window
+      var modalWidth = Math.floor($(c).width());
+      // set the modal's width, to overwrite any CSS sizes
+      mymodal.css('width', modalWidth);
+      //now that the modal width is based off of the sitewidth, instead of other numbers, re-evaluate to get the width + padding (similiar to the height)
+      // modalWidth = Math.floor(mymodal.width());
+      var windowWidth = $(window).width();
+      // find the new left for the modal window
+      var newLeft = Math.floor((windowWidth - modalWidth) / 2);
+      // set the new left
+      mymodal.css('left', newLeft);
+      // instead of using the top of the screen to determine where the modal goes, we're using the offset position of the link that calls the function
+      // for the user to see the pop-up they need to click the link
+      // so to ensure that the user sees the modal it will appear above the link.
+      // This is taking the offset position of the link - half the modal window's height.  So in theory, the modal window's center will be right above the calling link.
+      var newTop = anchorOffset - Math.floor(modalHeight / 2);
+      // set the new top
+      mymodal.css('top', newTop);
+      // now set the height of the content div inserted into 
+      // the modal
+      var child = mymodal.children('div')[0];
+      $(child).css('height', modalHeight)
+      // fade the modal window in
+      mymodal.fadeIn();
+    }
+}
 var datepickerConfigure = {
   init : function() {
-    /*
-    $('#start_date').datetimepicker({
+    
+    $('#Astart_date').datetimepicker({
       controlType: 'select',
       dateFormat: "yy-mm-dd",
       timeFormat: 'hh:mm tt',
     });
-    */
+    
     $("#start_date").datepicker({
       dateFormat: "yy-mm-dd",
       changeMonth: true,
@@ -96,6 +146,14 @@ var homePage = {
 }
 var report = {
     init : function() {
+    	  $("body").on('click', ".start_date", function(e) {
+    		  $('#start_date').keypress();
+    	  });
+      	$("body").on('click', "#report-cancel", function(e) {
+      		$('#branch_id option').attr('selected', false);
+      		$('#start_date').val('');
+      		$('#end_date').val('');
+    	  });
       $("body").on('click', "#report-submit", function(e) {
         var br = $('#branch_id').val();
         if (br == null) {
@@ -125,7 +183,7 @@ var report = {
       });
     },
     update : function(data) {
-      $('#report-results').html(data);
+      $('#report-results').show().html(data);
     }
 }
 var search = {
@@ -277,26 +335,8 @@ var editHealth = {
         "cursor" : "pointer"
       });
       $('#modal-window').html(data)
-      editHealth.openModal(editHealth.modalId, editHealth.entry_id);
+      Modal.open(editHealth.modalId, editHealth.entry_id);
     },
-    openModal : function (modal_id, anchor_id) {
-      // modal_id modal window placeholder id
-      // anchor_id element id, click which trigers the modal window
-      var modalID = "#" + modal_id;
-      var anchorID = "#" + anchor_id;
-      var anchorOffset = Math.floor(jQuery(anchorID).offset().top);
-      var modalHeight = Math.floor(jQuery(modalID).height());
-      var modalWidth = 506;
-      jQuery(modalID).css('width', modalWidth);
-      modalWidth = Math.floor(jQuery(modalID).width());
-      var windowWidth = jQuery(window).width();
-      var newLeft = Math.floor((windowWidth - modalWidth) / 2);
-      
-      jQuery(modalID).css('left', newLeft);
-      var newTop = anchorOffset - Math.floor(modalHeight / 2);
-      jQuery(modalID).css('top', newTop);
-      jQuery(modalID).fadeIn();
-    }
   }
 var loadSoundCloud = {
     entry_id : 0,
@@ -320,15 +360,11 @@ var loadSoundCloud = {
         $(this).css({
           "cursor" : "wait"
         });
-        dropbox_url = $('#soundcloud_url').val();
-        title = $('#soundcloud_title').val();
-        genre = $('#soundcloud_genre').val();
-        description = $('#soundcloud_description').val();
-        data={};
-        data["soundcloud[title]"]=title;
-        data["soundcloud[url]"]=dropbox_url;
-        data["soundcloud[genre]"]=genre;
-        data["soundcloud[description]"]=description; 
+        data = {};
+        records = $('input[name*="soundcloud"]');
+        records.each(function () {
+          data[this.name] = this.value;
+        });
         jQuery.get(url, data, loadSoundCloud.change, 'html');
         return false;
       });
@@ -343,7 +379,7 @@ var loadSoundCloud = {
       });
       var o = jQuery('#'+loadSoundCloud.modalId)
       o.html(data);
-      loadSoundCloud.openModal(loadSoundCloud.modalId, loadSoundCloud.entry_id);
+      Modal.open(loadSoundCloud.modalId, loadSoundCloud.entry_id);
     },
     updated : function(data) {
       $('.publish-syndicate a').css({
@@ -354,39 +390,6 @@ var loadSoundCloud = {
       my.addClass(obj.error).html(obj.message);
       my.fadeIn("fast").delay(3000).fadeOut("slow");
     },
-    openModal : function (modal_id, anchor_id) {
-      // modal_id modal window placeholder id
-      // anchor_id element id, click which trigers the modal window
-      var modalID = "#" + modal_id;
-      var anchorID = "#" + anchor_id;
-      // get how many pixels that the calling link is from the top of the page -- to be used later.
-      var anchorOffset = Math.floor(jQuery(anchorID).offset().top);
-      
-      // get the modal window's height + padding top + padding bottom
-      var modalHeight = Math.floor(jQuery(modalID).height());
-      // the modal's width is based off width of the site area, rather than being set off of another value
-      // sitewidth - modal padding left - modal padding right - 20 ... dropping any hanging decimals
-      var modalWidth = 506;
-      
-      // set the modal's width, to overwrite any CSS sizes
-      jQuery(modalID).css('width', modalWidth);
-      //now that the modal width is based off of the sitewidth, instead of other numbers, re-evaluate to get the width + padding (similiar to the height)
-      modalWidth = Math.floor(jQuery(modalID).width());
-      var windowWidth = jQuery(window).width();
-      // find the new left for the modal window
-      var newLeft = Math.floor((windowWidth - modalWidth) / 2);
-      // set the new left
-      jQuery(modalID).css('left', newLeft);
-      // instead of using the top of the screen to determine where the modal goes, we're using the offset position of the link that calls the function
-      // for the user to see the pop-up they need to click the link
-      // so to ensure that the user sees the modal it will appear above the link.
-      // This is taking the offset position of the link - half the modal window's height.  So in theory, the modal window's center will be right above the calling link.
-      var newTop = anchorOffset - Math.floor(modalHeight / 2);
-      // set the new top
-      jQuery(modalID).css('top', newTop);
-      // fade the modal window in
-      jQuery(modalID).fadeIn();
-    }
   }
 
 

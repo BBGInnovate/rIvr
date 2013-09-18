@@ -319,12 +319,13 @@ a.go-template {
 /* for modal window */
 #health-form-wrapper {
 	 margin: 0 0 0 0px;
-	 height: 100%;
+	 height: auto;
 	 width: 500px;
 	 border: 1px dotted #CCCCCC;
 	 background-color: #CCCCCC;
 }
 /* for modal window */
+/* moved to var Modal.css *
 .helpPopUp {
     background: none repeat scroll 0 0 #FFFFFF;
     border: 1px solid #CFE8F5;
@@ -332,9 +333,10 @@ a.go-template {
     padding: 20px;
     position: absolute;
     text-align: center;
-	  height: 360px;
+	  min-height: 360px;
 	  display: none
-}
+} */
+
 #health-form-wrapper p {
   clear: both;
   height: 25px;
@@ -422,6 +424,9 @@ input[type=submit]:hover {
 .ui-timepicker-rtl dl dt{ float: right; clear: right; }
 .ui-timepicker-rtl dl dd { margin: 0 45% 10px 10px; }
 /* report page */
+.search-results {
+	display:none;
+}
 .ui-datepicker-trigger {
    vertical-align: middle;
    line-height: 24px;

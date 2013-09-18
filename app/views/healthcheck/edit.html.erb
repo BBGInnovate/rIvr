@@ -1,7 +1,7 @@
 <div id="health-form-wrapper">
 	<h2>Edit </h2>
   <div id="report">
-    <p><span id="error"></span></p>
+    <span id="error"></span>
     <p>
     <label class="subtle-label" for="alarm_enabled">Alarm Enabled</label>
 				<%= check_box_tag "record[send_alarm]",@record.send_alarm, :checked=>!!@record.send_alarm  %>
