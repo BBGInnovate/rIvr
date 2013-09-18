@@ -74,15 +74,6 @@ class AnalyticsController < ApplicationController
     @rows
   end
       
-  def content
-    flash[:error] = nil
-    respond_to do |format|
-      filename = "dl_#{Time.now.strftime('%Y%m%d')}.csv".downcase
-      format.csv { send_content(filename) }
-      format.html { get_data; render :content, :layout=>false}
-    end
-  end
-
   protected
   
   def access_denied
@@ -92,12 +83,6 @@ class AnalyticsController < ApplicationController
         redirect_to "/"
       end
     end
-  end
-
-  def get_variables
-    new
-    @branch_id = params[:branch]
-    @branch = Branch.find_by_id @branch_id.to_i
   end
 
   def send_content(filename)
@@ -114,24 +99,7 @@ class AnalyticsController < ApplicationController
     send_data content, :filename => filename,
       :type => 'text/csv; charset=iso-8859-1; header=present'
   end
-  
-  def get_data
 
-  end
-
- def order_by
-   params[:order] =~ /(transaction|billing_statement)-(\w+)/
-   o = $2
-   a = ['asc','desc']
-   if !session[o]
-     session[o] = 'desc'
-   else
-     a.delete session[o]
-     session[o] = a.to_s
-   end
-
- end
- 
  private 
 
 end

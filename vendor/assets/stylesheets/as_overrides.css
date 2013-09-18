@@ -225,7 +225,7 @@ div {
     font-size: 14px;
 }
 
-input.btnAction:hover {
+input.btnAction:hover, .branch-name:hover {
   background-color:#004276;
   cursor: pointer; 
   color: #FFF;
@@ -293,6 +293,79 @@ a.go-template {
 }
 
 /******* liwen added ******/
+/* moderation/index */
+#publish-to-dropbox {
+	 width:300px;
+		height: auto;
+}
+#soundcloud-upload h2 {
+    color: #333333;
+    font-size: 18px;
+    margin-top: 10px;
+}
+#publish-to-dropbox {
+	 margin: 0 0 0 10px;
+		font-weight: bold;
+	 display: none;
+}
+#soundcloud-upload {
+	 height: 100%;
+		width: 500px;
+	 border: 1px dotted #CCCCCC;
+		background-color: #CCCCCC;
+}
+
+/***  healthcheck/1/edit ***/
+/* for modal window */
+#health-form-wrapper {
+	 margin: 0 0 0 0px;
+	 height: 100%;
+	 width: 500px;
+	 border: 1px dotted #CCCCCC;
+	 background-color: #CCCCCC;
+}
+/* for modal window */
+.helpPopUp {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border: 1px solid #CFE8F5;
+    border-radius: 11px 11px 11px 11px;
+    padding: 20px;
+    position: absolute;
+    text-align: center;
+	  height: 360px;
+	  display: none
+}
+#health-form-wrapper p {
+  clear: both;
+  height: 25px;
+  line-height: 21px;
+}
+#health-form-wrapper label {
+    float: left;
+		text-align: right;
+    margin-left: 0;
+    width: 120px;
+}
+#health-form-wrapper input, #health-form-wrapper select {
+  float: left;
+  margin-left: 10px;
+  width: 130px;
+}
+#health-form-wrapper .description {
+	  margin: 0;
+}
+#health-form-wrapper input.btnAction {
+    float: none;
+    height: 31px;
+    margin-top: 20px;
+    width: 100px;
+    font-family: Arial,sans serif;
+    font-size: 14px;
+}
+#health-form-wrapper #record_send_alarm {
+	 width: 20px;
+}
+
 .my-tooltip {
   line-height: 20px;
   vertical-align:middle
@@ -336,7 +409,18 @@ img.red-light, img.green-light {
 input[type=submit]:hover {
   cursor: pointer; 
 }
+/* css for timepicker */
+.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
+.ui-timepicker-div dl { text-align: left; }
+.ui-timepicker-div dl dt { float: left; clear:left; padding: 0 0 0 5px; }
+.ui-timepicker-div dl dd { margin: 0 10px 10px 45%; }
+.ui-timepicker-div td { font-size: 90%; }
+.ui-tpicker-grid-label { background: none; border: none; margin: 0; padding: 0; }
 
+.ui-timepicker-rtl{ direction: rtl; }
+.ui-timepicker-rtl dl { text-align: right; padding: 0 5px 0 0; }
+.ui-timepicker-rtl dl dt{ float: right; clear: right; }
+.ui-timepicker-rtl dl dd { margin: 0 45% 10px 10px; }
 /* report page */
 .ui-datepicker-trigger {
    vertical-align: middle;

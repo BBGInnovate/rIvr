@@ -1,0 +1,38 @@
+<div id="health-form-wrapper">
+	<h2>Edit </h2>
+  <div id="report">
+    <p><span id="error"></span></p>
+    <p>
+    <label class="subtle-label" for="alarm_enabled">Alarm Enabled</label>
+				<%= check_box_tag "record[send_alarm]",@record.send_alarm, :checked=>!!@record.send_alarm  %>
+	   </p>
+
+    <p>
+    <label for="record_no_activity_1">No activity</label>
+				<span class="description">In hours to trigger notification</span>
+				<%= no_activity_form_column(@record, nil) %>   
+    </p>
+
+    <p>
+    	<label for="record_deliver_method_1">Deliver method</label>
+					<%= deliver_method_form_column(@record, nil) %>
+				</p>
+				<p>
+					<label for="record_email_1">Email</label>
+					<%= text_field_tag "record[email]", @record.email %>
+				</p>
+				
+				<p>
+					<label for="record_cell_phone_1">Cell phonenumber</label>
+					<%= text_field_tag "record[cell_phone]", @record.cell_phone, :placeholder=>"2021234567" %>
+    <p>
+    	  <label for="record_phone_carrier_1">Phone carrier</label>
+							<%= phone_carrier_form_column(@record, nil) %>
+    </p>
+    <p>
+    
+    <input type="submit" class="btnAction" id="submit" value="Submit" />
+    <input type="submit" class="btnAction" value="Back" name="cancel" />
+    </p>
+			</div>
+</div>

@@ -1,6 +1,6 @@
 <% @branches.each do |branch|%>
       <tr>
-        <td>
+        <td class="branch-name" id="<%= branch.id %>" data-url="/healthcheck/<%= branch.id %>/edit">
           <%= branch.name%>
         </td>
         <td>

@@ -9,10 +9,10 @@
       <%= e.branch.country.name %>
     </td>
     <td class="phone">
-      <%= @calls[e.branch.id] || 0 %>
+      <%= @calls[e.branch.id][:total] || 0 %>
     </td>
     <td class="message left-nav-bar" data-url="/entries">
-      <%= @messages[e.branch_id] || 0 %>
+      <%= @messages[e.branch_id][:total] || 0 %>
     </td>
     <td class="alert left-nav-bar" data-url="/health">
       <%= e.branch.health_image.html_safe %>

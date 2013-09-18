@@ -56,7 +56,7 @@ class ModerationController < ApplicationController
     elsif params[:publish].to_i == 1
       if publish_dropbox
         @entry.save
-        txt="{\"error\":\"info\",\"message\":\"Published to Dropbox\"}"
+        txt="{\"error\":\"success\",\"message\":\"Published to Dropbox\"}"
       else
         txt="{\"error\":\"error\",\"message\":\"#{@entry.errors.full_messages.first}\"}"
       end

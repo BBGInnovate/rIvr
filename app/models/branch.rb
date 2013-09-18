@@ -49,8 +49,9 @@ class Branch< ActiveRecord::Base
   end
   
   def self.top_activity
-    Event.select("branch_id, max(created_at) as created_at").
-      group(:branch_id).order("created_at desc").limit(3)
+    Event.joins(:branch).where("branches.is_active=1").
+      select("branch_id, max(events.created_at) as created_at").
+      group(:branch_id).order("events.created_at desc").limit(3)
   end
   
   def self.forum_type_ui(forum_type)
@@ -83,8 +84,8 @@ class Branch< ActiveRecord::Base
   belongs_to :country, :foreign_key=>"country_id"
   
   def unhealth?
-    return true if !self.health
-    self.health.last_event < self.health.no_activity.hours.ago
+    return true if (!self.health || !self.health.last_event)
+    self.health.last_event.to_i < self.health.no_activity.hours.ago.to_i
   end
   def health_image
     if unhealth?
@@ -93,7 +94,13 @@ class Branch< ActiveRecord::Base
       %{<img src="/assets/images/icon-analytics.png" width="23" height="21" alt="radio signal" />}
     end  
   end
-  
+  def gmap_marker
+    if unhealth?
+      "/assets/red.png"
+    else
+      "/assets/radio-wave.png"
+    end  
+  end
   has_many :alerted_messages 
   
   has_many :voting_sessions do
@@ -164,7 +171,7 @@ class Branch< ActiveRecord::Base
       # AppliactionHelper#format_seconds(total_seconds)
     end
   end
-  has_many :healths
+#  has_many :healths
   has_many :reports do
     def latest
       res = select("max(id) as id").group(:name).where(:is_active=>true)

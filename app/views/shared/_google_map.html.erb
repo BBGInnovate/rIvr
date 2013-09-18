@@ -59,11 +59,21 @@ jQuery(document).ready(function() {
 						  var infowindow<%=i%> = new google.maps.InfoWindow({
            content: '<%= b.gmaps4rails_infowindow %>'
         });
+        var image = {
+        url: "<%= b.gmap_marker%>",
+        // This marker is 20 pixels wide by 20 pixels tall.
+        size: new google.maps.Size(20,20),
+        // The origin for this image is 0,0.
+        origin: new google.maps.Point(0,0),
+        // The anchor for this image is the base of the flagpole at 0,32.
+        anchor: new google.maps.Point(0,0)
+        };
+
         var myLatlng = new google.maps.LatLng(<%= b.latitude %>, <%= b.longitude %>);
         var marker<%=i%> = new google.maps.Marker({
             position: myLatlng,
             map: Gmaps.map.map,
-												icon: "assets/radio-wave.png",
+					  icon: image,
             title: '<%#= b.gmaps4rails_infowindow %>'
         });
         google.maps.event.addListener(marker<%=i%>, 'click', function() {

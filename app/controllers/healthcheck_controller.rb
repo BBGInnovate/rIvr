@@ -8,6 +8,25 @@ class HealthcheckController < ApplicationController
     if !@branches 
       @branches = Branch.includes(:country).where(:is_active=>true).all
     end
+    Health.populate(@branches)
+  end
+  
+  def edit
+    @record = Health.find_by_branch_id params[:id]
+    record = params[:record]
+    if record
+      @record.attributes = record
+      if @record.valid?
+        @record.save
+        txt = "{\"error\":\"success\", \"msg\":\"Record updated\"}"
+        render :text=>txt,:layout=>false, :content_type=>'text'
+      else
+        msg = @record.errors.full_messages.first
+        txt = "{\"error\":\"error\", \"msg\":\"#{msg}\"}"
+      end
+    else
+      render :layout=>false, :content_type=>'text'
+    end
   end
   
   def search

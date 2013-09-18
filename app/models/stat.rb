@@ -5,7 +5,7 @@ class Stat
   # class << self
     attr_accessor :started, :ended, :branches, :branch_ids
     
-    def initialize(start_date=nil, end_date=nil, branches=[])
+    def initialize(start_date=nil, end_date=nil, mybranches=[])
       # start_date, end_date must be format Time.now.to_s(:db)
       # Time.now.beginning_of_month
       if !!start_date
@@ -18,12 +18,12 @@ class Stat
       else
         @ended = Time.now.to_s(:db)
       end
-      if branches.size>0
-        @branches = branches
+      if mybranches.size>0
+        @branches = mybranches
       else
         @branches = Branch.where("branches.is_active=1").all
       end
-      @branch_ids = branches.map{|b| b.id}
+      @branch_ids = @branches.map{|b| b.id}
     end
     
     # for active branches

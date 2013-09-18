@@ -1,0 +1,27 @@
+<%= link_to_function("Print", "javascript:print()", :class=>"print-it") %>
+<h2 class="print-header"><%= @report_name %></h2>
+<span class="print-date"><%= @start_date %> - <%= @end_date %> </span>
+<table id="search-results-id">
+  <thead>
+    <tr>
+    	<% @title.each do |f| %>
+      <th>
+        <%= f %>
+      </th>
+      <% end %>
+    </tr>
+  </thead>
+  <tbody>
+    <% @rows.each do | row | %>
+    <tr>
+      <% @title.each do |f| %>
+      <td>
+        <%= row[f] %>
+      </td>
+      <% end %>
+    </tr>
+    <% end %>
+  </tbody>
+</table>
+
+

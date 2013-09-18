@@ -51,7 +51,7 @@ class Health< ActiveRecord::Base
   end
   
   
-  def self.populate
+  def self.populate(branches=nil)
         sql = "SELECT t1.id, branch_id, action_id, created_at FROM events as t1 JOIN (SELECT MAX(id) id FROM events WHERE action_id != #{Action.ping_server} GROUP BY branch_id) as t2 ON t1.id = t2.id;"
         events1 = Health.connection.execute sql
         # next to find ping server event
@@ -59,19 +59,29 @@ class Health< ActiveRecord::Base
         events2 = Health.connection.execute sql2
         events = events1.to_a + events2.to_a
         actions = Action.all
-        Health.truncate
+        branch_ids = []
         events.each do |e|
           br  = Branch.find_me e[1]
+          branch_ids << br
           next if (!br || !br.is_active)
           act = actions.select{|a| a.id==e[2]}[0]
-          b = Health.find_by_event_id e[0]
+          b = Health.find_by_branch_id e[1]
           if b && act
             b.update_attributes :event_id=>e[0], :last_event=>e[3], :event=>act.name
           elsif act && act.id != Action.ping_server
             Health.create :branch_id=>e[1], :event_id=>e[0], :last_event=>e[3], :event=>act.name
           end
         end
- end
+        branch_ids.compact!
+        if !branches
+          branches = Branch.where(["is_active=1 AND id not in (?)", branch_ids])
+        end
+        branches.each do |b|
+          if !Health.find_by_branch_id(b.id)
+            Health.create :branch_id=>b.id
+          end
+        end    
+   end
       
   def self.truncate
       connection.execute "truncate table #{table_name}"

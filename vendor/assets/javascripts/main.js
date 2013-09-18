@@ -1,3 +1,37 @@
+var datepickerConfigure = {
+  init : function() {
+    /*
+    $('#start_date').datetimepicker({
+      controlType: 'select',
+      dateFormat: "yy-mm-dd",
+      timeFormat: 'hh:mm tt',
+    });
+    */
+    $("#start_date").datepicker({
+      dateFormat: "yy-mm-dd",
+      changeMonth: true,
+      changeYear: true,
+      timeFormat: 'hh:mm',
+      showSecond: false,
+      showButtonPanel: true,
+      minDate: new Date(2013, 0, 1),
+      maxDate: '+1Y',
+      showOn: 'button',
+      buttonImageOnly: true,
+      buttonImage: '/assets/calendar.gif'
+    });
+    $("#end_date").datepicker({
+      dateFormat: "yy-mm-dd",
+      changeMonth: true,
+      changeYear: true,
+      minDate: new Date(2013, 0, 1),
+      maxDate: '+1Y',
+      showOn: 'both',
+      buttonImageOnly: true,
+      buttonImage: '/assets/calendar.gif'
+    });
+  }, 
+}
 var datePicker = {
   options : {
   	dateFormat: "yy-mm-dd",
@@ -11,7 +45,7 @@ var datePicker = {
     buttonImage: 'assets/calendar.gif' 
   },
   css : {
-  	  "vertical-align": "middle",
+  	"vertical-align": "middle",
     "line-height": "24px",
     "margin-left": "5px",
     "width": "20px",
@@ -194,6 +228,76 @@ var searchEntry = {
     }
 }
 /** modal window ***/
+var editHealth = {
+    entry_id : 0,
+    modalId : 'modal-window',
+    init : function() {
+      jQuery("body").on('click', ".branch-name", function(e) {
+        var name = $(this).text(); // get branch name
+        editHealth.entry_id=this.id;
+        $(this).css({
+          "cursor" : "wait"
+        });
+        var url= $(this).attr("data-url");
+        jQuery.get(url, {}, editHealth.updated, 'html')
+
+        return false;
+      });
+      $('body').on('click', "#submit", function(e) {
+        var url="/healthcheck/" + editHealth.entry_id + "/edit";
+        $(this).css({
+          "cursor" : "wait"
+        });
+        data = {};
+        records = $('input[name*="record"],select[name*="record"]');
+        records.each(function () {
+        	  if (this.name=='record[send_alarm]') {
+        	    	data[this.name] = this.checked
+        	  } else {
+            data[this.name] = this.value;
+        	  }
+        });
+        jQuery.get(url, data, editHealth.change, 'html');
+        return false;
+      });
+      $('body').on('click','input[name="cancel"]', function(e) {
+        $('#'+editHealth.modalId).hide();
+      });
+
+    },
+    change : function(data) {
+      	var obj = jQuery.parseJSON(data);
+    	  $('#error').addClass(obj.error).html(obj.msg);
+      $('body').css({
+        "cursor" : "pointer"
+      });
+    },
+    updated : function(data) {
+      $('.branch-name').css({
+        "cursor" : "pointer"
+      });
+      $('#modal-window').html(data)
+      editHealth.openModal(editHealth.modalId, editHealth.entry_id);
+    },
+    openModal : function (modal_id, anchor_id) {
+      // modal_id modal window placeholder id
+      // anchor_id element id, click which trigers the modal window
+      var modalID = "#" + modal_id;
+      var anchorID = "#" + anchor_id;
+      var anchorOffset = Math.floor(jQuery(anchorID).offset().top);
+      var modalHeight = Math.floor(jQuery(modalID).height());
+      var modalWidth = 506;
+      jQuery(modalID).css('width', modalWidth);
+      modalWidth = Math.floor(jQuery(modalID).width());
+      var windowWidth = jQuery(window).width();
+      var newLeft = Math.floor((windowWidth - modalWidth) / 2);
+      
+      jQuery(modalID).css('left', newLeft);
+      var newTop = anchorOffset - Math.floor(modalHeight / 2);
+      jQuery(modalID).css('top', newTop);
+      jQuery(modalID).fadeIn();
+    }
+  }
 var loadSoundCloud = {
     entry_id : 0,
     modalId : 'modal-window',
@@ -247,12 +351,7 @@ var loadSoundCloud = {
       });
       var obj = jQuery.parseJSON(data);
       my = jQuery("#publish-to-dropbox")
-      my.html(obj.message);
-      if (obj.error == 'error')
-        my.addClass('color-red');
-      else
-        my.addClass('color-green');
-         
+      my.addClass(obj.error).html(obj.message);
       my.fadeIn("fast").delay(3000).fadeOut("slow");
     },
     openModal : function (modal_id, anchor_id) {
@@ -357,10 +456,15 @@ var reportUpload = {
 		var ids = "#introduction,#goodbye,#bulletin_question, .square";
 		jQuery("#forum-template").on('click', ".square", function(e) {
 			var name = this.id; // this div id is used as template.name
+			var url;
+			if (name == 'headline') {
+			  url = '/templates/headline';
+		  } else {
+		    url = '/templates/new';
+		  }
 			reportUpload.myId = this.id;
 			$(this).css("cursor", "progress");
 			var b = jQuery('#branch-name').val();
-			var url = '/templates/new';
 			var data = {
 				name : name,
 				type : forum_type,
@@ -369,7 +473,7 @@ var reportUpload = {
 			jQuery.get(url, data, reportUpload.update, 'html');
 			jQuery('#forum-upload').show();
 		});
-
+    /*
 		jQuery("#forum-template").on('click', "#headline", function(e) {
 			var name = this.id;
 			var b = jQuery('#branch-name').val();
@@ -382,6 +486,7 @@ var reportUpload = {
 			jQuery.get(url, data, reportUpload.update, 'html');
 			jQuery('#forum-upload').show();
 		});
+		*/
 		jQuery("#template-headline").on('click', "#save", function(e) {
 			var url = '/templates/headline';
 			jQuery("[name='todo']").val("save");

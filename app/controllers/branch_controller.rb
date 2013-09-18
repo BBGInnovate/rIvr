@@ -29,13 +29,22 @@ class BranchController < ApplicationController
   
     def create
       temp = params[:branch]
-      @branch = Branch.new temp
+      @branch = Branch.find_by_name temp[:name]
+        
+      if @branch
+        @branch.attributes = temp
+        msg = "#{@branch.name.titleize} saved"
+      else
+        @branch = Branch.new temp
+        msg = "#{@branch.name.titleize} created"
+      end
+        
       if !@branch.valid?
         text = %{{"error": "error", "msg": "Invalid #{@branch.errors.full_messages.first}"}}
       else 
         begin
           @branch.save
-          text = %{{"error": "notice", "msg": "Branch #{@branch.name.titleize} created"}} 
+          text = %{{"error": "notice", "msg": "Branch #{msg}"}} 
         rescue Mysql2::Error => e
           text = %{{"error": "error", "msg": "MySQL error #{e.message}"}}
         rescue Exception=>e
