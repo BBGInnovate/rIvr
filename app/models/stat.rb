@@ -3,7 +3,7 @@ class Stat
   
   # Syntax: Stat.new('2013-08-01','2013-09-1').alerted
   # class << self
-    attr_accessor :started, :ended, :branches, :branch_ids
+    attr_accessor :started, :ended, :branches, :branch_ids, :countries
     
     def initialize(start_date=nil, end_date=nil, mybranches=[])
       # start_date, end_date must be format Time.now.to_s(:db)
@@ -24,6 +24,7 @@ class Stat
         @branches = Branch.where("branches.is_active=1").all
       end
       @branch_ids = @branches.map{|b| b.id}
+      @countries = @branches.map{|b| b.country }.uniq
     end
     
     # for active branches
@@ -41,11 +42,14 @@ class Stat
   # listened[:number_of_calls] == number of calls for listening
   def listened
     hsh = {:total=>0}
-    my_events = Event.where(["events.branch_id in (?)", branch_ids])
+    my_events = Event.includes(:branch).where(["events.branch_id in (?)", branch_ids])
     my_events = my_events.where("events.created_at"=>started..ended).
         where("action_id in (#{Action.begin_listen},#{Action.end_listen})").
         select("session_id, events.branch_id, events.action_id, events.created_at").all
 
+    @countries.each do |c|
+      hsh[c.name] = {:total=>0, :number_of_calls=>0, :average=>0}
+    end
     branches.each do |b|
       hsh[b.id] =  {:total=>0, :number_of_calls=>0, :average=>0}
     end
@@ -59,6 +63,8 @@ class Stat
       b = session_rows.first
       hsh[b.branch_id][:total] += session_seconds
       hsh[b.branch_id][:number_of_calls] += 1
+      hsh[country_name(b.branch.country_id)][:total] += session_seconds
+      hsh[country_name(b.branch.country_id)][:number_of_calls] += 1
     end
     branches.each do |b|
       if hsh[b.id][:number_of_calls]>0
@@ -70,6 +76,12 @@ class Stat
     ave = sessions.keys.size>0 ? (hsh[:total] / sessions.keys.size) : 0
     hsh[:number_of_calls]=sessions.keys.size
     hsh[:average]=ave
+    @countries.each do |c|
+      if hsh[c.name][:total] > 0
+         hsh[c.name][:average] = 
+           hsh[c.name][:total] / hsh[c.name][:number_of_calls]
+      end
+    end
     hsh
   end
 
@@ -96,12 +108,15 @@ class Stat
   # call_times[:total] = total call duration for all branches
   # call_times[:average] = ave call duration
   def call_times
-    events = Event.where(:created_at=>started..ended).
+    events = Event.includes(:branch).where(:created_at=>started..ended).
          where(["events.branch_id in (?)",branch_ids]).
          select("session_id, branch_id, created_at")
     hsh = {}
     total = 0
     len  = 0
+    @countries.each do |c|
+      hsh[c.name] = {:total=>0, :rows=>0, :average=>0} 
+    end
     branches.each do |b|
       hsh[b.id] = {:total=>0, :rows=>0, :average=>0} 
     end 
@@ -110,14 +125,22 @@ class Stat
       e = subs[session_id]
       len = e.last.created_at.to_i - e.first.created_at.to_i
       hsh[e.last.branch_id][:total] += len
+      hsh[country_name(e.last.branch.country_id)][:total] += len
       total += len
       hsh[e.last.branch_id][:rows] += 1
+      hsh[country_name(e.last.branch.country_id)][:rows] += 1
     end
     branches.each do |b|
       if hsh[b.id][:rows] > 0
         hsh[b.id][:average] = hsh[b.id][:total]/hsh[b.id][:rows]
       end
     end 
+    @countries.each do |c|
+      if hsh[c.name][:total]>0
+        hsh[c.name][:average] = 
+          hsh[c.name][:total] / hsh[c.name][:rows]
+      end
+    end
     ave_call_time = subs.keys.size>0 ? (total / subs.keys.size) : 0
     hsh[:total] = total
     hsh[:rows] = subs.keys.size
@@ -142,11 +165,12 @@ class Stat
     # messages[branch_id] #=> message number for the branch
     def messages
     #  numbers = Entry.joins(:branch).where("branches.is_active=1").
-      numbers = Entry.where(["entries.branch_id in (?) ", branch_ids]).
+      numbers = Entry.includes(:branch).where(["entries.branch_id in (?) ", branch_ids]).
       where("entries.created_at"=>started..ended).
       select("branch_id, count(entries.id) AS total").
       group(:branch_id)
       hsh = set_hash(numbers)
+      hsh
     end
 
     protected
@@ -154,14 +178,29 @@ class Stat
     def set_hash(input_array)
       hsh = {}
       total = 0
+      @countries.each do |c|
+        hsh[c.name] = {:total=>0, :rows=>0, :average=>0, :branches=>[]}
+      end
       branches.each do |b|
         hsh[b.id] = {:total=>0}
       end
+      
       input_array.each do | n |
+        hsh[country_name(n.branch.country_id)][:branches] << n.branch.name
         hsh[n.branch_id][:total] = n.total
+        hsh[country_name(n.branch.country_id)][:total] += n.total
         total += n.total
+        hsh[country_name(n.branch.country_id)][:rows] += 1
       end
+      
       hsh[:total] = total
+      @countries.each do |c|
+        hsh[c.name][:branches].uniq!
+        if hsh[c.name][:total] > 0
+          hsh[c.name][:average] = 
+            hsh[c.name][:total] / hsh[c.name][:rows]
+        end
+      end
       hsh
     end
 
@@ -186,4 +225,7 @@ class Stat
       session_listen_time
     end
 
+    def country_name(id)
+      countries.detect{|c| c.id==id}.name
+    end
 end

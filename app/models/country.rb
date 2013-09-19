@@ -1,6 +1,7 @@
 require 'open-uri'
 require 'nokogiri'
 class Country< ActiveRecord::Base
+   has_many :branches
    def self.populate
      url = "https://raw.github.com/umpirsky/country-list/master/country/cldr/en/country.xml"
      doc = Nokogiri::XML(open(url))

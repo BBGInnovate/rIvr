@@ -7,6 +7,7 @@ class Branch< ActiveRecord::Base
   attr_accessor :vote_result
 
   has_one :health
+  belongs_to :country, :foreign_key=>"country_id"
 #  include HealthHelper
   
   def gmaps4rails_infowindow
@@ -80,8 +81,6 @@ class Branch< ActiveRecord::Base
   end
   
 #  has_and_belongs_to_many :users
-  
-  belongs_to :country, :foreign_key=>"country_id"
   
   def unhealth?
     return true if (!self.health || !self.health.last_event)

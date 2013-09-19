@@ -21,7 +21,9 @@ class AnalyticsController < ApplicationController
     
     if request.post?
       # @branches = Branch.includes(:country).where(:is_active=>true).select("country_id, contries.id, contries.name, branches.name").all
-      @branches = Branch.where(["id in (?)", params[:branch_id]])   
+      @branches = Branch.includes(:country).
+         where(["id in (?)", params[:branch_id]])  
+      @countries = @branches.map{|b| b.country }.uniq 
       @stats = Stat.new(started, ended, @branches)
       # @alerts = @stats.alerted
       @messages = @stats.messages
@@ -55,6 +57,14 @@ class AnalyticsController < ApplicationController
             'Number of Messages Left', # Stat.new.messages[:total]
             'Country'
             ]
+     @country_title = [
+                'Country',
+                'Number of Callers', # Stat.new.number_of_calls
+                'Average time listening',
+                'Average total call time', # Stat.new.call_times[:average]
+                'Number of Messages Left', # Stat.new.messages[:total]
+                'Branches'
+                ]
   end
     
   def branch_report_rows
@@ -70,6 +80,17 @@ class AnalyticsController < ApplicationController
       row['Number of Messages Left'] = @messages[b.id][:total]
       row['Country'] = b.country.name
       @rows << row
+    end
+    @country_rows = []
+    @countries.each do | c |
+      row = {}
+      row['Country'] = c.name
+      row['Number of Callers'] = @calls[c.name][:total]
+      row['Average time listening'] = @listened[c.name][:average]
+      row['Average total call time'] = @call_times[c.name][:average]
+      row['Number of Messages Left'] = @messages[c.name][:total]
+      row['Branches'] = @messages[c.name][:branches].join(',')
+      @country_rows << row
     end
     @rows
   end
