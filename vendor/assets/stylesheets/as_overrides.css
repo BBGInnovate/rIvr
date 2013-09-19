@@ -424,7 +424,7 @@ input[type=submit]:hover {
 .ui-timepicker-rtl dl dt{ float: right; clear: right; }
 .ui-timepicker-rtl dl dd { margin: 0 45% 10px 10px; }
 /* report page */
-.search-results {
+#report-results {
 	display:none;
 }
 .ui-datepicker-trigger {

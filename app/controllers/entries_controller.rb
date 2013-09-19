@@ -93,24 +93,28 @@ class EntriesController < ApplicationController
   end
   
   def play
+    e = Entry.find_by_id params[:id]
+    return '' if !e
     ds = DropboxSession.last
     if !!ds
       dropbox_session = Dropbox::Session.new(DROPBOX.consumer_key, DROPBOX.consumer_secret)
       dropbox_session.set_access_token ds.token, ds.secret
       dropbox_session.mode = :dropbox
-      e = Entry.find_by_id params[:id]
-      return '' if !e
       # mime_type posted by IVR system may not be correct
       meta = dropbox_session.metadata("bbg/#{e.branch.name}/#{e.dropbox_file}")
       e.mime_type = meta.mime_type
       e.size = meta.bytes
- #     e.save
-      
-      content = dropbox_session.download("bbg/#{e.branch.name}/#{e.dropbox_file}")
-      send_data content,
-      :filename=>e.dropbox_file,
-      :type=>e.mime_type,
-      :disposition=>'inline'
+      options = {:filename=>e.dropbox_file,
+                 :disposition=>'inline',
+                 :type=>e.mime_type}
+      f = "bbg/#{e.branch.name}/#{e.dropbox_file}"
+      if File.exists? "#{DROPBOX.home}/#{f}"
+        send_file "#{DROPBOX.home}/#{f}", options
+      else
+        # download from dropbox service
+        content = dropbox_session.download(f)
+        send_data content,options      
+      end
     end
   end
 #  def create
@@ -159,7 +163,7 @@ class EntriesController < ApplicationController
     @record.is_active = false
     self.successful = @record.save
   end
-      
+  
   def contenttype(file)
     arr = file.split(".")
     if arr.last == "wav"
