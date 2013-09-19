@@ -16,10 +16,11 @@
 
     <label for="start_date">Start Date:</label>
     <input type="text" class="datepicker" id="start_date" name="start_date" value="<%= @start_date %>" />
-		
+		<!-- img src="/assets/calendar.gif" class="calendar-img" / -->
 		<div class="separator"></div>
     <label for="end_date">End Date:</label>
     <input type="text" class="datepicker" id="end_date" name="end_date" value="<%= @end_date %>" />
+    <!-- img src="/assets/calendar.gif" class="calendar-img" / -->
     <div class="separator"></div>
     <label>Format</label>
     <% fmt = params[:format] || 'csv' %>

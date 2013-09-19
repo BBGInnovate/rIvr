@@ -6,7 +6,12 @@ class ApplicationController < ActionController::Base
   
   layout :choose_layout
   def choose_layout
-    !params[:ajax] ? "application" : nil
+    if @controller != 'moderation'
+      erb ='application'
+    else
+      erb = 'moderation'
+    end
+    !params[:ajax] ? erb : nil
   end
     
   ActiveScaffold.set_defaults do |conf|

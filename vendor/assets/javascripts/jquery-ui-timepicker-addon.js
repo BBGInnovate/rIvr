@@ -27,6 +27,7 @@
 	* allowing multiple different settings on the same page.
 	*/
 	var Timepicker = function () {
+		this._triggerClass = "ui-datepicker-trigger"; // The name of the trigger marker class
 		this.regional = []; // Available regional settings, indexed by language code
 		this.regional[''] = { // Default regional settings
 			currentText: 'Now',
@@ -46,6 +47,7 @@
 			isRTL: false
 		};
 		this._defaults = { // Global defaults for all the datetime picker instances
+		  buttonImage: '',
 			showButtonPanel: true,
 			timeOnly: false,
 			showHour: null,
@@ -149,6 +151,18 @@
 			return this;
 		},
 
+		/* attach calendar image and add trigger to show the calendar
+		 * 
+		 */
+		addCalendarImage: function (tp_inst, $input, opts) {
+			buttonImage = opts['buttonImage'];
+			tp_inst.trigger=$("<img/>").addClass(this._triggerClass).
+		     attr({ src: buttonImage, alt: '..', title: '..' })
+		  $input.after(tp_inst.trigger);
+			tp_inst.trigger.click(function() {
+				$input.trigger('focus');
+			})
+		},
 		/*
 		* Create a new Timepicker instance
 		*/
@@ -158,6 +172,7 @@
 				fns = {},
 				overrides, i;
 
+			this.addCalendarImage(tp_inst, $input, opts);
 			for (var attrName in this._defaults) {
 				if (this._defaults.hasOwnProperty(attrName)) {
 					var attrValue = $input.attr('time:' + attrName);

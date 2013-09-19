@@ -21,7 +21,7 @@ table, th, td {
 				margin: 0 10px 10px 0;
 }
 .search-results {
-    border: 1px solid #CCCCCC;
+    border: 0px solid #CCCCCC;
     margin: 30px auto;
     padding: 15px;
     text-align: center;

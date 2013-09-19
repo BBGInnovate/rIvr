@@ -427,13 +427,19 @@ input[type=submit]:hover {
 #report-results {
 	display:none;
 }
+.calendar-img {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+}
+/*
 .ui-datepicker-trigger {
    vertical-align: middle;
    line-height: 24px;
    margin-left: 5px;
    width: 20px;
    height: 20px;
-}
+} */
 .print-header {
 	 display: none;
 }
@@ -473,7 +479,7 @@ input[type=submit]:hover {
 .report input.btnAction {
     float: none;
     font-size: 14px;
-				with: 40px;
+	  with: 40px;
     height: 31px;
     margin: 10px 0 5px 20px;
 }
@@ -492,6 +498,7 @@ input[type=submit]:hover {
 .publish-syndicate a:hover {
   cursor: pointer;
 }
+/* for date picker */
 .ui-datepicker-trigger {
       vertical-align: middle;
       line-height: 24px;
@@ -499,7 +506,7 @@ input[type=submit]:hover {
       width: 20px;
       height: 20px;
   }
-  
+
   .moderation input[type="text"], select {
       width: 70px;
   }

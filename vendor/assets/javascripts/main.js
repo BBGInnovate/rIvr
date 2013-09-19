@@ -50,14 +50,13 @@ var Modal = {
 }
 var datepickerConfigure = {
   init : function() {
-    /*
-    $('#Astart_date').datetimepicker({
+    $('#start_date, #end_date').datetimepicker({
       controlType: 'select',
       dateFormat: "yy-mm-dd",
       timeFormat: 'hh:mm tt',
+      buttonImage: '/assets/calendar.gif'
     });
-    */
-    $("#start_date, #end_date").datepicker({
+    $("#Astart_date, #Aend_date").datepicker({
       	dateFormat: "yy-mm-dd",
       changeMonth: true,
       changeYear: true,
@@ -67,19 +66,9 @@ var datepickerConfigure = {
       buttonImageOnly: true,
       buttonImage: '/assets/calendar.gif'
     });
-    /*
-    $("#end_date").datepicker({
-      dateFormat: "yy-mm-dd",
-      changeMonth: true,
-      changeYear: true,
-      minDate: new Date(2013, 0, 1),
-      maxDate: '+1Y',
-      showOn: 'both',
-      buttonImageOnly: true,
-      buttonImage: '/assets/calendar.gif'
-    }); */
   }, 
 }
+/*
 var datePicker = {
   options : {
   	dateFormat: "yy-mm-dd",
@@ -108,7 +97,7 @@ var datePicker = {
 		
 	}
 }
-
+*/
 var autoRefreshHeader = {
     init : function() {
       var header_refresh = setInterval(
@@ -144,8 +133,9 @@ var homePage = {
 }
 var report = {
     init : function() {
-    	  //$("body").on('click', ".start_date", function(e) {
-    		  // $('#start_date').keypress();
+    	  //$("body").on('click', ".calendar-img", function(e) {
+    	    	// trigger date input to show
+    	    //$(this).prev().trigger('focus');
     	  //});
       	$("body").on('click', "#report-cancel", function(e) {
       		$('#branch_id option').attr('selected', false);
