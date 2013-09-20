@@ -108,11 +108,22 @@ class AnalyticsController < ApplicationController
 
   def send_content(filename)
     content = CSV.generate(:col_sep => ",") do |csv|
-      csv << branch_report_title
-      branch_report_rows.each do | row |
-        csv << [row['Branch Name'], row['Date'],row['Number of Callers'],
-        row['Average time listening'],row['Average total call time'],
-        row['Number of Messages Left'],row['Country'] ]
+      csv << @title
+      @rows.each do | row |
+        one_row = []
+        @title.each do | f |
+          one_row << row[f]
+        end
+      csv << one_row
+      end
+      csv << []
+      csv << @country_title
+      @country_rows.each do | row |
+        one_row = []
+        @country_title.each do | f |
+          one_row << row[f]
+        end
+        csv << one_row
       end
     end
     bom = "\377\376" # Byte Order Mark
