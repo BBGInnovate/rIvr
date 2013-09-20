@@ -405,7 +405,7 @@ img.red-light, img.green-light {
 }
 /* remote desktop */
 #remote-desktop-select {
-	 width: auto;
+	 width: 120px;
 		margin: 0 0 10px 0;
 }
 input[type=submit]:hover {
