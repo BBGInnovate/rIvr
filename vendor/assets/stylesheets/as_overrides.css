@@ -576,7 +576,19 @@ input[type=submit]:hover {
       color: #000;
       text-shadow: none !important
   }
-		
+/* BBG Logo */
+#sidebar ul li a.logo {
+	position: relative;
+}
+.oddi-logo {
+	position: absolute;
+	left: 5px;
+	top: 5px;
+	width: 90px;
+	height: 80px;
+	margin: 0;
+	padding: 0;
+}
 
 
 /* override all.css */

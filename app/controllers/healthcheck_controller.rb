@@ -6,9 +6,11 @@ class HealthcheckController < ApplicationController
   
   def index
     if !@branches 
-      @branches = Branch.includes(:country).where(:is_active=>true).all
+      @branches = Branch.includes(:country).
+      where(:is_active=>true).all
     end
     Health.populate(@branches)
+    @branches.sort_by!{|a| a.health?}  
   end
   
   def edit

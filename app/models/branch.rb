@@ -81,7 +81,17 @@ class Branch< ActiveRecord::Base
   end
   
 #  has_and_belongs_to_many :users
-  
+  # for array sort_by so that not health items come first
+  # order by 0,1
+  def health?
+    return 0 if (!self.health || !self.health.last_event)
+    if self.health.last_event.to_i > self.health.no_activity.hours.ago.to_i
+      1
+    else
+      0
+    end
+  end
+    
   def unhealth?
     return true if (!self.health || !self.health.last_event)
     self.health.last_event.to_i < self.health.no_activity.hours.ago.to_i
