@@ -495,7 +495,7 @@ input[type=submit]:hover {
 	 display: inline-block;
 		margin: 0 0 0 10px;
 }
-.publish-syndicate a:hover, #search-results-id a {
+.publish-syndicate a:hover, #search-results-id a:hover {
   cursor: pointer;
 }
 /* for date picker */

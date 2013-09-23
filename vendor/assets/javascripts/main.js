@@ -210,10 +210,15 @@ var search = {
 var searchEntry = {
     checked : null,
     parent_id : null,
+    clicked: null,
     init : function() {
       	$("body").on('click', "#search-results-id th a", function(e) {
       		searchEntry.parent_id = $(this).closest("div").attr("id");
-      		var order = this.id
+      		var order = this.id;
+      		searchEntry.clicked = this;
+      		$(this).css({
+          "cursor":"wait"
+        });
       		data = searchEntry.getData();
       		data.order=order;
         url = 'moderation/search';
@@ -252,6 +257,9 @@ var searchEntry = {
       });
     },
     update : function(data) {
+      	$(searchEntry.clicked).css({
+        "cursor":"pointer"
+      });
       $('#'+searchEntry.parent_id).html(data);
     },
     getData : function() {

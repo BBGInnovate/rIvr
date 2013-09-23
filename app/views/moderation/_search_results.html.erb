@@ -12,11 +12,14 @@
 </thead>
 <tbody>
 <% @results.each do |e| %>
-<% if e.dropbox_file_exists? %>
 <tr>
    <td>
+     <% if e.dropbox_file_exists? %>
       <a id='<%=e.id%>' class="audio2 {ogg:'/entries/<%=e.id%>/play',autoplay:false, inLine:true}"
        href='/entries/<%=e.id%>/play'><%= e.dropbox_file %></a>
+     <% else %>
+     <%= e.dropbox_file %> missing
+     <% end %>
    </td>
    <td>
       <%= e.branch.name %>
@@ -31,7 +34,6 @@
       <%= e.branch.contact %>
    </td>
 </tr>
-<% end %>
 <% end %>
 </tbody>
 </table>
