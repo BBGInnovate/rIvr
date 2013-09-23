@@ -11,10 +11,10 @@
     <td class="phone">
       <%= @calls[e.branch.id][:total] || 0 %>
     </td>
-    <td class="message left-nav-bar" data-url="/entries">
+    <td class="message left-nav-bar" data-url="/moderation">
       <%= @messages[e.branch_id][:total] || 0 %>
     </td>
-    <td class="alert left-nav-bar" data-url="/health">
+    <td class="alert left-nav-bar" data-url="/healthcheck">
       <%= e.branch.health_image.html_safe %>
     </td>
   </tr>
