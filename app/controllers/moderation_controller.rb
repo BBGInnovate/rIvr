@@ -1,9 +1,9 @@
 class ModerationController < ApplicationController
   #  doorkeeper_for :create
   skip_before_filter :verify_authenticity_token, :only => [:create]
-  skip_before_filter :init
+  before_filter :init
   #rails g kaminari:config
-  
+  layout 'moderation'
   # to deal with "HEAD true" request
   def dummy
     if request.head?
@@ -12,13 +12,15 @@ class ModerationController < ApplicationController
         Rails.logger.info "Derp #{request.method}"
     end
   end
-  
+  # override application#init
+  def init
+    @controller = request.filtered_parameters['controller']
+  end
   def index
     uri = request.env['REQUEST_URI']
     uri.slice!(request.path)
     Entry.request_url = uri
-    
-    @controller = request.filtered_parameters['controller']
+    session['entries.created_at'] = 'desc'
     p = params[:page] || 1
 #    # this is for listen content
 #    @entries = Entry.joins(:branch).where("branches.is_active=1").
@@ -32,8 +34,8 @@ class ModerationController < ApplicationController
     # this is for initial search_results content corresponding to Incoming radio
     # button is checked
     @results = Entry.joins(:branch).where("branches.is_active=1").
-       where(:is_active=>true,:is_private=>true).
-       order("id desc").page(p).per(10)
+       where(:is_private=>true).
+       order("entries.id desc").page(p).per(10)
     if params[:ajax]
       # request from paginate links in listen, syndicate  page
       render :partial=>params[:partial], :layout=>false, :content_type=>'text' and return
@@ -107,7 +109,9 @@ class ModerationController < ApplicationController
      
     p = params[:page] || 1
       
-    @entries_query = Entry.includes([:branch=>:country]).where("branches.is_active=1")
+    @entries_query = Entry.includes([:branch=>:country]).
+      where("branches.is_active=1").
+      order(order_by)
 
     if !!start_date && !!end_date
       @entries_query = @entries_query.where("entries.created_at"=>start_date..end_date)
@@ -139,5 +143,17 @@ class ModerationController < ApplicationController
 #    headers["Content-Type"] = 'text/javascript'
 #    render :partial=>'paginate', :layout=>false, :content_type => 'text/javascript'
     render :partial=>'search_results', :layout=>false, :content_type => 'text'
+  end
+  
+  def order_by
+     o = params[:order]
+     a = ['asc','desc']
+     if !session[o]
+       session[o] = 'desc'
+     else
+       a.delete session[o]
+       session[o] = a.first
+     end
+     "#{o} #{session[o]}"
   end
 end

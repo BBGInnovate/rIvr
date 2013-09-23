@@ -211,6 +211,15 @@ var searchEntry = {
     checked : null,
     parent_id : null,
     init : function() {
+      	$("body").on('click', "#search-results-id th a", function(e) {
+      		searchEntry.parent_id = $(this).closest("div").attr("id");
+      		var order = this.id
+      		data = searchEntry.getData();
+      		data.order=order;
+        url = 'moderation/search';
+        jQuery.get(url, data, searchEntry.update, 'html');
+        return false
+      	});
       $("body").on('click', ".pagination a", function(e) { 
         var url =$(this).attr('href');
         searchEntry.parent_id = $(this).closest("div").attr("id");
