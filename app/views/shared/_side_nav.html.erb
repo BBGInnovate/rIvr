@@ -1,9 +1,33 @@
 <ul>
 <li><a href="/" class="logo"><img class="oddi-logo" src="/assets/images/oddi-logo.png"/></a></li>
 <!-- li><a href="#" class="login">Log in or Sign up</a></li -->
-<li class="left-nav-bar" data-url="/branch"><a class="branch-configuration">Branch Configuration</a></li>
-<li class="left-nav-bar" data-url="/moderation"><a class="moderation">Moderation</a></li>
-<li class="left-nav-bar" data-url="/analytics"><a class="analytics">Analytics</a></li>
-<li class="left-nav-bar" data-url="/healthcheck"><a class="health-check">Health Check</a></li>
+<% if @klass=='branch-configuration-on'%>
+<li class="left-nav-bar" data-klass="branch-configuration-on" data-url="/branch"><a class="<%= @klass %>">Branch Configuration</a></li>
+<li class="left-nav-bar" data-klass="moderation-on" data-url="/moderation"><a class="moderation">Moderation</a></li>
+<li class="left-nav-bar" data-klass="analytics-on" data-url="/analytics"><a class="analytics">Analytics</a></li>
+<li class="left-nav-bar" data-klass="health-on" data-url="/healthcheck"><a class="health-check">Health Check</a></li>
+<% elsif @klass=='moderation-on'%>
+<li class="left-nav-bar" data-klass="branch-configuration-on" data-url="/branch"><a class="branch-configuration">Branch Configuration</a></li>
+<li class="left-nav-bar" data-klass="moderation-on" data-url="/moderation"><a class="<%= @klass %>">Moderation</a></li>
+<li class="left-nav-bar" data-klass="analytics-on" data-url="/analytics"><a class="analytics">Analytics</a></li>
+<li class="left-nav-bar" data-klass="health-on" data-url="/healthcheck"><a class="health-check">Health Check</a></li>
+<% elsif @klass=='analytics-on'%>
+<li class="left-nav-bar" data-klass="branch-configuration-on" data-url="/branch"><a class="branch-configuration">Branch Configuration</a></li>
+<li class="left-nav-bar" data-klass="moderation-on" data-url="/moderation"><a class="moderation">Moderation</a></li>
+<li class="left-nav-bar" data-klass="analytics-on" data-url="/analytics"><a class="<%= @klass %>">Analytics</a></li>
+<li class="left-nav-bar" data-klass="health-on" data-url="/healthcheck"><a class="health-check">Health Check</a></li>
+
+<% elsif @klass=='health-on'%>
+<li class="left-nav-bar" data-klass="branch-configuration-on" data-url="/branch"><a class="branch-configuration">Branch Configuration</a></li>
+<li class="left-nav-bar" data-klass="moderation-on" data-url="/moderation"><a class="moderation">Moderation</a></li>
+<li class="left-nav-bar" data-klass="analytics-on" data-url="/analytics"><a class="analytics">Analytics</a></li>
+<li class="left-nav-bar" data-klass="health-on" data-url="/healthcheck"><a class="<%= @klass %>">Health Check</a></li>
+<% else %>
+<li class="left-nav-bar" data-klass="branch-configuration-on" data-url="/branch"><a class="branch-configuration">Branch Configuration</a></li>
+<li class="left-nav-bar" data-klass="moderation-on" data-url="/moderation"><a class="moderation">Moderation</a></li>
+<li class="left-nav-bar" data-klass="analytics-on" data-url="/analytics"><a class="analytics">Analytics</a></li>
+<li class="left-nav-bar" data-klass="health-on" data-url="/healthcheck"><a class="health-check">Health Check</a></li>
+
+<% end %>
 </ul>
 

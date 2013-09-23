@@ -3,7 +3,7 @@ class ApplicationController < ActionController::Base
   
 #  before_filter :authenticate_user!
   before_filter :init
-  
+  before_filter :add_klass
   layout :choose_layout
   def choose_layout
     if @controller != 'moderation'
@@ -47,7 +47,10 @@ class ApplicationController < ActionController::Base
       return false
     end
   end
-  
+  # add class to nav bar box
+  def add_klass
+    @klass = params[:klass]
+  end
   def init
     @controller = request.filtered_parameters['controller']
        started = Branch.message_time_span.days.ago.to_s(:db)

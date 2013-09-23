@@ -117,11 +117,15 @@ var homePage = {
     anchorId : null,
     init : function(content_id) {
       homePage.anchorId = content_id;
+      jQuery(".left-nav-bar").hover(function(e) {
+      	  
+      });
       jQuery("body").on('click', ".left-nav-bar", function(e) {
         // var name = this.id;
         // var url = '/'+name;
+        var klass = $(this).attr("data-klass");
         var url = $(this).attr("data-url");
-        window.location = url;
+        window.location = url+"?klass="+klass;
         // var data = {ajax: 1};
         // jQuery.get(url, data, homePage.update, 'html');
         return false

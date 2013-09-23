@@ -1,4 +1,5 @@
 class BranchController < ApplicationController
+  layout 'branch'
   def index
     if params[:branch]
       @branch = Branch.find_by_name params[:branch]

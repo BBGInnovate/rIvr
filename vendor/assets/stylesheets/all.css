@@ -67,12 +67,12 @@ h2 {
 	position: relative;
 }
 
-#sidebar ul li a.login.on, #sidebar ul li a.login:hover { background: url(images/icons-nav-sprite.png) -100px -90px no-repeat; }
-#sidebar ul li a.logo.on, #sidebar ul li a.logo:hover { background: url(images/icons-nav-sprite.png) -100px 0px no-repeat; }
-#sidebar ul li a.moderation.on, #sidebar ul li a.moderation:hover { background: url(images/icons-nav-sprite.png) -100px -180px no-repeat; }
-#sidebar ul li a.branch-configuration.on, #sidebar ul li a.branch-configuration:hover { background: url(images/icons-nav-sprite.png) -100px -270px no-repeat; }
-#sidebar ul li a.analytics.on, #sidebar ul li a.analytics:hover { background: url(images/icons-nav-sprite.png) -100px -360px no-repeat; }
-#sidebar ul li a.health-check.on, #sidebar ul li a.health-check:hover { background: url(images/icons-nav-sprite.png) -100px -450px no-repeat; }
+.login-on, #sidebar ul li a.login.on, #sidebar ul li a.login:hover { background: url(images/icons-nav-sprite.png) -100px -90px no-repeat; }
+.logo-on, #sidebar ul li a.logo.on, #sidebar ul li a.logo:hover { background: url(images/icons-nav-sprite.png) -100px 0px no-repeat; }
+.moderation-on,#sidebar ul li a.moderation.on, #sidebar ul li a.moderation:hover { background: url(images/icons-nav-sprite.png) -100px -180px no-repeat; }
+.branch-configuration-on, #sidebar ul li a.branch-configuration.on, #sidebar ul li a.branch-configuration:hover { background: url(images/icons-nav-sprite.png) -100px -270px no-repeat; }
+.analytics-on, #sidebar ul li a.analytics.on, #sidebar ul li a.analytics:hover { background: url(images/icons-nav-sprite.png) -100px -360px no-repeat; }
+.health-on, #sidebar ul li a.health-check.on, #sidebar ul li a.health-check:hover { background: url(images/icons-nav-sprite.png) -100px -450px no-repeat; }
 
 #sidebar ul li a.on { background: url(images/icons-nav-sprite.png) 0 -90 no-repeat; }
 #sidebar ul li a.logo { background: url(images/icons-nav-sprite.png) 0 0px no-repeat; }
