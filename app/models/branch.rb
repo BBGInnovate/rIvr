@@ -34,7 +34,7 @@ class Branch< ActiveRecord::Base
   end
     
   def self.message_time_span
-     o = Option.where(:name=>'message_time_span', :branch_id=>0).first
+     o = Option.where("name='message_time_span' AND (branch_id is NULL OR branch_id = 0)).first
      if o
        o.value.to_i
      else
