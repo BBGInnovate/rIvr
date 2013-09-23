@@ -229,9 +229,6 @@ var searchEntry = {
       $("body").on('click', "input:radio[name='moderation']", function(e) {
          searchEntry.parent_id = "search-results-id";
          data = searchEntry.getData();
-         //data.search_for = this.value;
-         //var op = $('input:radio[name="moderation"]:checked').val();
-         //data.search_for = op;
          var url = "/moderation/search"
          jQuery.get(url, data, searchEntry.update, 'html');
          return true
@@ -240,8 +237,6 @@ var searchEntry = {
       $("body").on('click', "input[name='search']", function(e) {
         searchEntry.parent_id = "search-results-id";
         data = searchEntry.getData();
-        //var op = $('input:radio[name="moderation"]:checked').val();
-        //data.search_for = op;
         var url = "/moderation/search"
         jQuery.get(url, data, searchEntry.update, 'html');
         return false

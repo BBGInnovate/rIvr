@@ -20,14 +20,14 @@ class ModerationController < ApplicationController
     
     @controller = request.filtered_parameters['controller']
     p = params[:page] || 1
-    # this is for listen content
-    @entries = Entry.joins(:branch).where("branches.is_active=1").
-    where(:is_active=>true).
-    order("id desc").page(p).per(10)
-    # this is for syndicated content
-    @syndicated = Entry.joins(:branch).where("branches.is_active=1").
-        joins(:soundkloud).
-        order("id desc").page(p).per(10)
+#    # this is for listen content
+#    @entries = Entry.joins(:branch).where("branches.is_active=1").
+#    where(:is_active=>true).
+#    order("id desc").page(p).per(10)
+#    # this is for syndicated content
+#    @syndicated = Entry.joins(:branch).where("branches.is_active=1").
+#        joins(:soundkloud).
+#        order("id desc").page(p).per(10)
         
     # this is for initial search_results content corresponding to Incoming radio
     # button is checked
@@ -129,6 +129,9 @@ class ModerationController < ApplicationController
     when 'published'
       @results = @entries_query.
          where("entries.is_private=0").page(p).per(10)
+    when 'syndicated'
+            @results = @entries_query.joins(:soundkloud).
+            page(p).per(10)
     when 'deleted'
       @results = @entries_query.
          where("entries.is_active=0").page(p)
