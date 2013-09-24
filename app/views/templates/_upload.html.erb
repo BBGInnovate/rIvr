@@ -13,18 +13,10 @@
     <%= flash[:notice] %>
   </div>
 		<% if template.name =~ /introduction/ %>
-    	<% if template.kind_of?(Vote) %>
+    	   <% if template.kind_of?(Vote) %>
 		      <div class="title">Enter a name for this Vote/Poll</div>		
 		      <input type="text" name="<%= template.class.name.downcase%>[identifier]" value="<%= template.identifier %>" />
-								<!--
-								<input type="text" list="cookies" name="<%#= template.class.name.downcase%>[identifier]" placeholder="Vote/Poll Name"/>
-        <datalist id="cookies">
-        	<%# template.branch.voting_sessions.each do | v| %>
-         <option value="<%#=v.name%>" label="<%#= v.name %>"></option>
-         <%# end %>
-         </datalist>
-									-->
-					<% end %>
+		   <% end %>
 		<% elsif !template.find_introduction %>
 		  <div class='error'>
        You have to upload Introdution Voice Prompt first
@@ -38,25 +30,30 @@
 
 
 		<p></p>
-  <h3>Select your <%= template.name_map(template.name) %> file to upload</h3>
+  <h3><% if !!template.audio_link %>
+    You have uploaded a file previously<br/>
+    <% end %>
+    Select your <%= template.name_map(template.name) %> file to upload</h3>
   <div class='fileBrowseWrap'>
     <%= f.file_field :sound %>
   </div>
   <div class="btnUploadWrap">
-    <span><%= submit_tag 'Preview', :id=>"preview", :value=>"Upload (Preview)", :class=>"btnAction" %></span>
+    <span><%= submit_tag 'Preview', :id=>"preview", :value=>"Upload", :class=>"btnAction" %></span>
     <% if @preview || @save %>
       <span><%= submit_tag 'Save', :id=>"save", :class=>"btnAction" %></span>
     <% end %>
     <span><%= submit_tag 'Cancel', :id=>"cancel", :class=>"btnAction" %></span>
   </div>
   <div class="clear">
-    <% if @preview %>
+    <% if !!template.audio_link || @preview %>
     <% src="/#{template.audio_link}" %>
-    <object data="<%= src %>" type="application/x-mplayer2" width="300" height="60">
-      <param name="filename" value="<%= src %>">
-    </object><!--
-    <embed type="application/x-mplayer2" src="<%= src %>" width="300" height="60"></embed>
-    --><% end %>
+    <object data="<%= src %>" type="application/x-mplayer2" width="300" height="60" autoplay="false">
+      <param name="filename" value="<%= src %>" />
+      <param name="controller" value="true" /> 
+      <param name="autoplay" value="false" />
+      <param name="autostart" value="0" />
+    </object>
+    <% end %>
   </div>
   
 </div>

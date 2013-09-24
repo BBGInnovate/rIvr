@@ -273,6 +273,7 @@ class Branch< ActiveRecord::Base
   validates :name, :uniqueness => {:scope => :country_id}
 
   def feed_limit
+      return nil if self.new_record?
       opt = Option.where(:branch_id=>self.id, :name=>'feed_limit').last
       if opt
         opt.value
@@ -282,6 +283,7 @@ class Branch< ActiveRecord::Base
   end
 
   def feed_source
+      return nil if self.new_record?
       opt = Option.where(:branch_id=>self.id, :name=>'feed_source').last
       if opt
         opt.value
@@ -291,6 +293,7 @@ class Branch< ActiveRecord::Base
   end
 
   def feed_url
+      return nil if self.new_record?
       opt = Option.where(:branch_id=>self.id, :name=>'feed_url').last
       if opt
         opt.value

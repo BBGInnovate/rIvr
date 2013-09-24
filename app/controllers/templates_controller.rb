@@ -50,11 +50,8 @@ class TemplatesController < ApplicationController
     @listen_bulletin=nil
     @record_bulletin=nil
     branch = Branch.find_me(params[:branch])
-#    @template = branch.forum_type.camelcase.constantize.find_me(branch.id, params[:name])
-#    always create a new record
-    @template = branch.forum_type.camelcase.constantize.new :branch_id=>branch.id, 
-      :name=>params[:name]
-        
+    # template created if not found
+    @template = branch.forum_type.camelcase.constantize.find_me(branch.id, params[:name]) 
 #    if params[:name] == 'introduction'
 #      Template.delete_all("is_active=0")
 #    end
@@ -94,10 +91,7 @@ class TemplatesController < ApplicationController
     identifier = temp.delete(:identifier)
     
     @template = Template.find_by_id temp.delete(:id)
-    if !@template
-      @template = branch.forum_type.camelcase.constantize.new temp
-    end
-    
+
     @preview = false
     if params[:todo] == 'preview'
       @template.identifier = identifier if @template.kind_of?(Vote)
@@ -126,6 +120,34 @@ class TemplatesController < ApplicationController
         flash[:error] = @template.class.name + " : " + @template.errors.full_messages.first
       end
     end
+    render :action=>'new', :layout => false
+  end
+
+  # save recording after user clicked Send Data
+  def create_recording
+    
+    puts "AAAA" + params[:par]
+    
+    branch=Branch.find_by_id temp[0]
+    filename = Time.now.strftime("%Y%m%d%H%M%S")+'.wav'
+    data = request.raw_post
+#   save recorded sound to file
+#    File.open(filename, 'wb') do |file|
+#      file.write(request.raw_post)
+#    end
+
+    identifier = temp.delete(:identifier)
+    @template = Template.find_by_id temp[1]
+    if !@template
+      @template = branch.forum_type.camelcase.constantize.new :branch_id=>temp[0],
+        :name=>temp[2]
+    end
+    @template.save_recording_to_dropbox(data, filename)
+    @template.is_active=true
+    @template.save :validate=>false
+    flash[:notice] = "#{@template.name_map(@template.name)} file " +
+               File.basename(@template.dropbox_file) +
+               " was saved to Dropbox"
     render :action=>'new', :layout => false
   end
 

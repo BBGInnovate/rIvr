@@ -58,10 +58,31 @@ class Template < ActiveRecord::Base
     end
   end
 
+  def save_recording_to_dropbox(data, filename)
+      client = self.get_dropbox_session
+      if !!client
+        to = self.dropbox_dir
+        begin
+          client.mkdir to
+        rescue
+          logger.warn "Error: upload_to_dropbox : #{$!}"
+        end
+        begin
+          re = client.upload(data, to, :as=>filename)
+          # path="/bbg/oddi/report/introduction.mp3"
+          self.dropbox_file=re.path
+          self.content_type=re.mime_type
+          self.save!
+          logger.warn "INFO: Dropbox uploaded: #{filename}"
+        rescue Exception=>ex
+          logger.warn "Error #{ex.message}"
+        end
+      end
+    end
   # name = 'introduction','message'
   def audio_link
     client = self.get_dropbox_session
-    if !!client
+    if !!client && self.dropbox_file
       name = File.basename(self.dropbox_file)
       link = "system/#{self.branch.name.downcase}/#{self.class.name.downcase}"
       local="#{Rails.root}/public/#{link}"

@@ -68,36 +68,6 @@ var datepickerConfigure = {
     });
   }, 
 }
-/*
-var datePicker = {
-  options : {
-  	dateFormat: "yy-mm-dd",
-    changeMonth: true,
-    changeYear: true,
-    showButtonPanel: true,
-    minDate: new Date(2013, 0, 1),
-    maxDate: '+1Y',
-    showOn: 'button',
-    buttonImageOnly: true,
-    buttonImage: 'assets/calendar.gif' 
-  },
-  css : {
-  	"vertical-align": "middle",
-    "line-height": "24px",
-    "margin-left": "5px",
-    "width": "20px",
-    "height": "20px"
-  },
-	init : function(start_date_id, end_date_id) {
-		$("#"+start_date_id).datepicker(datePicker.options);
-		$("#"+end_date_id).datepicker(datePicker.options);
-		$('.ui-datepicker-trigger').css(datePicker.css);
-	},
-	update : function() {
-		
-	}
-}
-*/
 var autoRefreshHeader = {
     init : function() {
       var header_refresh = setInterval(
@@ -627,12 +597,14 @@ var branchManage = {
 					});
 				},
 				success : function(data) {
+					jQuery('#new-branch').hide();
+					jQuery('#go-template').show();
 					jQuery('#branch').css({
 						"cursor" : "hand",
 						"cursor" : "pointer"
 					});
-
 					var obj = jQuery.parseJSON(data);
+					jQuery('#go-template').attr('href',"/templates?branch=" + obj.branch);
 					if (obj.error == 'error')
 						jQuery(".error").html(obj.msg);
 					else

@@ -50,7 +50,7 @@ class BranchController < ApplicationController
           @branch.feed_source = feed_source
           @branch.feed_url = feed_url
           @branch.feed_limit = feed_limit
-          text = %{{"error": "notice", "msg": "Branch #{msg}"}} 
+          text = %{{"error": "notice", "msg": "Branch #{msg}", "branch":"#{@branch.id}"}} 
         rescue Mysql2::Error => e
           text = %{{"error": "error", "msg": "MySQL error #{e.message}"}}
         rescue Exception=>e
