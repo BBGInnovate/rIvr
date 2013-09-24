@@ -1,0 +1,72 @@
+<% content_for :head do %>
+  <script src="/assets/jquery.min.js"></script>
+  <script src="/assets/jRecorder.js">
+<% end %>
+<div id="template-popup" class="template-popup">
+<%= form_for template, :url=> templates_path, :html => {:method=>'post',:multipart => true, :id=>"frm-upload-logo"} do |f| %>
+<div class="inputSpacing"> 
+  <input type="hidden" name="todo" value="" />
+  <%= f.hidden_field :name %>
+  <%= f.hidden_field :id %>
+  <%= f.hidden_field :branch_id %>
+		<input type="hidden" name="branch_id" value="<%= template.branch_id %>" />
+		<div class='error'>
+    <%= flash[:error] %>
+  </div>
+  <div class='notice'>
+    <%= flash[:notice] %>
+  </div>
+		<% if template.name =~ /introduction/ %>
+    	<% if template.kind_of?(Vote) %>
+		      <div class="title">Enter a name for this Vote/Poll</div>		
+		      <input type="text" name="<%= template.class.name.downcase%>[identifier]" value="<%= template.identifier %>" />
+		<% end %>
+		<% elsif !template.find_introduction %>
+		  <div class='error'>
+       You have to upload Introdution Voice Prompt first
+    </div>
+		<% else %>
+		  <% if (template.kind_of? Vote)
+         voting_name = template.identifier %>
+         <input type="hidden" name="<%= template.class.name.downcase%>[identifier]" value="<%= voting_name %>" />
+      <% end %>
+		<% end %>
+		<p></p>
+  <h3>Record your voice forum</h3>
+  <div class='btnUploadWrap'>
+    <%= render :partial=>'recorder' %>
+  </div>
+  <div class="clear">
+
+  </div>
+  
+</div>
+<% end %>
+</div>
+<script>
+  var record = '<%= template.class.name.downcase%>';
+$(function() { 
+  $.jRecorder({
+    host : '/templates/?branch_id=<%= template.branch_id %>' + 
+       '&'+record+'[identifier]=<%= template.identifier %>' +
+       '&'+record+'[id]=<%= template.id%>'
+    , 
+    callback_started_recording : function() {
+      callback_started();
+    },
+        callback_stopped_recording : function() {
+          callback_stopped();
+        },
+        callback_activityLevel : function(level) {
+          callback_activityLevel(level);
+        },
+        callback_activityTime : function(time) {
+          callback_activityTime(time);
+        },
+        callback_finished_sending : function(time) {
+          callback_finished_sending()
+        },
+        swf_path:'/inc/jRecorder.swf'
+      });
+});
+</script>
