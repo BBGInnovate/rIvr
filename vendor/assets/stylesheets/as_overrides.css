@@ -297,7 +297,11 @@ input.btnAction:hover, .branch-name:hover {
 a.go-template {
 	display: none;
 }
-
+#go-template-hint {
+	color:red;
+	margin-left: 20px;
+	line-height: 20px;
+}
 /******* liwen added ******/
 /* moderation/index */
 #publish-to-dropbox {

@@ -14,7 +14,14 @@ class BranchController < ApplicationController
       @branch.save
      # render :text=>branch.forum_type and return 
     end
-    text=%{{"forum":"#{@branch.forum_type}","forum_ui":"#{@branch.forum_type_ui}", "branch":"#{@branch.name}"}}
+    hint = ''
+    if @branch.forum_type
+      tmp = @branch.send "#{@branch.forum_type.pluralize}"
+      if tmp.latest.size == 0
+        hint = "You must upload the voice forum audio files by clicking Edit Forum link to the left"
+      end
+    end
+    text=%{{"hint":"#{hint}","forum":"#{@branch.forum_type}","forum_ui":"#{@branch.forum_type_ui}", "branch":"#{@branch.name}"}}
     render :text =>text ,:content_type=>'application/text',:layout=>false and return
 
   end

@@ -181,13 +181,13 @@ class Branch< ActiveRecord::Base
     end
   end
 #  has_many :healths
-  has_many :reports do
+  has_many :reports, :conditions => ['is_active = ?', 1] do
     def latest
       res = select("max(id) as id").group(:name).where(:is_active=>true)
       select("id, name, dropbox_file, voting_session_id").where(["id in (?)", res.map{|t| t.id}])
     end
   end
-  has_many :bulletins do
+  has_many :bulletins, :conditions => ['is_active = ?', 1] do
     def latest
       res = select("max(id) as id").group(:name).where(:is_active=>true)
       select("id, name, dropbox_file, voting_session_id").where(["id in (?)", res.map{|t| t.id}])
@@ -195,7 +195,7 @@ class Branch< ActiveRecord::Base
   end
 
   # is a vote template
-  has_many :votes do
+  has_many :votes, :conditions => ['is_active = ?', 1] do
     def latest
       res = select("max(id) as id").group(:name).where(:is_active=>true)
       select("id, name, dropbox_file, voting_session_id").where(["id in (?)", res.map{|t| t.id}])

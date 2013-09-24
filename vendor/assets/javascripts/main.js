@@ -667,6 +667,7 @@ var branchManage = {
 		    jQuery('#go-template-result').attr('href', "/templates?result=1&branch=" + obj.branch);
 		    jQuery('#go-template-result').show();
 		  }
+		  jQuery('#go-template-hint').html(obj.hint);
 		} else {
 		  // jQuery("[id*='forum_type_']").prop('checked', false);
 		  jQuery(".TabbedPanelsTab").removeClass('TabbedPanelsTabSelected');

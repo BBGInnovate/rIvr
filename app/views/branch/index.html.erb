@@ -18,7 +18,8 @@
 		<p id="return-msg" class="notice"></p>
   <p>
   <a id="go-template" class="go-template" href="/templates">Edit Forum</a>
-		</p>
+  <span id="go-template-hint" class="go-template-hint"></span>
+	</p>
 		<p>
 			<% warn = "Creating a Forum Result template indicates the Vote/Poll is ended. Continue?" %>
 		<a id="go-template-result" class="go-template" onclick="return confirm('<%= warn %>')" href="/templates">Edit Forum Result</a>
