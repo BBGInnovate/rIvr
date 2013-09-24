@@ -272,6 +272,62 @@ class Branch< ActiveRecord::Base
   validates_presence_of :name
   validates :name, :uniqueness => {:scope => :country_id}
 
+  def feed_limit
+      opt = Option.where(:branch_id=>self.id, :name=>'feed_limit').last
+      if opt
+        opt.value
+      else
+        nil
+      end
+  end
+
+  def feed_source
+      opt = Option.where(:branch_id=>self.id, :name=>'feed_source').last
+      if opt
+        opt.value
+      else
+        nil
+      end
+  end
+
+  def feed_url
+      opt = Option.where(:branch_id=>self.id, :name=>'feed_url').last
+      if opt
+        opt.value
+      else
+        nil
+      end
+  end
+    
+  def feed_limit=(val)
+      opt = Option.where(:branch_id=>self.id, :name=>'feed_limit').last
+      if opt
+        opt.value = val
+        opt.save
+      else
+        Option.create :branch_id=>self.id, :name=>'feed_limit', :value=>val
+      end
+  end
+
+  def feed_source=(val)
+      opt = Option.where(:branch_id=>self.id, :name=>'feed_source').last
+      if opt
+        opt.value = val
+        opt.save
+      else
+        Option.create :branch_id=>self.id, :name=>'feed_source', :value=>val
+      end
+  end
+
+  def feed_url=(val)
+      opt = Option.where(:branch_id=>self.id, :name=>'feed_url').last
+      if opt
+        opt.value = val
+        opt.save
+      else
+        Option.create :branch_id=>self.id, :name=>'feed_url', :value=>val
+      end
+  end
   has_many :options do
     def feed_limit
       where(:name=>'feed_limit').last

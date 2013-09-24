@@ -31,7 +31,9 @@ class BranchController < ApplicationController
     def create
       temp = params[:branch]
       @branch = Branch.find_by_name temp[:name]
-        
+      feed_source = temp.delete(:feed_source)
+      feed_url = temp.delete(:feed_url)
+      feed_limit = temp.delete(:feed_limit)
       if @branch
         @branch.attributes = temp
         msg = "#{@branch.name.titleize} saved"
@@ -45,6 +47,9 @@ class BranchController < ApplicationController
       else 
         begin
           @branch.save
+          @branch.feed_source = feed_source
+          @branch.feed_url = feed_url
+          @branch.feed_limit = feed_limit
           text = %{{"error": "notice", "msg": "Branch #{msg}"}} 
         rescue Mysql2::Error => e
           text = %{{"error": "error", "msg": "MySQL error #{e.message}"}}
