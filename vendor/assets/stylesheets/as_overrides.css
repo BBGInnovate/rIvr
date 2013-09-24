@@ -263,6 +263,12 @@ input.btnAction:hover, .branch-name:hover {
   cursor: pointer; 
   color: #FFF;
 }
+/* for the box remain highlighted after clicked */
+.square-clicked {
+  background-color:#004276;
+  cursor: pointer; 
+  color: #FFF;
+}
 /* branch create */
 #new-branch {
   margin: 0 0 0 10px;

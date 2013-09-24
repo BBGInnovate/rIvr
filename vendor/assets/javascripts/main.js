@@ -479,6 +479,8 @@ var reportUpload = {
 			};
 			jQuery.get(url, data, reportUpload.update, 'html');
 			jQuery('#forum-upload').show();
+			$(".square").removeClass('square-clicked');
+			$('#'+reportUpload.myId).addClass('square-clicked');
 		});
     /*
 		jQuery("#forum-template").on('click', "#headline", function(e) {
