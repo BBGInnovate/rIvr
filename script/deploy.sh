@@ -65,6 +65,7 @@ ssh -i ${keyfile} -t ${host} -l ${user} \
    ln -s $shared/prompt current/public/prompt; \
    cd current; \
    sudo chmod -R 777 *; \
+   ln -s app/assets/images/images/flags app/assets/images/flags;\
    bundle exec rake db:migrate; \
    touch tmp/restart.txt;\
    sudo chown -R ${app_user}:${app_user} /data/ivr; "
