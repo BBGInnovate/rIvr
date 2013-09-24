@@ -33,8 +33,8 @@ class ModerationController < ApplicationController
         
     # this is for initial search_results content corresponding to Incoming radio
     # button is checked
-    @results = Entry.joins(:branch).where("branches.is_active=1").
-       where(:is_private=>true).
+    @results = Entry.where("entries.is_private=1 AND entries.is_active=1").
+       joins(:branch).where("branches.is_active=1").
        order("entries.id desc").page(p).per(10)
     if params[:ajax]
       # request from paginate links in listen, syndicate  page
@@ -66,8 +66,13 @@ class ModerationController < ApplicationController
     elsif params[:delete].to_i == 1
       @entry.is_active = 0
       @entry.save!
-      txt="{\"error\":\"info\",\"message\":\"Message deleted\"}"
+      txt="{\"error\":\"notice\",\"message\":\"Message deleted\"}"
       render :text=>txt,:layout=>false, :content_type=>'text' and return
+    elsif params[:undelete].to_i == 1
+      @entry.is_active = 1
+      @entry.save!
+      txt="{\"error\":\"notice\",\"message\":\"Message undeleted\"}"
+      render :text=>txt,:layout=>false, :content_type=>'text' and return 
     else
       txt="{\"error\":\"error\",\"message\":\"Not know what to do \"}"
       render :text=>txt,:layout=>false, :content_type=>'text' and return
@@ -146,7 +151,7 @@ class ModerationController < ApplicationController
   end
   
   def order_by
-     o = params[:order]
+     o = params[:order] || "entries.id"
      a = ['asc','desc']
      if !session[o]
        session[o] = 'desc'

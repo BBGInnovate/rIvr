@@ -9,7 +9,7 @@
     <% else %>
 				   <%= "#{e.dropbox_file} Not Found" %>
 				<% end %>
-		<% title1 = !!e.is_private ? 'Message is public' : 'Make Dropbox file public' %>
+		<% title1 = !e.is_private ? 'Message is public' : 'Make Dropbox file public' %>
 		<% title2 = !!e.soundkloud ? 'Message is in SoundCloud' : 'Syndicate Dropbox file to SoundCloud' %>
 		<span title="<%= title1 %>" class="publish-syndicate"><a id='P<%= e.id %>' data-url="/moderation/<%= e.id %>/edit/?publish=1">Publish</a></span>
 		<span title="<%= title2 %>" class="publish-syndicate"><a id='S<%= e.id %>' data-url="/moderation/<%= e.id %>/edit/?syndicate=1">Syndicate</a></span>

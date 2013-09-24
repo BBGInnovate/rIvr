@@ -6,12 +6,19 @@
         <th>Message</th>
         <th><a id="branches.name">Branch</a></th>
         <th><a id="entries.created_at">Date</a></th>
+        <th></th>
+        <th></th>
+        <th></th>
         <th><a id="countries.name">Country/Location</a></th>
         <th><a id="branches.contact">Contact</a></th>
       </tr>
 </thead>
 <tbody>
 <% @results.each do |e| %>
+<% title1 = !e.is_private ? 'Message is public' : 'Make Dropbox file public' 
+   title1 = "#{e.id} #{title1}"
+%>
+<% title2 = !!e.soundkloud ? 'Message is in SoundCloud' : 'Syndicate Dropbox file to SoundCloud' %>
 <tr>
    <td>
      <% if e.dropbox_file_exists? %>
@@ -24,9 +31,24 @@
    <td>
       <%= e.branch.name %>
    </td>
-			<td>
+   <td>
       <%= e.created_at.to_s(:db) %>
    </td>
+	 <td title="<%= title1 %>" class="publish-syndicate">
+      <a id='P<%= e.id %>' data-url="/moderation/<%= e.id %>/edit/?publish=1">Publish</a>
+   </td>
+   <td title="<%= title2 %>" class="publish-syndicate">
+      <a id='S<%= e.id %>' data-url="/moderation/<%= e.id %>/edit/?syndicate=1">Syndicate</a>
+   </td>
+   <% if e.is_active == true %>
+   <td title="Delete this message" class="publish-syndicate">
+      <a id='D<%= e.id %>' data-url="/moderation/<%= e.id %>/edit/?delete=1">Delete</a>
+   </td>
+   <% else %>
+   <td title="Unelete this message" class="publish-syndicate">
+      <a id='D<%= e.id %>' data-url="/moderation/<%= e.id %>/edit/?undelete=1">Undelete</a>
+   </td>
+   <% end %>
    <td>
       <%= e.branch.country.name %>
    </td>

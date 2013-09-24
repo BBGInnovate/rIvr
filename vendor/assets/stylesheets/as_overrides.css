@@ -491,10 +491,12 @@ input[type=submit]:hover {
 .color-green {
 	 color: green;
 }
+/*
 .publish-syndicate {
 	 display: inline-block;
 		margin: 0 0 0 10px;
-}
+} 
+*/
 .publish-syndicate a:hover, #search-results-id a:hover {
   cursor: pointer;
 }

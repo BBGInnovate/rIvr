@@ -1,4 +1,10 @@
 <div class="search-results">
+  <p class="notice">
+     <%= notice %>
+  </p>
+  <p class="alert error">
+     <%= alert %>
+  </p>
   <h3>Find Messages</h3>
   <form action="">
     <input name="moderation" type="radio" value="incoming" checked />
@@ -34,6 +40,6 @@
 				<input name="search" type="button" value="Filter">
 				</p>
   </form>
-  <div id="search-results-id"><%= render :partial=>'search_results' %></div>
+  <div id="search-results"><%= render :partial=>'search_results' %></div>
 </div>
 

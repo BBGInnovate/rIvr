@@ -354,9 +354,30 @@ var loadSoundCloud = {
         var url= $(this).attr("data-url");
         if ( loadSoundCloud.entry_id.charAt(0) == 'P')
           jQuery.get(url, {}, loadSoundCloud.updated, 'html')
-        else
+        else if ( loadSoundCloud.entry_id.charAt(0) == 'S')
           jQuery.get(url, {}, loadSoundCloud.change, 'html')
-          
+        else {
+        	  var myRe = /\?(\w+)=/;
+        	  var myArr = myRe.exec(url);
+        	$('<div></div>').appendTo('body')
+          .html('<div><h3>Are you sure you want to '+myArr[1]+' this message?</h3></div>')
+          .dialog({
+              modal: true, title: 'Delete message', zIndex: 10000, autoOpen: true,
+              width: 'auto', resizable: false,
+              buttons: {
+                  Yes: function () {
+                      $(this).dialog("close");
+                      jQuery.get(url, {}, loadSoundCloud.json, 'html')
+                  },
+                  No: function () {
+                      $(this).dialog("close");
+                  }
+              },
+              close: function (event, ui) {
+                  $(this).remove();
+              }
+          });
+        }
         return false;
       });
       $('body').on('click', "#soundcloud-upload #submit", function(e) {
@@ -384,6 +405,15 @@ var loadSoundCloud = {
       var o = jQuery('#'+loadSoundCloud.modalId)
       o.html(data);
       Modal.open(loadSoundCloud.modalId, loadSoundCloud.entry_id);
+    },
+    json : function(data) {
+      $('.publish-syndicate a').css({
+        "cursor" : "pointer"
+      });
+      var obj = jQuery.parseJSON(data);
+      my = jQuery("."+obj.error);
+      my.html(obj.message);
+      my.fadeIn("fast").delay(5000).fadeOut("slow");
     },
     updated : function(data) {
       $('.publish-syndicate a').css({

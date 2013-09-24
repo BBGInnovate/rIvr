@@ -3,7 +3,7 @@
 	 <% Branch.top_activity.each do |e| %>
   <tr>
     <td class="flag">
-      <img src="<%=e.branch.country_flag_url || '/assets/images/flag-tanzania.png' %>" width="35" height="34" alt="Tanzania flag">
+      <img src="<%=e.branch.country_flag_url %>" width="35" height="34" alt="Tanzania flag">
     </td>
     <td class="country">
       <%= e.branch.country.name %>
