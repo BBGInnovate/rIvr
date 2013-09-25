@@ -451,7 +451,7 @@ input[type=submit]:hover {
 .ui-timepicker-rtl dl dd { margin: 0 45% 10px 10px; }
 /* report page */
 #report-results {
-	display:none;
+/* 	display:none; */
 }
 .calendar-img {
   width: 20px;

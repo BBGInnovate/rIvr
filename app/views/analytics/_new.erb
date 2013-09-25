@@ -31,7 +31,9 @@
 		  <input type="button" value="Submit" id="report-submit" class="btnAction" />
     <% end %>
   </div>
-  <div id="report-results" class="search-results"></div>
+  <div id="report-results" class="search-results">
+    <%= render :partial=>'content' %>
+  </div>
 </div>
 <script type="text/javascript">
   jQuery(document).ready(function(){

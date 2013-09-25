@@ -20,9 +20,12 @@ class AnalyticsController < ApplicationController
     @end_date = ended
     
     if request.post?
-      # @branches = Branch.includes(:country).where(:is_active=>true).select("country_id, contries.id, contries.name, branches.name").all
       @branches = Branch.includes(:country).
-         where(["id in (?)", params[:branch_id]])  
+         where(["id in (?)", params[:branch_id]]) 
+    else
+      @branches = Branch.includes(:country).
+         where("is_active = 1")
+    end 
       @countries = @branches.map{|b| b.country }.uniq 
       @stats = Stat.new(started, ended, @branches)
       # @alerts = @stats.alerted
@@ -32,7 +35,6 @@ class AnalyticsController < ApplicationController
       @listened = @stats.listened
       branch_report_title
       branch_report_rows
-     end
   end
 
   def index
