@@ -108,8 +108,11 @@ class EntriesController < ApplicationController
                  :disposition=>'inline',
                  :type=>e.mime_type}
       f = "bbg/#{e.branch.name}/#{e.dropbox_file}"
+      f2 = "bbg/#{e.branch.name.downcase}/#{e.dropbox_file}"
       if File.exists? "#{DROPBOX.home}/#{f}"
         send_file "#{DROPBOX.home}/#{f}", options
+      elsif File.exists? "#{DROPBOX.home}/#{f2}"
+        send_file "#{DROPBOX.home}/#{f2}", options
       else
         # download from dropbox service
         content = dropbox_session.download(f)

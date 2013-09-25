@@ -23,8 +23,9 @@ class Entry< ActiveRecord::Base
 #      f = "#{DROPBOX.home}/bbg/#{self.branch.name}/#{self.forum_type}/#{self.dropbox_file}"
 #    else
       f = "#{DROPBOX.home}/bbg/#{self.branch.name}/#{self.dropbox_file}"
+      f2 = "#{DROPBOX.home}/bbg/#{self.branch.name.downcase}/#{self.dropbox_file}"
 #    end
-    return File.exists?(f)
+    return File.exists?(f) || File.exists?(2)
     
 #    dir = "/system/#{self.branch.name.downcase}"
 #    system_dir = "#{Rails.root}/public/#{dir}"
