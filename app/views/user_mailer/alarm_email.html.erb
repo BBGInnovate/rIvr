@@ -4,12 +4,13 @@
     <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
   </head>
   <body>
-    <% url = list_event_url(@health.event_id) %>
+    <% url = healthcheck_index_url %>
     <p>
       <%= @message %><br/>
     </p>
     <p>
-      To view the last event for this branch <%= @health.branch %>, just follow this link: <%= url %>.
+      To go to the Health Monitor page, 
+      just follow this link: <%= url %>.
     </p>
   </body>
 </html>
