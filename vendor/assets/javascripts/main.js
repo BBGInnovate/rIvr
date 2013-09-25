@@ -290,6 +290,7 @@ var editHealth = {
         	  }
         });
         jQuery.get(url, data, editHealth.change, 'html');
+        $('#'+editHealth.modalId).hide();
         return false;
       });
       $('body').on('click','input[name="cancel"]', function(e) {
