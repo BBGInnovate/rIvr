@@ -75,8 +75,8 @@ module TestIvr
     config.action_mailer.smtp_settings = {:address => "smtp.gmail.com",
     :port=>587,
     :domain=>'localhost',
-    :user_name=> 'liwenliu732@gmail.com',
-    :password=> 'metr0st@rsystems',
+    :user_name=> 'broadcastingivr@gmail.com',
+    :password=> 'bbgIVR$#',
     :authentication=> 'plain',
     :enable_starttls_auto=>true}
        
