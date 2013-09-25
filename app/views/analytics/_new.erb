@@ -23,7 +23,7 @@
     <!-- img src="/assets/calendar.gif" class="calendar-img" / -->
     <div class="separator"></div>
     <label>Format</label>
-    <% fmt = params[:format] || 'csv' %>
+    <% fmt = params[:format] || 'html' %>
     <%= radio_button_tag 'format', 'csv', fmt=='csv' %>&nbsp;CVS<%= radio_button_tag 'format', 'html', fmt=='html' %>&nbsp;HTML
     <div class="separator"></div>
 
