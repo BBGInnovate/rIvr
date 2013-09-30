@@ -55,6 +55,7 @@ jQuery(document).ready(function() {
 	  Gmaps.map.callback = function() {
 	     LoadBbgMap();
 			 googleMapCallback();
+			 var myBounds = new google.maps.LatLngBounds();
 			 <% Branch.where("is_active=1 AND latitude is not null").each_with_index do |b, i| %>
 					 var infowindow<%=i%> = new google.maps.InfoWindow({
            content: '<%= b.gmaps4rails_infowindow %>'
@@ -77,11 +78,13 @@ jQuery(document).ready(function() {
 					  icon: image,
             title: '<%#= b.gmaps4rails_infowindow %>'
         });
+        myBounds.extend(myLatlng);
         google.maps.event.addListener(marker<%=i%>, 'click', function() {
            infowindow<%=i%>.open(Gmaps.map.map,marker<%=i%>);
         });
 	     <% end %>
-
+	     // auto center and zoom
+       // Gmaps.map.map.fitBounds(myBounds); 
    };
 
 });
