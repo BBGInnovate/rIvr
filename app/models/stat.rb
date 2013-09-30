@@ -27,6 +27,18 @@ class Stat
       @countries = @branches.map{|b| b.country }.uniq
     end
     
+  # number of branches no activities in started..ended
+  def no_activity
+    activities = Health.
+      where(["healths.branch_id in (?)", branch_ids]).
+      where("TIMESTAMPDIFF(HOUR,last_event, NOW()) < healths.no_activity").
+      select("branch_id").
+      group(:branch_id)
+
+    no_activities = branch_ids - activities.map{|a| a.branch_id} 
+      {:unique => no_activities.size}
+   end
+      
     # for active branches
     # alerted[:total] #=> total number of alerts for all
     # alerted[branch_id] #=> number of alerts for the branch
