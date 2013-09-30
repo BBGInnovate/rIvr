@@ -174,7 +174,18 @@ class Stat
       hsh = set_hash(numbers)
       hsh
     end
-
+    # not moderated messages
+    def new_messages
+      numbers = Entry.includes(:branch).where(["entries.branch_id in (?) ", branch_ids]).
+      where("entries.created_at"=>started..ended).
+      where("entries.is_private"=>true).
+      where("entries.created_at != entries.updated_at").
+      select("branch_id, count(entries.id) AS total").
+      group(:branch_id)
+      hsh = set_hash(numbers)
+      hsh
+    end
+    
     protected
 
     def set_hash(input_array)
