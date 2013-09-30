@@ -33,9 +33,12 @@ class ModerationController < ApplicationController
         
     # this is for initial search_results content corresponding to Incoming radio
     # button is checked
+    start_date = Branch.message_time_span.days.ago.to_s(:db)
+    end_date = Time.now.to_s(:db)
     @results = Entry.where("entries.is_private=1 AND entries.is_active=1").
        joins(:branch).where("branches.is_active=1").
-       order("entries.id desc").page(p).per(10)
+       where("entries.created_at"=>start_date..end_date).
+       order("entries.id desc").page(p)
     if params[:ajax]
       # request from paginate links in listen, syndicate  page
       render :partial=>params[:partial], :layout=>false, :content_type=>'text' and return
@@ -105,7 +108,7 @@ class ModerationController < ApplicationController
   end
   
   def search
-    search_for = params[:search_for]
+    search_for = params[:search_for] || 'incoming'
     start_date = params[:start_date]
     end_date = params[:end_date]
     forum_type = params[:forum_type]
@@ -134,13 +137,13 @@ class ModerationController < ApplicationController
     case search_for
     when 'incoming'
       @results = @entries_query.
-         where("entries.is_private=1").page(p).per(10)
+         where("entries.is_private=1").page(p)
     when 'published'
       @results = @entries_query.
-         where("entries.is_private=0").page(p).per(10)
+         where("entries.is_private=0").page(p)
     when 'syndicated'
             @results = @entries_query.joins(:soundkloud).
-            page(p).per(10)
+            page(p)
     when 'deleted'
       @results = @entries_query.
          where("entries.is_active=0").page(p)
