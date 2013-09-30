@@ -737,7 +737,7 @@ function SaveBbgMap(lat, lng)
 function LoadBbgMap()
 {
   var loadedstring=getCookie("DaftLogicGMRLL");
-  if (loadedstring.match(/NaN_NaN_/)) {
+  if (loadedstring.length==0 || loadedstring.match(/NaN_NaN_/)) {
 	  return;
   } else {
   }
