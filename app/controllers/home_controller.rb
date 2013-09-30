@@ -5,7 +5,7 @@ class HomeController < ApplicationController
   def index
     started = Branch.message_time_span.days.ago.to_s(:db)
     ended = Time.now.to_s(:db)
-    @alerts = Stat.new(started, ended).alerted
+    @alerts = Stat.new(started, ended).no_activity
     @messages = Stat.new(started, ended).new_messages
     @calls = Stat.new(started, ended).number_of_calls
   end
