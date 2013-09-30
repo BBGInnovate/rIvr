@@ -4,7 +4,13 @@ class Option < ActiveRecord::Base
   def to_label
     "Option"
   end
-  
+  def branch_name
+    if branch
+      branch.name
+    else
+      'Global Option'
+    end
+  end
   def public_url
     if self.name == 'recording_url'
       self.value
