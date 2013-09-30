@@ -305,9 +305,9 @@ your style specs here
 .remote-desktop {
 	position: absolute;
 	top: 20px;
-	right: 20px;
-	border: 1px solid #999;
-	width: 120px;	
+	right: 80px;
+	/* border: 1px solid #999; */
+	width: 200px;	
 	padding: 10px;
 }
 
