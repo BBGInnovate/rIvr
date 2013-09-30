@@ -53,12 +53,12 @@ div#ft p {
 <script>
 jQuery(document).ready(function() {
 	  Gmaps.map.callback = function() {
-			    googleMapCallback();
-						
-						<% Branch.where("is_active=1 AND latitude is not null").each_with_index do |b, i| %>
-						  var infowindow<%=i%> = new google.maps.InfoWindow({
+	     LoadBbgMap();
+			 googleMapCallback();
+			 <% Branch.where("is_active=1 AND latitude is not null").each_with_index do |b, i| %>
+					 var infowindow<%=i%> = new google.maps.InfoWindow({
            content: '<%= b.gmaps4rails_infowindow %>'
-        });
+           });
         var image = {
         url: "<%= b.gmap_marker%>",
         // This marker is 20 pixels wide by 20 pixels tall.
@@ -81,9 +81,8 @@ jQuery(document).ready(function() {
            infowindow<%=i%>.open(Gmaps.map.map,marker<%=i%>);
         });
 	     <% end %>
-				
+
    };
-	
-	  
+
 });
 </script>
