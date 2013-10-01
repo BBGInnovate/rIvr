@@ -28,6 +28,10 @@ class Branch< ActiveRecord::Base
     self.name
   end
   
+  def country_flag_url
+    read_attribute(:country_flag_url) || '/assets/rails.png'
+  end
+    
   def message_time_span
     # if not defined return 7 days
      read_attribute(:message_time_span) || 7

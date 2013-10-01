@@ -152,7 +152,7 @@
 		},
 
 		/* attach calendar image and add trigger to show the calendar
-		 * 
+		 * Added by LLIU
 		 */
 		addCalendarImage: function (tp_inst, $input, opts) {
 			buttonImage = opts['buttonImage'];
