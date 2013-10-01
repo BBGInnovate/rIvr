@@ -1,8 +1,6 @@
-<a href="#" id="send-email" class="print-it">Email</a>
-<%= link_to_function("Print", "javascript:print()", :class=>"print-it") %>
 <h2 class="print-header"><%= @report_name %></h2>
 <span class="print-date"><%= @start_date %> - <%= @end_date %> </span>
-<table class="search-results-table">
+<table border=1 class="search-results-table">
   <thead>
     <tr>
     	<% @title.each do |f| %>
@@ -24,7 +22,7 @@
     <% end %>
   </tbody>
 </table>
-<table class="search-results-table">
+<table border=1 class="search-results-table">
   <thead>
     <tr>
       <% @country_title.each do |f| %>

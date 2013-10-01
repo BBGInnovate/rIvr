@@ -1,12 +1,14 @@
 var Modal = {
-		css : function() {
+		css : function(height) {
+			height = height || '360';
 			var newRule = ".helpPopUp {background: none repeat scroll 0 0 #FFFFFF;border: 1px solid #CFE8F5;";
 			newRule = newRule +"border-radius: 11px 11px 11px 11px;padding: 20px;position: absolute;";
-			newRule = newRule +"text-align: center;min-height: 360px;display: none}";
+			newRule = newRule +"text-align: center;min-height: " + height + "px;display: none}";
 			$("style").append(newRule);
 		},
-		open : function (modal_id, anchor_id) {
-			Modal.css();
+		open : function (modal_id, anchor_id, height) {
+			height = height || '360';
+			Modal.css(height);
       // modal_id modal window placeholder id
       // anchor_id element id, click which trigers the modal window
       var modalID = "#" + modal_id;
@@ -260,6 +262,47 @@ var searchEntry = {
     }
 }
 /** modal window ***/
+var emailReport = {
+    anchor_id : 0,
+    modalId : 'modal-window',
+    init : function() {
+      jQuery("body").on('click', "#send-email", function(e) {
+        emailReport.anchor_id=this.id;
+        var modal_height = 80;
+        Modal.open(emailReport.modalId, emailReport.anchor_id, modal_height);
+        return false;
+        
+      });
+      $('body').on('click', "#email-submit", function(e) {
+        	var email = $('input[name="email"]').val();
+        $(this).css({
+          "cursor" : "wait"
+        });
+        var url= '/analytics/send_email'
+        jQuery.get(url, {email: email}, null, 'html');
+        $('#'+emailReport.modalId).hide();
+        return false;
+      });
+      $('body').on('click','input[name="cancel"]', function(e) {
+        $('#'+editHealth.modalId).hide();
+      });
+
+    },
+    change : function(data) {
+      	var obj = jQuery.parseJSON(data);
+    	  $('#error').addClass(obj.error).html(obj.msg);
+      $('body').css({
+        "cursor" : "pointer"
+      });
+    },
+    updated : function(data) {
+      $('body').css({
+        "cursor" : "pointer"
+      });
+      $('#modal-window').html(data)
+      Modal.open(emailReport.modalId, emailReport.anchor_id);
+    },
+  }
 var editHealth = {
     entry_id : 0,
     modalId : 'modal-window',

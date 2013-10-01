@@ -1,3 +1,12 @@
+<div id="modal-window" class="helpPopUp" style="display:none;">
+  <style></style>
+  <div style="width: 250px; background-color: #CCCCCC;">
+    <span>Enter Email Address</span><br/><br/>
+    <input type="text" name="email" value="" style="width: 150px;" autocomplete="on" />
+    <input type="button" value="Submit" id="email-submit" class="btnAction" />
+  </div>
+</div>
+
 <div id="report-form-wrapper">
   <div class="report">
     <h2><%= @report_name %></h2>
@@ -42,7 +51,8 @@
 <script type="text/javascript">
   jQuery(document).ready(function(){
       report.init();
-						datepickerConfigure.init();
+		  datepickerConfigure.init();
+		  emailReport.init();
   });
 </script>
 

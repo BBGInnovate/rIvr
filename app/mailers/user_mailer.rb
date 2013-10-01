@@ -1,5 +1,16 @@
 class UserMailer < ActionMailer::Base
   default :from => "doug@bbg.gov"  
+  
+  def analytics(report = {}, email)
+    @report_name = report[:report_name]
+    @start_date = report[:start_date]
+    @end_date = report[:end_date]
+    @title = report[:title]
+    @rows = report[:rows]
+    @country_title = report[:country_title]
+    @country_rows = report[:country_rows]
+    mail(to: email, subject: @report_name)     
+  end
   # UserMailer.alarm_email(health, message).deliver worked
   def alarm_email(health, message)
       @health = health

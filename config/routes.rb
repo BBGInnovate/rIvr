@@ -9,7 +9,11 @@ TestIvr::Application.routes.draw do
   match '/true' => 'moderation#dummy'
   match '/moderation/true' => 'moderation#dummy'
   
-  resources :analytics
+  resources :analytics do
+    collection do
+      get :send_email
+    end
+  end
   
   resources :healthcheck do
     collection do
@@ -34,7 +38,9 @@ TestIvr::Application.routes.draw do
     end
   end
   
-  resources :branch
+  resources :branch do
+    get :active_forum
+  end
   resources :templates do
     collection do
       post :headline

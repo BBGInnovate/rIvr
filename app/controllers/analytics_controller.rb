@@ -3,7 +3,7 @@ require 'csv'
 
 class AnalyticsController < ApplicationController
 #   before_filter :login_required
-  before_filter :init
+  before_filter :init, :except=>'send_email'
 
   def init
     @controller = request.filtered_parameters['controller']
@@ -21,22 +21,53 @@ class AnalyticsController < ApplicationController
     
     if request.post?
       @branches = Branch.includes(:country).
-         where(["id in (?)", params[:branch_id]]) 
+         where(["id in (?)", params[:branch_id]])
     else
       @branches = Branch.includes(:country).
          where("is_active = 1")
     end 
-      @countries = @branches.map{|b| b.country }.uniq 
-      @stats = Stat.new(started, ended, @branches)
+    @countries = @branches.map{|b| b.country }.uniq 
+    @stats = Stat.new(started, ended, @branches)
       # @alerts = @stats.alerted
-      @messages = @stats.messages
-      @calls = @stats.number_of_calls
-      @call_times = @stats.call_times
-      @listened = @stats.listened
-      branch_report_title
-      branch_report_rows
+    @messages = @stats.messages
+    @calls = @stats.number_of_calls
+    @call_times = @stats.call_times
+    @listened = @stats.listened
+    branch_report_title
+    branch_report_rows
+    cache
   end
 
+  def send_email
+    email = params[:email]
+    @controller = request.filtered_parameters['controller']
+    @report_name = "Activity Reports"
+    started = session[:start_date]
+    ended = session[:end_date]
+    @start_date = started
+    @end_date = ended
+    @branches = Branch.includes(:country).
+      where(["id in (?)", session[:branch_id]]) 
+    @countries = @branches.map{|b| b.country }.uniq 
+    @stats = Stat.new(started, ended, @branches)
+    @messages = @stats.messages
+    @calls = @stats.number_of_calls
+    @call_times = @stats.call_times
+    @listened = @stats.listened
+    branch_report_title
+    branch_report_rows
+    report = {}
+    report[:report_name] = @report_name
+    report[:start_date] = started
+    report[:end_date] = ended
+    report[:rows] = @rows
+    report[:title] = @title
+    report[:country_rows] = @country_rows
+    report[:country_title] = @country_title
+    UserMailer.analytics(report, email).deliver
+    render :text=>"Sent"
+  end
+  
   def index
     render :action=>'new'  #,:layout=>false, :content_type=>'text/html'
   end
@@ -98,7 +129,11 @@ class AnalyticsController < ApplicationController
   end
       
   protected
-  
+  def cache
+    session[:branch_id] = @branches.map{|b| b.id}
+    session[:start_date] = @start_date
+    session[:end_date] = @end_date
+  end
   def access_denied
     respond_to do |format|
       format.html do
