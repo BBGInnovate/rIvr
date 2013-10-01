@@ -268,7 +268,7 @@ var emailReport = {
     init : function() {
       jQuery("body").on('click', "#send-email", function(e) {
         emailReport.anchor_id=this.id;
-        var modal_height = 80;
+        var modal_height = 100;
         Modal.open(emailReport.modalId, emailReport.anchor_id, modal_height);
         return false;
         
@@ -284,7 +284,7 @@ var emailReport = {
         return false;
       });
       $('body').on('click','input[name="cancel"]', function(e) {
-        $('#'+editHealth.modalId).hide();
+        $('#'+emailReport.modalId).hide();
       });
 
     },
