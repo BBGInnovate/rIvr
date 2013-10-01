@@ -4,7 +4,7 @@ require 'csv'
 class AnalyticsController < ApplicationController
 #   before_filter :login_required
   before_filter :init, :except=>'send_email'
-
+  include ApplicationHelper
   def init
     @controller = request.filtered_parameters['controller']
     @title = I18n.t('pages.admin_charities.title')
@@ -85,16 +85,16 @@ class AnalyticsController < ApplicationController
       @title = [
             'Branch Name',
             'Number of Callers', # Stat.new.number_of_calls
-            'Average time listening',
-            'Average total call time', # Stat.new.call_times[:average]
+            "Average time listening (sec)",
+            'Average total call time (sec)', # Stat.new.call_times[:average]
             'Number of Messages Left', # Stat.new.messages[:total]
             'Country'
             ]
      @country_title = [
                 'Country',
                 'Number of Callers', # Stat.new.number_of_calls
-                'Average time listening',
-                'Average total call time', # Stat.new.call_times[:average]
+                'Average time listening (sec)',
+                'Average total call time (sec)', # Stat.new.call_times[:average]
                 'Number of Messages Left', # Stat.new.messages[:total]
                 'Branches'
                 ]
@@ -108,8 +108,8 @@ class AnalyticsController < ApplicationController
 #      row['From Date'] = @start_date
 #      row['End Date'] = @end_date
       row['Number of Callers'] = @calls[b.id][:total]
-      row['Average time listening'] = @listened[b.id][:average]
-      row['Average total call time'] = @call_times[b.id][:average]
+      row['Average time listening (sec)'] = format_seconds @listened[b.id][:average]
+      row['Average total call time (sec)'] = format_seconds @call_times[b.id][:average]
       row['Number of Messages Left'] = @messages[b.id][:total]
       row['Country'] = b.country.name
       @rows << row
@@ -119,8 +119,8 @@ class AnalyticsController < ApplicationController
       row = {}
       row['Country'] = c.name
       row['Number of Callers'] = @calls[c.name][:total]
-      row['Average time listening'] = @listened[c.name][:average]
-      row['Average total call time'] = @call_times[c.name][:average]
+      row['Average time listening (sec)'] = format_seconds @listened[c.name][:average]
+      row['Average total call time (sec)'] = format_seconds @call_times[c.name][:average]
       row['Number of Messages Left'] = @messages[c.name][:total]
       row['Branches'] = @messages[c.name][:branches].join(',')
       @country_rows << row
