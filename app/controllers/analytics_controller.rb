@@ -13,8 +13,8 @@ class AnalyticsController < ApplicationController
       started = params[:start_date]
       ended = params[:end_date]
     else
-      started = Branch.message_time_span.days.ago.strftime("%Y-%m-%d")
-      ended = Time.now.strftime("%Y-%m-%d")
+      started = Branch.message_time_span.days.ago.strftime("%Y-%m-%d %I:%M %P")
+      ended = Time.now.strftime("%Y-%m-%d %I:%M %P")
     end
     @start_date = started
     @end_date = ended
