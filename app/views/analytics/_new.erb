@@ -7,28 +7,32 @@
     <%= form_tag("/analytics", :method => :post, :id=>"post-report") do %>
     <%= hidden_field_tag "authenticity_token", "#{form_authenticity_token}" %>
 
-				<label for="branch_id">Select Branch</label>
-    <% options = Branch.where("is_active=1").map{|b| [b.name, b.id]} 
-       id=0 
-    %>
-    <%= select_tag 'branch_id', options_for_select(options, id), { :multiple => true, :size => 5 } %>
-    <div class="separator"></div>
-
-    <label for="start_date">Start Date:</label>
-    <input type="text" class="datepicker" id="start_date" name="start_date" value="<%= @start_date %>" />
-		<!-- img src="/assets/calendar.gif" class="calendar-img" / -->
-		<div class="separator"></div>
-    <label for="end_date">End Date:</label>
-    <input type="text" class="datepicker" id="end_date" name="end_date" value="<%= @end_date %>" />
-    <!-- img src="/assets/calendar.gif" class="calendar-img" / -->
-    <div class="separator"></div>
-    <label>Format</label>
-    <% fmt = params[:format] || 'html' %>
-    <%= radio_button_tag 'format', 'csv', fmt=='csv' %>&nbsp;CVS<%= radio_button_tag 'format', 'html', fmt=='html' %>&nbsp;HTML
-    <div class="separator"></div>
-
-    <input type="button" value="Cancel" id="report-cancel" class="btnAction" />
+    <div class="report-input-wrapper">
+      <div class="report-input">
+		    <label for="branch_id">Select Branch</label>
+        <% options = Branch.where("is_active=1").map{|b| [b.name, b.id]} 
+           id=0 
+        %>
+        <%= select_tag 'branch_id', options_for_select(options, id), { :multiple => true, :size => 5 } %>
+      </div>
+      <div class="report-input">
+        <label for="start_date">Start Date:</label>
+        <input type="text" class="datepicker" id="start_date" name="start_date" value="<%= @start_date %>" />
+		    <!-- img src="/assets/calendar.gif" class="calendar-img" / -->
+        <div class="separator"></div>
+        <label for="end_date">End Date:</label>
+        <input type="text" class="datepicker" id="end_date" name="end_date" value="<%= @end_date %>" />
+        <!-- img src="/assets/calendar.gif" class="calendar-img" / -->
+      </div>
+      <div class="report-input">
+        <% fmt = params[:format] || 'html' %>
+        <%= radio_button_tag 'format', 'csv', fmt=='csv' %>&nbsp;CVS<%= radio_button_tag 'format', 'html', fmt=='html' %>&nbsp;HTML
+      </div>
+    </div>
+    <div class="report-button-wrapper">
+      <input type="button" value="Cancel" id="report-cancel" class="btnAction" />
 		  <input type="button" value="Submit" id="report-submit" class="btnAction" />
+    </div>
     <% end %>
   </div>
   <div id="report-results" class="search-results">
