@@ -83,6 +83,7 @@ class AnalyticsController < ApplicationController
   
   def branch_report_title
       @title = [
+            ' ',
             'Branch Name',
             'Number of Callers', # Stat.new.number_of_calls
             "Average time listening (sec)",
@@ -91,6 +92,7 @@ class AnalyticsController < ApplicationController
             'Country'
             ]
      @country_title = [
+                ' ',
                 'Country',
                 'Number of Callers', # Stat.new.number_of_calls
                 'Average time listening (sec)',
@@ -104,6 +106,7 @@ class AnalyticsController < ApplicationController
     @rows = []
     @branches.each do | b |
       row = {}
+      row[' '] = "<img width=20 height=20 src='#{b.country_flag_url}' />".html_safe
       row['Branch Name'] = b.name
 #      row['From Date'] = @start_date
 #      row['End Date'] = @end_date
@@ -117,6 +120,7 @@ class AnalyticsController < ApplicationController
     @country_rows = []
     @countries.each do | c |
       row = {}
+      row[' '] = "<img width=20 height=20 src='#{c.branches[0].country_flag_url}' />".html_safe
       row['Country'] = c.name
       row['Number of Callers'] = @calls[c.name][:total]
       row['Average time listening (sec)'] = format_seconds @listened[c.name][:average]
