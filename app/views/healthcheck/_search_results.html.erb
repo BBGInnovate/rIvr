@@ -3,8 +3,8 @@
         <td class="branch-name" id="<%= branch.id %>" data-url="/healthcheck/<%= branch.id %>/edit">
           <%= branch.name%>
         </td>
-        <td>
-          <%= branch.health_image.html_safe %>
+        <td class='branch-name-tip' title="<%= branch.title_infowindow %>">
+           <%= branch.health_image.html_safe %>
         </td>
         <td>
           <%= branch.country.name%>
@@ -14,3 +14,13 @@
         </td>
       </tr>
 <% end %>
+<script>
+   jQuery(document).ready(function(){
+     $('.branch-name-tip').tooltip({
+      // this code make line break
+         content: function() {
+           return $(this).attr('title');
+         }
+      });
+  });
+</script>

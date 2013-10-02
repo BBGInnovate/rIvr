@@ -10,7 +10,9 @@ class HealthcheckController < ApplicationController
       where(:is_active=>true).all
     end
     Health.populate(@branches)
-    @branches.sort_by!{|a| a.health?}  
+    @branches.sort_by!{|a| a.health?} 
+    @map_width = '100%' 
+    @map_height = '250px'
   end
   
   def edit

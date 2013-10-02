@@ -19,7 +19,14 @@ class Branch< ActiveRecord::Base
     htm << "<span class=\"my-tooltip\">Health: #{health_image}</span> <br/>"
     htm.html_safe
   end
-      
+  def title_infowindow
+      htm = "<span class=\"my-tooltip\"><b>#{self.name.titleize}</b> <br/>"
+      htm << "<span class=\"my-tooltip\">Last Activity: #{entries.last.created_at.to_s(:db) rescue 'N/A'} </span><br/>"
+      htm << "<span class=\"my-tooltip\">IVR #: #{self.ivr_call_number} </span><br/>"
+      htm << "<span class=\"my-tooltip\">POC:  #{self.contact}</span><br/>"
+      htm
+  end
+        
   def gmaps4rails_title
      self.name
   end
