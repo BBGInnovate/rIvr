@@ -57,7 +57,7 @@ div#ft p {
 <script>
 jQuery(document).ready(function() {
 	  Gmaps.map.callback = function() {
-	     // LoadBbgMap();
+	     LoadBbgMap();
 			 googleMapCallback();
 			 var myBounds = new google.maps.LatLngBounds();
 			 <% Branch.where("is_active=1 AND latitude is not null").each_with_index do |b, i| %>
@@ -88,7 +88,7 @@ jQuery(document).ready(function() {
         });
 	     <% end %>
 	     // auto center and zoom
-       Gmaps.map.map.fitBounds(myBounds); 
+       // Gmaps.map.map.fitBounds(myBounds); 
    };
 
 });
