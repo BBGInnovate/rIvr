@@ -3,12 +3,15 @@
   <head>
     <title>BBG IVR</title>
     <!-- <META HTTP-EQUIV="refresh" CONTENT="60" /> -->
-				<%= stylesheet_link_tag    "application", :media => "all" %>
+		<%= stylesheet_link_tag    "application", :media => "all" %>
     <%= javascript_include_tag 'application.js' %>
     <%= stylesheet_link_tag "SpryTabbedPanels.css" %>
 				<%#= javascript_include_tag 'SpryTabbedPanels.js' %>
     <%= stylesheet_link_tag "all" %>
-				<%= stylesheet_link_tag "as_overrides" %>
+	  <%= stylesheet_link_tag "as_overrides" %>
+	  <script src="/jquery.mb.miniAudioPlayer-1.7.1/inc/jquery.jplayer.min.js?body=1" type="text/javascript"></script>
+    <script src="/jquery.mb.miniAudioPlayer-1.7.1/inc/jquery.mb.miniPlayer.js?body=1" type="text/javascript"></script>
+    <link href="/jquery.mb.miniAudioPlayer-1.7.1/css/miniplayer.css?body=1" media="screen" rel="stylesheet" type="text/css" />
     <%= csrf_meta_tags %>
     <%= yield :head %>
   </head>
@@ -20,31 +23,16 @@
       </nav>
       <!-- End Left side nav --><!--Module is the container class of the right content area -->
       <div class="module">
-        <!--Start Branch Caller and Activity Area--
-        <div class="controls">
-          <%#= render :partial=>'shared/header' %>
+				<!-- Put your map tool here. -->
+				<div class="content" id="content">
+           <p class="alert"><%= alert %></p>
+           <%= yield %>
         </div>
-        --End Branch Caller and Activity Area-->
-								
-								<!-- Put your map tool here. -->
-								<div class="content" id="content">
-         <p class="alert">
-          <%= alert %>
-        </p>
-          <%= yield %>
-        </div>
-								
-								
-								<!-- Start Activity area. This area set to have a top margin of 20px. --
-        <div class="activity">
-           <%#= render :partial=>'shared/activity' %>			
-        </div>
-        -- End Activity area -->
       </div>
       <!-- End Module -->
     </div>
     <!-- End Wrapper -->
-				<%= yield :scripts %> <!-- (in your footer) -->
+		<%= yield :scripts %> <!-- (in your footer) -->
     <script>
       jQuery(document).ready(function(){
           homePage.init("content");

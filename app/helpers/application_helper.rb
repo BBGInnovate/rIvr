@@ -42,5 +42,41 @@ module ApplicationHelper
     else
       super
     end
+  end
+  
+  def audio_players(branch)
+    audios = []
+    template = branch.forum_type.camelcase.constantize
+    intro = template.find_me(branch.id, 'introduction')
+    audios << ['Introduction', audio_tag(intro), edit_tag(intro)]  
+    case branch.forum_type
+    when 'report' 
+      headline = template.find_me(branch.id, 'headline')
+      audios << ['Headline News', 'Feed Source', edit_tag(headline)]  
+      bye = template.find_me(branch.id, 'goodbye')
+      audios << ['Goodbye', audio_tag(bye), edit_tag(bye)]  
+    when 'vote'
+      vote = template.find_me(branch.id, 'candidate')
+      audios << ['Participate', audio_tag(vote), edit_tag(vote)]  
+    when 'bulletin' 
+      bulletin = template.find_me(branch.id, 'bulletin_question')
+      audios << ['Ask the communite', audio_tag(bulletin), edit_tag(bulletin)]  
+    end
+  end
+  def audio_tag(template)
+    if template.audio_link
+    html = %{<a id="#{template.id}" class="audio {ogg:'#{template.audio_link}',downloadable:false,autoplay:false, inLine:true}"
+          href="#{template.audio_link}">
+          #{template.audio_link}</a>
+        <button onclick="$('##{template.id}').mb_miniPlayer_stop();">stop</button>
+        <button onclick="$('##{template.id}').mb_miniPlayer_play();">play</button>}
+    else
+      html = 'No audio file uploaded'
+    end
+    html.html_safe    
   end 
+  def edit_tag(template)
+  html = %{<input id="branch-name" type="hidden" value="#{template.branch_id}" name="branch" /><input type="hidden" value="#{template.branch.forum_type}" name="forum-type"/><a href='' class='square' id='#{template.name}'>&nbsp;&nbsp;Edit</a>}
+    html.html_safe
+  end
 end

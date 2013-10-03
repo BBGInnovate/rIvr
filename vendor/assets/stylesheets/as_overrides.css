@@ -176,18 +176,24 @@ input.btnAction:hover {
   margin: 0 0 10px 0;
 }
 #template-popup {
-      background-color: #FFFFFF;
-						/*
+	background-color: #CCCCCC;
+  border: 1px dotted #CCCCCC;
+  width: 320px;
+  /*    background-color: #FFFFFF;
       border: 1px solid #9CD5F8;
       border-radius: 25px 25px 25px 25px;
-      */
       float: left;
       margin: 0;
-      min-height: 250px;
+      min-height: 200px;
       padding: 20px 30px 5px;
-						margin: 0 0 10px 0;
-      width: 400px;
-						border-bottom: 1px solid #CCCCCC;
+			margin: 0 0 10px 0; 
+      border-bottom: 1px solid #CCCCCC; 
+  */
+}
+#template-headline {
+  background-color: #CCCCCC;
+  border: 1px dotted #CCCCCC;
+  width: 220px;
 }
 /*
 h2 {
@@ -271,8 +277,14 @@ input.btnAction:hover, .branch-name:hover {
 #forum-upload {
   width: 480px;
   margin: 50px 0 0 0;
-  
   overflow: hidden;
+}
+
+#forum-audio-upload {
+	margin: 0; /*  0 0 20px; */
+}
+#forum-audio-upload #template-popup {
+ /* padding: 0 30px 5px; */
 }
 #forum-template .square:hover {
   background-color:#004276;
@@ -310,6 +322,15 @@ input.btnAction:hover, .branch-name:hover {
     height: 31px;
     margin: 10px 0 5px 0;
 }
+#branch .TabbedPanels {
+	border-bottom: 1px solid #CCCCCC;
+	margin: 0 0 20px 0;
+  overflow: auto;
+  padding-bottom: 20px;
+  text-align: center;
+  width: 100%;
+}
+
 a.go-template {
 	display: none;
 }
@@ -536,7 +557,8 @@ input[type=submit]:hover {
 		margin: 0 0 0 10px;
 } 
 */
-.publish-syndicate a:hover, #search-results-id a:hover {
+.publish-syndicate a:hover, #search-results-id a:hover,
+a.square:hover {
   cursor: pointer;
 }
 /* for date picker */

@@ -8,7 +8,7 @@
   <% options = [['dropbox','dropbox'],['static_rss','static_rss']]
   id = @option.feed_source %>
   
-  <h2>Select a Headline News Source:</h2>
+  <h3>Select a Headline News Source:</h3>
   <div>
     <%= f.select :feed_source, options_for_select(options, id), :style=>'' %>
   </div>

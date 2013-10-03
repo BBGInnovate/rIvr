@@ -39,7 +39,7 @@
   </div>
   <div class="btnUploadWrap">
     <span><%= submit_tag 'Preview', :id=>"preview", :value=>"Upload", :class=>"btnAction" %></span>
-    <% if @preview || @save %>
+    <% if !!template.audio_link || @preview || @save %>
       <span><%= submit_tag 'Save', :id=>"save", :class=>"btnAction" %></span>
     <% end %>
     <span><%= submit_tag 'Cancel', :id=>"cancel", :class=>"btnAction" %></span>

@@ -1,5 +1,14 @@
 class BranchController < ApplicationController
   layout 'branch'
+  
+  def active_forum
+    @branch= Branch.find_me(params[:id])
+    f = @branch.branch_forum_types.last
+    if f
+      f.save
+    end
+  end
+  
   def index
     if params[:branch]
       @branch = Branch.find_by_name params[:branch]
@@ -21,9 +30,16 @@ class BranchController < ApplicationController
         hint = "You must upload the voice forum audio files by clicking Edit Forum link to the left"
       end
     end
-    text=%{{"hint":"#{hint}","forum":"#{@branch.forum_type}","forum_ui":"#{@branch.forum_type_ui}", "branch":"#{@branch.name}"}}
-    render :text =>text ,:content_type=>'application/text',:layout=>false and return
-
+    audios = render_to_string :partial=>'shared/audio_player', :formats=>["html"]
+#    text=%{{"":"hint":"#{hint}","forum":"#{@branch.forum_type}","forum_ui":"#{@branch.forum_type_ui}", "branch":"#{@branch.name}"}}
+#    render :text =>text ,:content_type=>'application/text',:layout=>false and return
+    render :json=>{:audios=>audios,
+                   :hint=>hint,
+                   :forum=>@branch.forum_type,
+                   :forum_ui=>@branch.forum_type_ui,
+                   :branch=>@branch.name},
+            :content_type=>"text", 
+            :layout=>false
   end
   def new
       flash[:notice] = nil
