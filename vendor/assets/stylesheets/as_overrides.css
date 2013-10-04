@@ -299,6 +299,10 @@ input.btnAction:hover, .branch-name:hover {
   color: #FFF;
 }
 /* branch create */
+#delete {
+	display:none;
+	margin: 0 0 0 20px;
+}
 #new-branch {
   margin: 0 0 0 10px;
 }
