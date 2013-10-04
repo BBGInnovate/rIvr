@@ -179,6 +179,7 @@ input.btnAction:hover {
 	background-color: #CCCCCC;
   border: 1px dotted #CCCCCC;
   width: 320px;
+  padding: 0px 30px 5px;
   /*    background-color: #FFFFFF;
       border: 1px solid #9CD5F8;
       border-radius: 25px 25px 25px 25px;
