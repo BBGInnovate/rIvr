@@ -682,6 +682,19 @@ a.square:hover {
     height: 50px;
 }
 
+.span-h2 {
+  font-size: 24px;
+  text-align: left;
+  text-transform: uppercase;
+}
+span.link {
+	display: inline-block;
+	font-size: 14px;
+	margin: 0 0 0 50px;
+}
+span.link a {
+  color: blue;
+}
 /*
 a.soundcloud:hover {
   background-color:yellow;
