@@ -620,6 +620,40 @@ var branchManage = {
 			jQuery('#new-branch').show();
 			return false
 		});
+		jQuery("#branch").on('click', "#delete", function(e) {
+			var branch_id = $("#record_id").val();
+			var branch_name = $('#record_id :selected').text();
+			$('<div></div>').appendTo('body')
+      .html('<div><h3>Are you sure you want to delete branch: ' + branch_name + '</h3></div>')
+      .dialog({
+          modal: true, title: 'Delete Branch', zIndex: 10000, autoOpen: true,
+          width: 'auto', resizable: false,
+          buttons: {
+              Delete: function () {
+                  $(this).dialog("close");
+                  var url = '/branch/'+branch_id;
+                  $.ajax({
+                    url: url,
+                    type: 'DELETE',
+                    success: function(result) {
+                    	  $('#record_id').html(result)
+                      $('#go-template').hide();
+                    	  $('#go-template-result').hide();
+                    	  $(".TabbedPanelsTab").removeClass('TabbedPanelsTabSelected');
+                  		  
+                    }
+                });
+              },
+              Cancel: function () {
+                  $(this).dialog("close");
+              }
+          },
+          close: function (event, ui) {
+              $(this).remove();
+          }
+      });
+		 
+		});
 		jQuery("#branch").on('change', "#record_id", function(e) {
 			var branch_id = this.value;
 			branchManage.myId = this.id
@@ -631,6 +665,7 @@ var branchManage = {
 			  $('#new-branch').hide();
 			  return false;
 			}
+			$("#delete").show();
 			var url = '/branch/' + branch_id;
 			var data = {};
 			// reset the notice msg
@@ -734,11 +769,11 @@ var branchManage = {
 	  $('#create').val('Edit Branch');
 		var obj = jQuery.parseJSON(data);
 		if (obj.forum.length>0) {
-			$('#audio-player-div').html(obj.audios);
+			// $('#audio-player-div').html(obj.audios);
 		  jQuery(".TabbedPanelsTab").removeClass('TabbedPanelsTabSelected');
 		  jQuery("#" + obj.forum).addClass('TabbedPanelsTabSelected');
 		  jQuery("#forum_type_" + obj.forum).prop('checked', true);
-		  /*
+		  
 		  jQuery('#go-template').attr('href', "/templates?branch=" + obj.branch);
 		  jQuery('#go-template').show();
 		  if (obj.forum=='vote' || obj.forum=='poll') {
@@ -746,12 +781,15 @@ var branchManage = {
 		    jQuery('#go-template-result').show();
 		  }
 		  jQuery('#go-template-hint').html(obj.hint);
-		  */
+		  
 		} else {
 		  // jQuery("[id*='forum_type_']").prop('checked', false);
 		  jQuery(".TabbedPanelsTab").removeClass('TabbedPanelsTabSelected');
 		  jQuery("[id^='go-template']").hide();
 		}
+	},
+	deleteBranch : function(branch_id) {
+		
 	},
 	update : function(data) {
 		jQuery("#new-branch").html(data);
