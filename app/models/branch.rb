@@ -38,7 +38,12 @@ class Branch< ActiveRecord::Base
   end
   
   def country_flag_url
-    read_attribute(:country_flag_url) || '/assets/rails.png'
+    f = read_attribute(:country_flag_url)
+    if !f || f.empty?
+      '/assets/rails.png'
+    else
+      f
+    end
   end
     
   def message_time_span
