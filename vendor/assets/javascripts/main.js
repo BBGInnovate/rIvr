@@ -788,9 +788,6 @@ var branchManage = {
 		  jQuery("[id^='go-template']").hide();
 		}
 	},
-	deleteBranch : function(branch_id) {
-		
-	},
 	update : function(data) {
 		jQuery("#new-branch").html(data);
 		$('#create-branch').html(branchManage.branchAction)
