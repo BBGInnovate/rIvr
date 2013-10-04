@@ -9,12 +9,13 @@ class Template < ActiveRecord::Base
   #     :url => "/system/:attachment/:id/:style/:filename"
   # name == 'introduction', 'message' etc.
   def self.find_me(branch_id, name)
-    record = self.last :conditions=>["branch_id=? and name=?", branch_id, name]
+    record = where(["branch_id=? and name=?", branch_id, name]).last
     if !record
-      self.create :branch_id=>branch_id, :name=>name
+      record = self.create :branch_id=>branch_id, :name=>name
     else
       record
     end
+    record
   end
 
   def find_introduction
