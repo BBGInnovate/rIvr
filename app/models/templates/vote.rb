@@ -5,14 +5,15 @@ require 'builder'
 class Vote < Template
   belongs_to :voting_session
   
-  HUMANIZED_COLUMNS = {:identifier=>"Name"}
+  HUMANIZED_COLUMNS = {:identifier=>"Vote/Poll Title"}
     
       def self.human_attribute_name(attribute, options = {})
         HUMANIZED_COLUMNS[attribute.to_sym] ||
         attribute.to_s.gsub(/_id$/, "").gsub(/_/, " ").capitalize
       end
       
-  validates :identifier, :presence => true,:length => {:minimum=>6, :maximum=>40}
+  validates :identifier, :length => {:minimum=>6, :maximum=>40},
+      :if => Proc.new {|c| !!c.identifier}
    
   def identifier
     # if this template is saved before
