@@ -3,22 +3,25 @@
   <div class="select-branch">
     <h4>Select Branch</h4>
     <form action="" method="get">
-            <% options = Branch.where("is_active=1").map{|b| [b.name, b.id]}
+      <% options = Branch.where("is_active=1").map{|b| [b.name, b.id]}
          options.unshift ["--Select Branch--","0"] 
          id = !!@branch ? @branch.id : 0
       %>
       <%= select_tag 'record[id]', options_for_select(options, id), :style=>'' %>
     </form>
-        <%= submit_tag 'Create Branch', :id=>"create", :class=>"create-branch ZbtnAction" %>
+    <%= submit_tag 'Create Branch', :id=>"create", :class=>"create-branch ZbtnAction" %>&nbsp;&nbsp;
+    <%= submit_tag 'Delete Branch', :id=>"delete", :class=>"create-branch" %>
   </div>
   <div id="new-branch" class="float-left"></div>
   <p id="return-msg" class="notice"></p>
-  <%# --
+
   <p>
   <a id="go-template" class="go-template" href="/templates">Edit Forum</a>
   <span id="go-template-hint" class="go-template-hint"></span>
   </p>
-  -- %>
+  <p>
+  <a id="go-template-result" class="go-template" href="/templates?result=1&branch=Accra" onclick="return confirm('Creating a Forum Result template indicates the Vote/Poll is ended. Continue?')">Edit Forum Result</a>
+  </p>
   <h3>Select Forum Type</h3>
   <div id="TabbedPanels1" class="TabbedPanels">
     <ul class="TabbedPanelsTabGroup">
