@@ -9,11 +9,13 @@ class Branch< ActiveRecord::Base
   has_one :health
   belongs_to :country, :foreign_key=>"country_id"
 #  include HealthHelper
-  
+  def last_activity
+    events.where(["action_id != ?", Action.ping_server]).last.created_at.to_s(:db) rescue 'N/A'
+  end
   def gmaps4rails_infowindow
     htm = "<span class=\"my-tooltip\"><b>#{self.name.titleize}</b> <br/>"
     htm << "<b>#{self.country.name}</b></span><br/>"
-    htm << "<span class=\"my-tooltip\">Last Activity: #{entries.last.created_at.to_s(:db) rescue 'N/A'} </span><br/>"
+    htm << "<span class=\"my-tooltip\">Last Activity: #{last_activity} </span><br/>"
     htm << "<span class=\"my-tooltip\">IVR #: #{self.ivr_call_number} </span><br/>"
     htm << "<span class=\"my-tooltip\">POC:  #{self.contact}</span><br/>"
     htm << "<span class=\"my-tooltip\">Health: #{health_image}</span> <br/>"
@@ -21,7 +23,7 @@ class Branch< ActiveRecord::Base
   end
   def title_infowindow
       htm = "<span class=\"my-tooltip\"><b>#{self.name.titleize}</b> <br/>"
-      htm << "<span class=\"my-tooltip\">Last Activity: #{entries.last.created_at.to_s(:db) rescue 'N/A'} </span><br/>"
+      htm << "<span class=\"my-tooltip\">Last Activity: #{last_activity} </span><br/>"
       htm << "<span class=\"my-tooltip\">IVR #: #{self.ivr_call_number} </span><br/>"
       htm << "<span class=\"my-tooltip\">POC:  #{self.contact}</span><br/>"
       htm
