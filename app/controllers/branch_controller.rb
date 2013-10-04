@@ -30,10 +30,10 @@ class BranchController < ApplicationController
         hint = "You must upload the voice forum audio files by clicking Edit Forum link to the left"
       end
     end
-    audios = render_to_string :partial=>'shared/audio_player', :formats=>["html"]
+#    audios = render_to_string :partial=>'shared/audio_player', :formats=>["html"]
 #    text=%{{"":"hint":"#{hint}","forum":"#{@branch.forum_type}","forum_ui":"#{@branch.forum_type_ui}", "branch":"#{@branch.name}"}}
 #    render :text =>text ,:content_type=>'application/text',:layout=>false and return
-    render :json=>{:audios=>audios,
+    render :json=>{:audios=>'',
                    :hint=>hint,
                    :forum=>@branch.forum_type,
                    :forum_ui=>@branch.forum_type_ui,
@@ -81,5 +81,17 @@ class BranchController < ApplicationController
         end
       end
       render :text=>text,:content_type=>"application/text", :layout => false
+    end
+    def destroy
+      branch=Branch.find_by_id params[:id]
+      if branch
+        branch.is_active=false
+        branch.save
+        render :partial=>"branch_options",
+          :layout=>false,:content_type=>'application/text'
+      else
+        render :text=>"branch not found for id : #{params[:id]}",
+                  :layout=>false,:content_type=>'text'
+      end
     end
 end
