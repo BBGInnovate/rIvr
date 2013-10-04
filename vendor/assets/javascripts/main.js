@@ -95,9 +95,17 @@ var homePage = {
       jQuery("body").on('click', ".left-nav-bar", function(e) {
         // var name = this.id;
         // var url = '/'+name;
-        var klass = $(this).attr("data-klass");
+        var klass = $(this).attr("data-klass") || '';
         var url = $(this).attr("data-url");
-        window.location = url+"?klass="+klass;
+        var branch_id = $(this).attr("data-id") || '';
+        if (klass.length>0 && branch_id.length>0)
+        	  url = url+"?klass="+klass + "&branch_id="+branch_id;
+        else if (branch_id.length>0) 
+        		url = url + "?branch_id="+branch_id;
+        else if (klass.length>0)
+        	  url = url+"?klass="+klass;
+        
+        window.location = url
         // var data = {ajax: 1};
         // jQuery.get(url, data, homePage.update, 'html');
         return false

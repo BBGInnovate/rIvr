@@ -37,8 +37,14 @@ class ModerationController < ApplicationController
     end_date = Time.now.to_s(:db)
     @results = Entry.where("entries.is_private=1 AND entries.is_active=1").
        joins(:branch).where("branches.is_active=1").
-       where("entries.created_at"=>start_date..end_date).
-       order("entries.id desc").page(p)
+       where("entries.created_at"=>start_date..end_date)
+    #   order("entries.id desc").page(p)
+       
+    if (params[:branch_id])
+      @results = @results.where(["entries.branch_id = ?", params[:branch_id]])
+    end
+    @results = @results.order("entries.id desc").page(p)
+    
     if params[:ajax]
       # request from paginate links in listen, syndicate  page
       render :partial=>params[:partial], :layout=>false, :content_type=>'text' and return

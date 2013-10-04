@@ -19,7 +19,7 @@ class AnalyticsController < ApplicationController
     @start_date = started
     @end_date = ended
     
-    if request.post?
+    if request.post? || params[:branch_id]
       @branches = Branch.includes(:country).
          where(["id in (?)", params[:branch_id]])
     else

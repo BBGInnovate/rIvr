@@ -11,6 +11,9 @@ class HealthcheckController < ApplicationController
     end
     Health.populate(@branches)
     @branches.sort_by!{|a| a.health?} 
+    if params[:branch_id]
+      @branches = @branches.select{|b| b.unhealth? && (b.id == params[:branch_id].to_i)} 
+    end
     @map_width = '100%' 
     @map_height = '250px'
   end
