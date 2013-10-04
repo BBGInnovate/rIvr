@@ -25,7 +25,7 @@ class Health< ActiveRecord::Base
         end
         message = "Branch #{h.branch.name}: No Activity For #{hours} hours and #{minutes} minutes"
         if h.deliver_method == "email"
-          if h.email
+          if h.email && !h.email.empty?
             UserMailer.alarm_email(h, message).deliver
             logger.debug "SENT #{h.email} #{message}"
             AlertedMessage.create :branch_id=>h.branch_id,
