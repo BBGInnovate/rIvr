@@ -22,8 +22,11 @@
 <tr>
    <td>
      <% if e.dropbox_file_exists? %>
-      <a id='<%=e.id%>' class="audio2 {ogg:'/entries/<%=e.id%>/play',autoplay:false, inLine:true}"
+      <a id='<%=e.id%>' class="audio2 {ogg:'/entries/<%=e.id%>/play',autoplay:false, downloadable:false,inLine:true}"
        href='/entries/<%=e.id%>/play'><%= e.dropbox_file %></a>
+       <a title="Download <%= e.dropbox_file %>" href='/entries/<%=e.id%>/play'>
+        Download
+       </a>
      <% else %>
      <%= e.dropbox_file %> missing
      <% end %>
