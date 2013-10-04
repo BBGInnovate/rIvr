@@ -2,11 +2,11 @@
 <%= link_to_function("Print", "javascript:print()", :class=>"print-it") %>
 <h2 class="print-header"><%= @report_name %></h2>
 <span class="print-date"><%= @start_date %> - <%= @end_date %> </span>
-<table class="search-results-table">
+<table class="search-results-table tablesorter">
   <thead>
     <tr>
     	<% @title.each do |f| %>
-      <th>
+      <th data-id="<%= f.lstrip.rstrip %>">
         <%= f %>
       </th>
       <% end %>
@@ -24,7 +24,7 @@
     <% end %>
   </tbody>
 </table>
-<table class="search-results-table">
+<table class="search-results-table tablesorter">
   <thead>
     <tr>
       <% @country_title.each do |f| %>

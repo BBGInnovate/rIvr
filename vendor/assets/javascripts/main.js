@@ -117,10 +117,16 @@ var homePage = {
 }
 var report = {
     init : function() {
-    	  //$("body").on('click', ".calendar-img", function(e) {
-    	    	// trigger date input to show
-    	    //$(this).prev().trigger('focus');
-    	  //});
+    	  $(".search-results-table").tablesorter({ 
+          // pass the headers argument and assing a object 
+          headers: { 
+              // assign the first column (we start counting zero) 
+              0: { 
+                  // disable it by setting the property sorter to false 
+                  sorter: false 
+              }, 
+          } 
+      }); 
       	$("body").on('click', "#report-cancel", function(e) {
       		$('#branch_id option').attr('selected', false);
       		$('#start_date').val('');
