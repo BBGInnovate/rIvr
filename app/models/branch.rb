@@ -676,10 +676,9 @@ class Branch< ActiveRecord::Base
   # generate forum.xml in dropbox public/<branch>
   def generate_forum_feed_xml(client=nil)
     local_file = self.forum_feed_xml
-    dropbox_branch = "#{DROPBOX.home}/#{self.name}"
+    dropbox_branch = "#{DROPBOX.home}/bbg/#{self.name}"
     remote_file = "#{dropbox_branch}/#{File.basename(local_file)}"
-    remote_file = "#{dropbox_branch}/forum_feed.xml"
-        
+      
     if !Prompt.file_equal?(remote_file, local_file)
       if Dir.exists? DROPBOX.home
         # dropbox client is installed
@@ -693,7 +692,7 @@ class Branch< ActiveRecord::Base
         if !client
           client = get_dropbox_session
         end
-        to = "Public/#{self.name}/"
+        to = "bbg/#{self.name}/"
         client.upload local_file, to
         puts "Uploaded #{local_file} to #{to}"
       rescue Exception=>e
