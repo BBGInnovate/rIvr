@@ -1,7 +1,7 @@
 class Template < ActiveRecord::Base
   belongs_to :branch
   
-  after_save :generate_forum_feed
+#  after_save :generate_forum_feed
 
   self.inheritance_column = "temp_type"
   #  has_attached_file :sound,
@@ -24,15 +24,13 @@ class Template < ActiveRecord::Base
     
   def generate_forum_feed
     if self.is_active==true
-      # branch.generate_forum_feed  # let cron job do the work
+      branch.generate_forum_feed_xml  # let cron job do the work
     end
   end
 
-  # for forum prompts file
+  # for forum prompt files
   def dropbox_dir
-    "/bbg/#{self.branch.name.downcase}/#{self.class.name.downcase}"
-    # "/Public/#{self.branch.name.downcase}/#{self.class.name.downcase}"
-    # "/bbg/#{self.branch.name.downcase}/forum"
+    self.branch.prompt_files_folder
   end
 
   def upload_to_dropbox(file)
