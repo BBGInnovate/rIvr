@@ -11,3 +11,9 @@ class ActiveRecord::Base
     dropbox_session
   end
 end
+module Kernel
+private
+    def this_method_name
+      caller[0] =~ /`([^']*)'/ and $1
+    end
+end

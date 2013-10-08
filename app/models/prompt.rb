@@ -50,9 +50,9 @@ class Prompt < ActiveRecord::Base
       # branch = en.name.downcase
       dir = "#{DROPBOX.tmp_dir}/#{branch.name}"
       FileUtils.mkdir_p(dir) if !Dir.exists?(dir)
-      generate_prompts_xml(branch, client)
-      generate_messages_xml(branch, client)
-      branch.generate_forum_feed(client)
+      # generate_prompts_xml(branch, client)
+      # generate_messages_xml(branch, client)
+      branch.generate_forum_feed_xml(client)
     end
     puts "#{Time.now.utc} End"
   end
