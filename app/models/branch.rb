@@ -67,6 +67,17 @@ class Branch< ActiveRecord::Base
     read_attribute(:ivr_call_number) || 'undefined'
   end
   
+  # folder stores voice prompts files
+  def prompt_files_folder
+    folder = "/bbg/#{self.name}/#{self.forum_type}/#{self.identifier}"  
+    folder += "/prompts"
+  end
+  # folder stores callers' messages
+  def entry_files_folder
+    folder = "/bbg/#{self.name}/#{self.forum_type}/#{self.identifier}"
+    folder += "/entries"
+  end
+    
   def self.top_activity
     Event.joins(:branch).where("branches.is_active=1").
       select("branch_id, max(events.created_at) as created_at").
@@ -199,23 +210,35 @@ class Branch< ActiveRecord::Base
     end
   end
 #  has_many :healths
-  has_many :reports, :conditions => ['is_active = ?', 1] do
-    def latest
-      res = select("max(id) as id").group(:name).where(:is_active=>true)
+  
+  # for report prompts
+  has_many :reports do
+    def latest(active=true)
+      res = select("max(id) as id").group(:name).where(:is_active=>active)
       select("id, name, dropbox_file, voting_session_id").where(["id in (?)", res.map{|t| t.id}])
     end
   end
-  has_many :bulletins, :conditions => ['is_active = ?', 1] do
-    def latest
-      res = select("max(id) as id").group(:name).where(:is_active=>true)
+  # for bulletin prompts
+  has_many :bulletins do
+    def latest(active=true)
+      res = select("max(id) as id").group(:name).where(:is_active=>active)
       select("id, name, dropbox_file, voting_session_id").where(["id in (?)", res.map{|t| t.id}])
+    end
+    def original_identifier
+      coll = latest
+      intro = coll.select{|t| t.name=='introduction'}
+      if intro.size == 0
+        return nil
+      end
+      identifier = intro.last.voting_session.name
     end
   end
 
   # is a vote template
-  has_many :votes, :conditions => ['is_active = ?', 1] do
-    def latest
-      res = select("max(id) as id").group(:name).where(:is_active=>true)
+  # for vote prompts
+  has_many :votes do
+    def latest(active=true)
+      res = select("max(id) as id").group(:name).where(:is_active=>active)
       select("id, name, dropbox_file, voting_session_id").where(["id in (?)", res.map{|t| t.id}])
     end
 
@@ -284,8 +307,9 @@ class Branch< ActiveRecord::Base
       get_result(0)
     end
   end
-
-  has_many :prompts, :conditions =>"is_active=1"
+  # files in this table are replaced by 
+  # Branch#prompts_files_folder
+  # has_many :prompts, :conditions =>"is_active=1"
 
   validates_presence_of :name
   validates :name, :uniqueness => {:scope => :country_id}
@@ -363,6 +387,11 @@ class Branch< ActiveRecord::Base
     end
   end
   has_many :entries do
+    def published(limit)
+      where(:is_privite=>false).
+      where(:forum_type=>proxy_association.owner.forum_type).
+      order("id desc").limit(limit)
+    end
     # return number of recorded messages in seconds
     def total_message_length(start_date=nil, end_date=nil)
       start_date = 1.month.ago.to_s(:db) if !start_date
@@ -382,7 +411,37 @@ class Branch< ActiveRecord::Base
     end
         
     # allow from dropbox or static rss, depending on configuration
+    # these messages are for caller to listen
+    # replace def forum_messages
+    def messages_to_listen(limit=10)
+      brch = proxy_association.owner
+      opt = Configure.conf(brch)
+      forum = brch.forum_type
+      limit = [limit, opt.feed_limit].max
+      if opt.feed_source == 'dropbox'
+        entries = []
+        begin
+          records = self.entries.published(limit)
+          records.each do |record|
+            entry = OpenStruct.new
+            #  public_url holds dropbox filepath name
+            file = brch.entry_files_folder+"/#{record.dropbox_file}"
+            if FileUtils.exists? file
+              entry.public_url = file
+              entries << entry 
+            end
+          end
+        rescue
+
+        end
+        entries
+      else # from static_rss
+        entries = Entry.parse_feed(opt.feed_url, limit)
+      end
+    end
+    # these messages are for caller to listen
     def forum_messages(limit=10)
+      logger.warn("DEPRECATION WARNING: #{this_method_name} replaced by messages_to_listen")
       brch = proxy_association.owner
       opt = Configure.conf(brch)
       forum = brch.forum_type
@@ -412,13 +471,16 @@ class Branch< ActiveRecord::Base
         entries = Entry.parse_feed(opt.feed_url, limit)
       end
     end
+
   end
 
   def identifier
-    if self.forum_type=="vote"
+    if self.forum_type=="bulletin"
+      self.bulletins.original_identifier
+    elsif self.forum_type=="vote"
       self.votes.original_identifier
     else
-      "Not Defined"
+      "None"
     end
   end
   #  def forum_type
@@ -436,6 +498,7 @@ class Branch< ActiveRecord::Base
 
   # generate forum.xml in dropbox public/<branch>
   def generate_forum_feed(client=nil)
+    logger.warn('DEPRECATION WARNING: generate_forum_feed replaced by generate_forum_feed_xml')   
     local_file = self.forum_feed
     remote_file = "#{DROPBOX.public_dir}/#{self.name}/#{File.basename(local_file)}"
     to = "Public/#{self.name}/"
@@ -498,6 +561,7 @@ class Branch< ActiveRecord::Base
   end
 
   def forum_feed(limit=10)
+    logger.warn('DEPRECATION WARNING: forum_feed replaced by forum_feed_xml')
     # get public messages
     entries = self.entries.forum_messages(limit)
     # get custom voice prompts
@@ -540,7 +604,11 @@ class Branch< ActiveRecord::Base
     return file_path
   end
 
+  # should not be used
   def prompts_feed
+    logger.warn('DEPRECATION WARNING: forum_feed replaced by forum_feed_xml')
+    return nil
+    
     records = self.prompts
     tmp = "#{DROPBOX.tmp_dir}/#{self.name}"
     FileUtils.mkdir_p tmp
@@ -563,5 +631,79 @@ class Branch< ActiveRecord::Base
     end
     return file_path
   end
+  
+  # replace def forum_feed
+  def forum_feed_xml(limit=10)
+    # get public messages
+    entries = self.entries.messages_to_listen(limit)
+    prompts = self.forum_prompts
+    tmp = "#{DROPBOX.tmp_dir}/#{self.name}"
+    FileUtils.mkdir_p tmp
+    if ::Rails.env != 'development'
+      system("sudo chmod -R 777 #{tmp}")
+    end
+    file_path = "#{tmp}/forum_feed.xml"
+    File.open(file_path, "w") do |file|
+      xml = ::Builder::XmlMarkup.new(:target => file, :indent => 2)
+      xml.instruct! :xml, :version => "1.0"
+      xml.rss :version => "2.0" do
+        xml.channel do
+          xml.created_at Time.now.getutc
+          xml.forum_type self.forum_type
+          xml.identifier self.identifier
+          xml.entry_upload_folder self.entry_files_folder
+          xml.prompt_upload_folder self.prompt_files_folder
+          xml.status (self.forum_type=="vote" && self.votes.ended) ? "vote ended" : "OK"
+          xml.branch self.name
+          xml.count entries.size
+          for m in prompts
+            xml.prompt do
+              # <introduction>/bbg/tripoli/bulletin/introduction.wav</introduction>
+              xml.method_missing(m.name, m.dropbox_file)
+            end
+          end
+          for m in entries
+            # these dropbox_file is to copy to ../Uploads in client
+            xml.item do
+              xml.link m.public_url.gsub("https","http")
+            end
+          end
+        end
+      end
+    end
+    return file_path
+  end
+  # generate forum.xml in dropbox public/<branch>
+  def generate_forum_feed_xml(client=nil)
+    local_file = self.forum_feed_xml
+    dropbox_branch = "#{DROPBOX.home}/#{self.name}"
+    remote_file = "#{dropbox_branch}/#{File.basename(local_file)}"
+    remote_file = "#{dropbox_branch}/forum_feed.xml"
+        
+    if !Prompt.file_equal?(remote_file, local_file)
+      if Dir.exists? DROPBOX.home
+        # dropbox client is installed
+        if !Dir.exists?(dropbox_branch)
+          FileUtils.mkdir_p dropbox_branch
+        end
+        FileUtils.copy local_file, remote_file
+        puts "Copied #{local_file} to #{remote_file}"
+      else
+        begin
+        if !client
+          client = get_dropbox_session
+        end
+        to = "Public/#{self.name}/"
+        client.upload local_file, to
+        puts "Uploaded #{local_file} to #{to}"
+      rescue Exception=>e
+        puts "Error generate_xml client.upload(#{local_file}, #{to}) #{e.message}"
+      end
+      end
+    else
+      puts "#{to}#{File.basename(local_file)} unchanged"
+    end
+  end
+
   protected
 end
