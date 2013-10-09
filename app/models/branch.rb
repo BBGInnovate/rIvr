@@ -73,7 +73,7 @@ class Branch< ActiveRecord::Base
     folder += "/prompts"
   end
   # folder stores callers' messages
-  def entry_files_folder(identifier)
+  def entry_files_folder(identifier=nil)
     folder = "/bbg/#{self.name}/#{self.forum_type}/#{self.identifier(identifier)}"
     folder += "/entries"
   end
@@ -486,17 +486,12 @@ class Branch< ActiveRecord::Base
   end
 
   def identifier(identifier=nil)
-    if self.forum_type=="bulletin"
-      identifier || self.bulletins.original_identifier
-    elsif self.forum_type=="vote"
-      identifier || self.votes.original_identifier
+    if self.forum_type=="report"
+      identifier || 'None'
     else
-      "None"
+      identifier || self.voting_sessions.last.name 
     end
   end
-  #  def forum_type
-  #    read_attribute(:forum_type) || false
-  #  end
 
   def forum_prompts
     begin
@@ -646,7 +641,7 @@ class Branch< ActiveRecord::Base
   # replace def forum_feed
   def forum_feed_xml(limit=10)
     # get public messages
-    entries = self.entries.messages_to_listen(limit)
+    items = self.listen_messages(limit)
     prompts = self.forum_prompts
     tmp = "#{DROPBOX.tmp_dir}/#{self.name}"
     FileUtils.mkdir_p tmp
@@ -669,11 +664,11 @@ class Branch< ActiveRecord::Base
           xml.count entries.size
           for m in prompts
             xml.prompt do
-              # <introduction>/bbg/tripoli/bulletin/introduction.wav</introduction>
+              # <introduction>/bbg/tripoli/vote/October 9//introduction.wav</introduction>
               xml.method_missing(m.name, m.dropbox_file)
             end
           end
-          for m in entries
+          for m in items
             # these dropbox_file is to copy to ../Uploads in client
             xml.item do
               xml.link m.public_url.gsub("https","http")
@@ -714,6 +709,58 @@ class Branch< ActiveRecord::Base
       puts "#{to}#{File.basename(local_file)} unchanged"
     end
   end
-
+  def listen_messages(limit=10)
+    limit = self.feed_limit if !limit
+    items = []
+    arr = []
+    if self.forum_type=='report'
+      if self.feed_source == 'static_rss'
+        items = Entry.parse_feed(self.feed_url, limit)
+      else
+        dir = "#{DROPBOX.home}#{self.entry_files_folder}"
+        FileUtils.mkdir_p(dir) if !Dir.exists?(dir)
+        arr = Dir.entries(dir).
+            select{|f| !File.directory? f}
+      end
+    elsif self.forum_type=='vote' || self.forum_type=='bulletin'
+      vs = self.voting_sessions.last
+      arr = entries.where(["forum_session_id=?", vs.id]).
+         select("dropbox_file").all
+    end
+    arr.all do |f|
+      item = OpenStruct.new
+      item.public_url = self.entry_files_folder + "/"+f
+      items << item
+    end
+    items
+  end
+  def entry_votes(limit=10)
+    limit = self.feed_limit if !limit
+    items = []
+    if self.forum_type=='vote'
+      vs = self.voting_sessions.last
+      entries.where(["forum_session_id=?", vs.id]).
+              select("dropbox_file").all.each do |e|
+         item = OpenStruct.new
+         item.public_url = self.entry_files_folder + "/"+e.dropbox_file
+         items << item
+      end
+    end
+    items
+  end
+  def entry_bulletins(limit=10)
+    limit = self.feed_limit if !limit
+    items = []
+    if self.forum_type=='bulletin'
+      vs = self.voting_sessions.last
+      entries.where(["forum_session_id=?", vs.id]).
+              select("dropbox_file").all.each do |e|
+         item = OpenStruct.new
+         item.public_url = self.entry_files_folder + "/"+e.dropbox_file
+         items << item
+      end
+    end
+    items
+  end
   protected
 end

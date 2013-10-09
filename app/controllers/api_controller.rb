@@ -14,7 +14,13 @@ class ApiController < ApplicationController
     end
   end
   def create
+    # entry needs [:forum_session]
     entry = params[:entry]
+    forum_session = entry.delete(:forum_session)
+    vs = VotingSession.find_by_name forum_session
+    if !!vs 
+      entry[:forum_session_id] = vs.id
+    end
     event = params[:event]
     vote_result = params[:vote_result]
     if entry
