@@ -29,30 +29,44 @@ class Template < ActiveRecord::Base
   end
 
   # for forum prompt files
-  def dropbox_dir
-    self.branch.prompt_files_folder
+  def dropbox_dir(identifier)
+    self.branch.prompt_files_folder(identifier)
   end
 
-  def upload_to_dropbox(file)
+  def upload_to_dropbox(file, identifier)
     # ext = file.original_filename.split(".")[1]
-    client = self.get_dropbox_session
-    if !!client
-      to = self.dropbox_dir
-      begin
-        client.mkdir to
-      rescue
-        logger.warn "Error: upload_to_dropbox : #{$!}"
+    to = self.dropbox_dir(identifier)
+    remote_dir = DROPBOX.home+to
+    if 1==0 && (Dir.exists? DROPBOX.home)
+      # dropbox client is installed
+      # have to be sure the dropbox client is running
+      if !Dir.exists?(remote_dir)
+         FileUtils.mkdir_p remote_dir
       end
-      name = self.name
-      begin
-        re = client.upload(file.tempfile, to, :as=>file.original_filename)
-        # path="/bbg/oddi/report/introduction.mp3"
-        self.dropbox_file=re.path
-        self.content_type=re.mime_type
-        self.save!
-        logger.warn "INFO: Dropbox uploaded: #{file.original_filename}"
-      rescue Exception=>ex
-        logger.warn "Error #{ex.message}"
+      FileUtils.copy file.tempfile.path, remote_dir
+      self.content_type=file.content_type
+      self.dropbox_file=to+"/"+ file.original_filename
+      self.save!
+      logger.info "Copied #{file.tempfile.path} to #{remote_dir}"
+    else    
+      client = self.get_dropbox_session
+      if !!client
+        begin
+          client.mkdir to
+        rescue
+          logger.warn "Error: upload_to_dropbox : #{$!}"
+        end
+        name = self.name
+        begin
+          re = client.upload(file.tempfile, to, :as=>file.original_filename)
+          # path="/bbg/oddi/report/introduction.mp3"
+          self.dropbox_file=re.path
+          self.content_type=re.mime_type
+          self.save!
+          logger.warn "INFO: Dropbox uploaded: #{file.original_filename}"
+        rescue Exception=>ex
+          logger.warn "Error #{ex.message}"
+        end
       end
     end
   end

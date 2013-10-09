@@ -68,13 +68,13 @@ class Branch< ActiveRecord::Base
   end
   
   # folder stores voice prompts files
-  def prompt_files_folder
-    folder = "/bbg/#{self.name}/#{self.forum_type}/#{self.identifier}"  
+  def prompt_files_folder(identifier)
+    folder = "/bbg/#{self.name}/#{self.forum_type}/#{self.identifier(identifier)}"  
     folder += "/prompts"
   end
   # folder stores callers' messages
-  def entry_files_folder
-    folder = "/bbg/#{self.name}/#{self.forum_type}/#{self.identifier}"
+  def entry_files_folder(identifier)
+    folder = "/bbg/#{self.name}/#{self.forum_type}/#{self.identifier(identifier)}"
     folder += "/entries"
   end
     
@@ -239,7 +239,13 @@ class Branch< ActiveRecord::Base
   has_many :votes do
     def latest(active=true)
       res = select("max(id) as id").group(:name).where(:is_active=>active)
-      select("id, name, dropbox_file, voting_session_id").where(["id in (?)", res.map{|t| t.id}])
+      items = select("id, name, dropbox_file, voting_session_id, description").where(["id in (?)", res.map{|t| t.id}])
+      vote_result_items = items.select{|i| i.description=='result'}
+      if vote_result_items.size == 3
+        vote_result_items
+      else
+        items
+      end
     end
 
     def original_identifier
@@ -271,7 +277,12 @@ class Branch< ActiveRecord::Base
 
     # if candidate_result prompt was uploaded indicating poll has ended
     def ended
-      !!candidate_result
+      # !!candidate_result
+      if latest.size > 0
+        latest.last.description == 'result'
+      else
+        false
+      end
     end
   end
 
@@ -474,11 +485,11 @@ class Branch< ActiveRecord::Base
 
   end
 
-  def identifier
+  def identifier(identifier=nil)
     if self.forum_type=="bulletin"
-      self.bulletins.original_identifier
+      identifier || self.bulletins.original_identifier
     elsif self.forum_type=="vote"
-      self.votes.original_identifier
+      identifier || self.votes.original_identifier
     else
       "None"
     end

@@ -5,5 +5,8 @@
   jQuery(document).ready(function () { 
   // pass forum type
     reportUpload.init("<%= @template.class.name.downcase %>");
+    // jquery combobox for Voting Session Name 
+    // create or select
+    $("[id*='identifier']").combobox();
   });
 </script>

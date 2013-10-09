@@ -12,20 +12,29 @@
   <div class='notice'>
     <%= flash[:notice] %>
   </div>
-		<% if template.name =~ /introduction/ %>
+		<%# if template.name =~ /introduction/ %>
+		<% if 1==1 %>
     	   <% if template.kind_of?(Vote) %>
-		      <div class="title">Enter a name for this Vote/Poll</div>		
-		      <input type="text" name="<%= template.class.name.downcase%>[identifier]" value="<%= template.identifier %>" />
+		      <div class="title">Enter/Select title for this Vote/Poll</div>		
+		   <!-- <input type="text" name="<%= template.class.name.downcase%>[identifier]" value="<%= template.identifier %>" /> -->
+		      <% options = VotingSession.all.map{|b| [b.name, b.name]}   
+             id = template.identifier||template.branch.identifier
+           %>
+          <%= select_tag "#{template.class.name.downcase}[identifier]", options_for_select(options, id), :style=>'' %>
 		   <% end %>
-		<% elsif !template.find_introduction %>
+		<%# elsif !template.find_introduction %>
+		  <!--
 		  <div class='error'>
        You have to upload Introdution Voice Prompt first
-    </div>
+      </div>
+      -->
 		<% else %>
-		  <% if (template.kind_of? Vote)
+		  <!--
+		  <% if (template.kind_of?(Vote)||template.kind_of?(Bulletin))
          voting_name = template.identifier %>
          <input type="hidden" name="<%= template.class.name.downcase%>[identifier]" value="<%= voting_name %>" />
-    <% end %>
+      <% end %>
+    -->
 		<% end %>
 
 
@@ -40,19 +49,25 @@
   <div class="btnUploadWrap">
     <span><%= submit_tag 'Preview', :id=>"preview", :value=>"Upload", :class=>"btnAction" %></span>
     <% if !!template.audio_link || @preview || @save %>
-      <span><%= submit_tag 'Save', :id=>"save", :class=>"btnAction" %></span>
+      <span><%= submit_tag 'Activate', :id=>"save", :class=>"btnAction" %></span>
     <% end %>
     <span><%= submit_tag 'Cancel', :id=>"cancel", :class=>"btnAction" %></span>
   </div>
   <div class="clear">
     <% if !!template.audio_link || @preview %>
     <% src="/#{template.audio_link}" %>
+    <!--
+    <a id="<%=template.id%>" class="audio {ogg:'<%=src%>',downloadable:false,autoplay:false, inLine:true}"
+         href="<%=src%>"><%= template.audio_link %>
+    </a>
+    -->
     <object data="<%= src %>" type="application/x-mplayer2" width="300" height="60" autoplay="false">
       <param name="filename" value="<%= src %>" />
       <param name="controller" value="true" /> 
       <param name="autoplay" value="false" />
       <param name="autostart" value="0" />
     </object>
+
     <% end %>
   </div>
   
