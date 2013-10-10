@@ -29,13 +29,13 @@ class Template < ActiveRecord::Base
   end
 
   # for forum prompt files
-  def dropbox_dir(identifier)
+  def dropbox_dir(identifier=nil)
     self.branch.prompt_files_folder(identifier)
   end
 
-  def upload_to_dropbox(file, identifier)
+  def upload_to_dropbox(file, identifier=nil)
     # ext = file.original_filename.split(".")[1]
-    to = self.dropbox_dir(identifier)
+    to = self.dropbox_dir
     remote_dir = DROPBOX.home+to
     if 1==0 && (Dir.exists? DROPBOX.home)
       # dropbox client is installed

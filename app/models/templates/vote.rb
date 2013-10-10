@@ -38,8 +38,9 @@ class Vote < Template
     votingsession = VotingSession.where(:branch_id=>self.branch_id, :name=>name).last
     # only introduction to create a voting session
     # the other template should use this voting session
-    if !votingsession && self.name =='introduction'
-      votingsession = VotingSession.create :branch_id=>self.branch_id, :name=>name
+    if !votingsession
+      votingsession = VotingSession.create :branch_id=>self.branch_id, 
+         :name=>name,:is_active=>false
     end
     self.voting_session_id=votingsession.id
     self.save!

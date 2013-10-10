@@ -68,13 +68,19 @@ class Branch< ActiveRecord::Base
   end
   
   # folder stores voice prompts files
-  def prompt_files_folder(identifier)
-    folder = "/bbg/#{self.name}/#{self.forum_type}/#{self.identifier(identifier)}"  
+  def prompt_files_folder(session_name=nil)
+    if !session_name
+      session_name = active_forum_session.name
+    end
+    folder = "/bbg/#{self.name}/#{self.forum_type}/#{session_name}"  
     folder += "/prompts"
   end
   # folder stores callers' messages
-  def entry_files_folder(identifier=nil)
-    folder = "/bbg/#{self.name}/#{self.forum_type}/#{self.identifier(identifier)}"
+  def entry_files_folder(session_name=nil)
+    if !session_name
+      session_name = active_forum_session.name
+    end
+    folder = "/bbg/#{self.name}/#{self.forum_type}/#{session_name}"
     folder += "/entries"
   end
     
@@ -214,14 +220,16 @@ class Branch< ActiveRecord::Base
   # for report prompts
   has_many :reports do
     def latest(active=true)
-      res = select("max(id) as id").group(:name).where(:is_active=>active)
+      res = select("max(id) as id").group(:name).where(:is_active=>active).
+          where(:voting_session_id=>nil)
       select("id, name, dropbox_file, voting_session_id").where(["id in (?)", res.map{|t| t.id}])
     end
   end
   # for bulletin prompts
   has_many :bulletins do
     def latest(active=true)
-      res = select("max(id) as id").group(:name).where(:is_active=>active)
+      res = select("max(id) as id").group(:name).where(:is_active=>active).
+            where(:voting_session_id=>proxy_association.owner.active_forum_session.id)
       select("id, name, dropbox_file, voting_session_id").where(["id in (?)", res.map{|t| t.id}])
     end
     def original_identifier
@@ -238,7 +246,8 @@ class Branch< ActiveRecord::Base
   # for vote prompts
   has_many :votes do
     def latest(active=true)
-      res = select("max(id) as id").group(:name).where(:is_active=>active)
+      res = select("max(id) as id").group(:name).where(:is_active=>active).
+            where(:voting_session_id=>proxy_association.owner.active_forum_session.id)
       items = select("id, name, dropbox_file, voting_session_id, description").where(["id in (?)", res.map{|t| t.id}])
       vote_result_items = items.select{|i| i.description=='result'}
       if vote_result_items.size == 3
@@ -398,10 +407,15 @@ class Branch< ActiveRecord::Base
     end
   end
   has_many :entries do
-    def published(limit)
-      where(:is_privite=>false).
-      where(:forum_type=>proxy_association.owner.forum_type).
-      order("id desc").limit(limit)
+    def published_to_be_deleted(limit)
+      items = where(:is_privite=>false).
+         where(:forum_type=>proxy_association.owner.forum_type)
+      if proxy_association.owner.forum_type=='report'
+         
+      else
+         items = items.where(:forum_session_id=>proxy_association.owner.active_forum_session.id)
+      end 
+      items.order("id desc").limit(limit)
     end
     # return number of recorded messages in seconds
     def total_message_length(start_date=nil, end_date=nil)
@@ -421,37 +435,8 @@ class Branch< ActiveRecord::Base
         select("count(entries.id) AS total").last.total
     end
         
-    # allow from dropbox or static rss, depending on configuration
     # these messages are for caller to listen
-    # replace def forum_messages
-    def messages_to_listen(limit=10)
-      brch = proxy_association.owner
-      opt = Configure.conf(brch)
-      forum = brch.forum_type
-      limit = [limit, opt.feed_limit].max
-      if opt.feed_source == 'dropbox'
-        entries = []
-        begin
-          records = self.entries.published(limit)
-          records.each do |record|
-            entry = OpenStruct.new
-            #  public_url holds dropbox filepath name
-            file = brch.entry_files_folder+"/#{record.dropbox_file}"
-            if FileUtils.exists? file
-              entry.public_url = file
-              entries << entry 
-            end
-          end
-        rescue
-
-        end
-        entries
-      else # from static_rss
-        entries = Entry.parse_feed(opt.feed_url, limit)
-      end
-    end
-    # these messages are for caller to listen
-    def forum_messages(limit=10)
+    def forum_messages_to_be_deleted(limit=10)
       logger.warn("DEPRECATION WARNING: #{this_method_name} replaced by messages_to_listen")
       brch = proxy_association.owner
       opt = Configure.conf(brch)
@@ -485,25 +470,8 @@ class Branch< ActiveRecord::Base
 
   end
 
-  def identifier(identifier=nil)
-    if self.forum_type=="report"
-      identifier || 'None'
-    else
-      identifier || self.voting_sessions.last.name 
-    end
-  end
-
-  def forum_prompts
-    begin
-      records = self.send(self.forum_type.pluralize)
-      records.latest
-    rescue
-      []
-    end
-  end
-
   # generate forum.xml in dropbox public/<branch>
-  def generate_forum_feed(client=nil)
+  def generate_forum_feed_to_be_deleted(client=nil)
     logger.warn('DEPRECATION WARNING: generate_forum_feed replaced by generate_forum_feed_xml')   
     local_file = self.forum_feed
     remote_file = "#{DROPBOX.public_dir}/#{self.name}/#{File.basename(local_file)}"
@@ -524,7 +492,7 @@ class Branch< ActiveRecord::Base
   end
 
   # for old voice forum voice prompts
-  def generate_prompts_feed(client=nil)
+  def generate_prompts_feed_to_be_deleted(client=nil)
     # In Branch, Prompt tables Branch is not downcased
     local_file = self.prompts_feed
     remote_file = "#{DROPBOX.public_dir}/#{name}/#{File.basename(local_file)}"
@@ -566,7 +534,7 @@ class Branch< ActiveRecord::Base
     self.first :conditions=>["id=? or name=?", attr, attr]
   end
 
-  def forum_feed(limit=10)
+  def forum_feed_to_be_deleted(limit=10)
     logger.warn('DEPRECATION WARNING: forum_feed replaced by forum_feed_xml')
     # get public messages
     entries = self.entries.forum_messages(limit)
@@ -611,7 +579,7 @@ class Branch< ActiveRecord::Base
   end
 
   # should not be used
-  def prompts_feed
+  def prompts_feed_to_be_deleted
     logger.warn('DEPRECATION WARNING: forum_feed replaced by forum_feed_xml')
     return nil
     
@@ -638,6 +606,19 @@ class Branch< ActiveRecord::Base
     return file_path
   end
   
+  def active_forum_session
+    if self.forum_type == 'report'
+      s = OpenStruct.new
+      s.name = 'None'
+      s.id = nil
+    else
+      self.voting_sessions.where(:is_active=>true).last
+    end 
+  end
+  def identifier(identifier=nil)
+    identifier || self.active_forum_session.name 
+  end
+  
   # replace def forum_feed
   def forum_feed_xml(limit=10)
     # get public messages
@@ -656,12 +637,12 @@ class Branch< ActiveRecord::Base
         xml.channel do
           xml.created_at Time.now.getutc
           xml.forum_type self.forum_type
-          xml.identifier self.identifier
+          xml.forum_session self.active_forum_session.name rescue 'None'
           xml.entry_upload_folder self.entry_files_folder
           xml.prompt_upload_folder self.prompt_files_folder
           xml.status (self.forum_type=="vote" && self.votes.ended) ? "vote ended" : "OK"
           xml.branch self.name
-          xml.count entries.size
+          xml.count items.size
           for m in prompts
             xml.prompt do
               # <introduction>/bbg/tripoli/vote/October 9//introduction.wav</introduction>
@@ -721,46 +702,42 @@ class Branch< ActiveRecord::Base
         FileUtils.mkdir_p(dir) if !Dir.exists?(dir)
         arr = Dir.entries(dir).
             select{|f| !File.directory? f}
+        arr.each do |f|
+          item = OpenStruct.new
+          item.public_url = self.entry_files_folder + "/"+f
+          items << item
+        end
       end
     elsif self.forum_type=='vote' || self.forum_type=='bulletin'
-      vs = self.voting_sessions.last
-      arr = entries.where(["forum_session_id=?", vs.id]).
+      vs = self.active_forum_session
+      arr = entries.where(["forum_session_id=? AND is_private=0", vs.id]).
          select("dropbox_file").all
-    end
-    arr.all do |f|
-      item = OpenStruct.new
-      item.public_url = self.entry_files_folder + "/"+f
-      items << item
-    end
-    items
-  end
-  def entry_votes(limit=10)
-    limit = self.feed_limit if !limit
-    items = []
-    if self.forum_type=='vote'
-      vs = self.voting_sessions.last
-      entries.where(["forum_session_id=?", vs.id]).
-              select("dropbox_file").all.each do |e|
-         item = OpenStruct.new
-         item.public_url = self.entry_files_folder + "/"+e.dropbox_file
-         items << item
+      arr.each do |f|
+        file_pathname  = DROPBOX.home + self.entry_files_folder + "/"+f.dropbox_file
+        if File.exists? file_pathname
+          item = OpenStruct.new
+          item.public_url = self.entry_files_folder + "/"+f.dropbox_file
+          items << item
+        else
+          puts "Not exists! #{file_pathname}"
+        end
       end
     end
     items
   end
-  def entry_bulletins(limit=10)
-    limit = self.feed_limit if !limit
-    items = []
-    if self.forum_type=='bulletin'
-      vs = self.voting_sessions.last
-      entries.where(["forum_session_id=?", vs.id]).
-              select("dropbox_file").all.each do |e|
-         item = OpenStruct.new
-         item.public_url = self.entry_files_folder + "/"+e.dropbox_file
-         items << item
-      end
+  
+  def forum_prompts
+    begin
+      records = self.send(self.forum_type.pluralize)
+      records.latest
+    rescue
+      []
     end
-    items
+  end
+  
+  def clean_prompt_files
+  # TODO clean outdated files
+  
   end
   protected
 end
