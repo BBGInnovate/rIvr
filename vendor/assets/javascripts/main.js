@@ -27,6 +27,7 @@ var Modal = {
       // which is inserted into the modal window
       var modalWidth = Math.floor($(c).width());
       // set the modal's width, to overwrite any CSS sizes
+
       mymodal.css('width', modalWidth);
       //now that the modal width is based off of the sitewidth, instead of other numbers, re-evaluate to get the width + padding (similiar to the height)
       // modalWidth = Math.floor(mymodal.width());
@@ -745,21 +746,41 @@ var branchManage = {
 			jQuery.get(url, data, branchManage.updateForum, 'html');
 			return false;
 		});
+		$("#activate-forum-div").on('click', "#save", function(e) {
+			branchManage.myId = this.id
+			var id = $('#activate_forum :selected').val();
+			var url = '/branch/activate_forum';
+			$("#"+branchManage.myId).css("cursor", "wait");
+			var data = {
+				id : id,
+				ajax: 1
+			};
+			jQuery.get(url, data, function(result) {
+			   $('#return-msg').html(result);
+			}, 'html');
+			return false;
+		});
 		jQuery("#branch").on(
 				'click',
 				".TabbedPanelsTab, input[name='forum_type']",
 				function(e) {	
 					var forum_type = this.id;
-					branchManage.myId = this.id
-					$("*").css("cursor", "progress");
-		      $(".TabbedPanelsTab").removeClass('TabbedPanelsTabSelected');
-		      $("#" + forum_type).addClass('TabbedPanelsTabSelected');
+					branchManage.myId = this.id;
 					branch_id = $("#record_id").val();
 					if (branch_id == '0') {
 						$('#return-msg').html('Please select a branch')
 						$("*").css("cursor", "default");
 						return false;
 					}
+					if (branchManage.myId=='active-forum') {
+                  Modal.open("forum-activate", branchManage.myId, 140);
+					   return false;
+					}
+					
+					$("*").css("cursor", "progress");
+		         $(".TabbedPanelsTab").removeClass('TabbedPanelsTabSelected');
+		         $("#" + forum_type).addClass('TabbedPanelsTabSelected');
+					
 					var url = '/branch/' + branch_id;
 					var data = {
 						forum_type : forum_type
@@ -769,7 +790,7 @@ var branchManage = {
 						  "cursor" : "default"
 						});
 						var obj = jQuery.parseJSON(data);
-					  jQuery('#audio-player-div').html(obj.audios);
+					   jQuery('#audio-player-div').html(obj.audios);
 						jQuery('#return-msg').html(
 								"Forum Type changed to " + obj.forum_ui.titleize());
 						/*
@@ -777,7 +798,7 @@ var branchManage = {
 						jQuery('#go-template').attr('href',"/templates?branch=" + obj.branch);
 						if (forum_type=="poll" || forum_type=="vote") {
 						  jQuery('#go-template-result').show();
-	            jQuery('#go-template-result').attr('href',"/templates?result=1&branch=" + obj.branch);
+	                 jQuery('#go-template-result').attr('href',"/templates?result=1&branch=" + obj.branch);
 						} else {
 						  jQuery('#go-template-result').hide();
 						}
@@ -785,8 +806,8 @@ var branchManage = {
 					}, 'html');
 
 				});
-		jQuery("#frm-new-branch").on('click', "#cancel", function(e) {
-			jQuery('#new-branch').hide();
+		jQuery("#frm-new-branch, #forum-activate").on('click', "#cancel", function(e) {
+			jQuery('#new-branch, #forum-activate').hide();
 			return false;
 		});
 	},
@@ -825,7 +846,7 @@ var branchManage = {
 			"cursor" : "pointer"
 		});
 		$("#forum-audio-upload").html(data);
-    Modal.open("forum-audio-upload", branchManage.myId, 220);
+      Modal.open("forum-audio-upload", branchManage.myId, 220);
 		//jQuery("#forum-audio-upload").show().html(data);
 	},
 }

@@ -39,7 +39,9 @@ TestIvr::Application.routes.draw do
   end
   
   resources :branch do
-    get :active_forum
+    collection do
+      get :activate_forum
+    end
   end
   resources :templates do
     collection do

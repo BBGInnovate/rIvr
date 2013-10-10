@@ -1,13 +1,13 @@
 class BranchController < ApplicationController
   layout 'branch'
   
-  def active_forum
-    @branch= Branch.find_me(params[:id])
-    f = @branch.branch_forum_types.last
-    if f
-      f.save
-    end
-  end
+#  def active_forum
+#    @branch= Branch.find_me(params[:id])
+#    f = @branch.branch_forum_types.last
+#    if f
+#      f.save
+#    end
+#  end
   
   def index
     if params[:branch]
@@ -41,6 +41,7 @@ class BranchController < ApplicationController
             :content_type=>"text", 
             :layout=>false
   end
+  
   def new
       flash[:notice] = nil
       if params[:branch_id]
@@ -93,5 +94,24 @@ class BranchController < ApplicationController
         render :text=>"branch not found for id : #{params[:id]}",
                   :layout=>false,:content_type=>'text'
       end
+    end
+    
+    def activate_forum
+      # /branch/activate_forum
+      # :branch_id is voting_session_id
+      vs = VotingSession.find_by_id params[:id]
+      
+      if vs
+        if !vs.is_active
+          vs.is_active = true
+          vs.save
+          text="Forum : #{vs.name} is activated."
+        else
+          text = "Forum : #{vs.name} is already active."
+        end
+      else
+        text = 'Forum Title Not Found'
+      end
+      render :text=>text, :layout=>false,:content_type=>'application/text'
     end
 end

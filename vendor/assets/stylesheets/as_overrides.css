@@ -198,7 +198,7 @@ input.btnAction:hover {
 }
 
 #template-popup {
-	background-color: #CCCCCC;
+  background-color: #CCCCCC;
   border: 1px dotted #CCCCCC;
   width: 320px;
   padding: 0px 30px 5px;
@@ -270,7 +270,7 @@ input.btnAction:hover, .branch-name:hover {
 }
 #forum-template {
   float: left;
-		margin: 0 0 0 20px;
+  margin: 0 0 0 20px;
 }
 #forum-template .square {
   border: 1px solid #9CD5F8;
@@ -366,6 +366,16 @@ a.go-template {
 	margin-left: 20px;
 	line-height: 20px;
 }
+/* activate forum */
+#activate-forum-div {
+  background-color: #CCCCCC;
+  border: 1px dotted #CCCCCC;
+  width: 220px;
+}
+#activate_forum {
+  width: 140px;
+}
+
 /******* liwen added ******/
 /* moderation/index */
 #publish-to-dropbox {

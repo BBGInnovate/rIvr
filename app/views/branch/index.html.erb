@@ -39,10 +39,17 @@
       <li id="bulletin" class="TabbedPanelsTab syndicate" tabindex="0">
         <a href="#"><%= Branch.forum_type_ui('bulletin') %></a>
       </li>
+      <li id="active-forum" class="TabbedPanelsTab syndicate" tabindex="0" data-url="">
+        <a href="#">Active Forum</a>
+      </li>
     </ul>
   </div>
   <div id="audio-player-div" class="float-left"></div>
   <div id="forum-audio-upload" class="float-left forum-upload helpPopUp"></div>
+  <div id="forum-activate" class="float-left helpPopUp" style="display:none;">
+    <%= render :partial=>'activate_forum' %>
+  </div>
+  
 </div>
 <style></style>
 <script>

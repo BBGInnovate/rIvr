@@ -69,7 +69,7 @@ class TemplatesController < ApplicationController
       if !sound_file
         @preview = true if !!@template.dropbox_file
       else
-        @template.upload_to_dropbox(sound_file, identifier)
+        @template.upload_to_dropbox(sound_file)
         @template.save :validate=>false
         @preview = true
 
@@ -178,7 +178,7 @@ class TemplatesController < ApplicationController
     elsif @branch.forum_type == 'vote'
       if params[:result].to_i == 1
         @question="Results"
-        @listen="Listen Messages"
+        @listen="Opinion Board"
       else
         @question="Participate"
         @comment = 'Leave Comment'
