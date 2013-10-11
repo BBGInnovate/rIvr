@@ -217,6 +217,7 @@ input.btnAction:hover {
   background-color: #CCCCCC;
   border: 1px dotted #CCCCCC;
   width: 220px;
+  padding: 0px 10px 10px;
 }
 /*
 h2 {

@@ -34,24 +34,26 @@
   <% options = forum_options 
      id = @branch.forum_type %>
   <%= f.select :forum_type, options_for_select(options, id), :style=>'' %>
+  <!--
   <p></p>
-  <% id=@branch.feed_source
+  <%# id=@branch.feed_source
      options = [['--Select--','0'],['dropbox','dropbox'],['static_rss','static_rss']]
     %>
   <label for="branch_feed_source">Feed&nbsp;Source </label>
-  <%= select_tag 'branch[feed_source]', options_for_select(options, id), :style=>'' %>
+  <%#= select_tag 'branch[feed_source]', options_for_select(options, id), :style=>'' %>
   <p></p>
   <label for="branch_feed_url">Feed&nbsp;Url </label>
-  <% id=@branch.feed_url %>
-  <%= text_field_tag 'branch[feed_url]', id, :style=>'' %>
+  <%# id=@branch.feed_url %>
+  <%#= text_field_tag 'branch[feed_url]', id, :style=>'' %>
   <p></p>
   <label for="branch_limit">Feed&nbsp;limit </label>
-  <% id=@branch.feed_limit %>
-  <%= text_field_tag 'branch[feed_limit]', id, :style=>'' %>
+  <%# id=@branch.feed_limit %>
+  <%#= text_field_tag 'branch[feed_limit]', id, :style=>'' %>
+  -->
   <p></p>
   <label for="branch_country_id">Country </label>
   <% options = Country.all.map{|b| [b.name, b.id]} 
-     id = @branch.country.id
+     id = @branch.country ? @branch.country.id : 0
    %>
   <%= f.select :country_id, options_for_select(options, id), :style=>'' %>
   <p></p>

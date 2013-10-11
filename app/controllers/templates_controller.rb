@@ -125,12 +125,24 @@ class TemplatesController < ApplicationController
         # params[:configure][:branch_id] == 'oddi'
         opt = params[:configure]
         branch = Branch.find_by_id opt[:branch_id]
-        feed_source= opt[:feed_source]
-        @option = Configure.find_me(branch, "feed_source")
-        @option.value = feed_source
-        @option.save!
-        branch.generate_forum_feed
-        flash[:notice] = "FEED SOURCE changed to #{@option.value}"
+        [:feed_source, :feed_limit, :feed_url].each do | feed |
+           val  = opt[feed]
+           @option = Configure.find_me(branch, feed.to_s)
+           @option.update_attribute :value, val
+        end
+           
+#        feed_source= opt[:feed_source]
+#        feed_limit= opt[:feed_limit]
+#        feed_url= opt[:feed_url]
+#        @option = Configure.find_me(branch, "feed_source")
+#        @option.update_attribute :value, feed_source
+#        @option = Configure.find_me(branch, "feed_limit")
+#        @option.update_attribute :value, feed_limit
+#        @option = Configure.find_me(branch, "feed_url")
+#        @option.update_attribute :value, feed_url
+        
+        branch.generate_forum_feed_xml
+        flash[:notice] = "FEED updated"
       end
       render :layout => false
     else

@@ -10,8 +10,19 @@
   
   <h3>Select a Headline News Source:</h3>
   <div>
-    <%= f.select :feed_source, options_for_select(options, id), :style=>'' %>
+    <%= f.select :feed_source, options_for_select(options, id), :style=>"width:100px" %>
   </div>
+  
+  <h3>Limit of news items:</h3>
+  <div>
+    <%= f.text_field :feed_limit, :style=>"width:100px" %>
+  </div>
+  
+  <h3>Source URL for static_rss:</h3>
+  <div>
+    <%= f.text_field :feed_url, :style=>"width:200px" %>
+  </div>
+  
   <div>
     <span><%= submit_tag 'Save', :id=>"save",:class=>"btnAction" %></span>
     <span><%= submit_tag 'Cance',:id=>"cancel",:class=>"btnAction" %></span>
@@ -24,4 +35,3 @@
     reportUpload.init("<%= @template.class.name.downcase %>");
   });
 </script>
-

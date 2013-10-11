@@ -305,15 +305,37 @@ class Branch< ActiveRecord::Base
         
       end
     end
+
+    def stats(voting_session_id=nil)
+      i = voting_session_id || proxy_association.owner.active_forum_session.id
+      if i
+       items = where(:voting_session_id=>i)
+      else
+       items = nil
+      end
+      stat = {:total=>0, :yes=>0,:no=>0,:none=>0,
+           :yes_per=>0,:no_per=>0,:none_per=>0
+         }
+      if items
+         yes = items.select {|a| a.result==1}.size
+         no = items.select {|a| a.result==-1}.size
+         none = items.select {|a| a.result==0}.size
+         total = yes+no+none
+         stat = {:total=>total, :yes=>yes,:no=>no,:none=>none,
+           :yes_per=>yes*100/total,:no_per=>no*100/total,:none_per=>none*100/total
+         }
+      end
+    end
+    
+    # block to be removed
     def get_result(pattern, voting_session_id=nil)
-      i = voting_session_id || (!!last && last.voting_session_id)
+      i = voting_session_id || proxy_association.owner.active_forum_session.id
       if i
         where(:result=>pattern, :voting_session_id=>i)
       else
         []
       end
     end
-
     def yes(voting_session_id=nil)
       #      brch = proxy_association.owner
       get_result(1)
@@ -326,6 +348,7 @@ class Branch< ActiveRecord::Base
     def none(voting_session_id=nil)
       get_result(0)
     end
+    # block to be removed
   end
   # files in this table are replaced by 
   # Branch#prompts_files_folder
@@ -611,6 +634,7 @@ class Branch< ActiveRecord::Base
       s = OpenStruct.new
       s.name = 'None'
       s.id = nil
+      s
     else
       self.voting_sessions.where(:is_active=>true).last
     end 
