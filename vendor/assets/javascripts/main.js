@@ -525,9 +525,13 @@ var reportUpload = {
 			var url;
 			if (name == 'headline') {
 			  url = '/templates/headline';
+			} else if (name == 'moderate') {
+			  $('#moderate-div').show();
+			  return false;
 		  } else {
 		    url = '/templates/new';
 		  }
+	     $('#moderate-div').hide();
 			reportUpload.myId = this.id;
 			$(this).css("cursor", "progress");
 			var b = jQuery('#branch-name').val();
@@ -581,10 +585,10 @@ var reportUpload = {
         alert("You must select a upload file first")
         return false;
       }
-			jQuery("[name='todo']").val(this.id);
-			// jquery combobox for Voting Session Name
-			var identifier = $('.custom-combobox-input').val();
-			$("[id*='_identifier']").append('<option value="'+identifier +'" selected="selected">'+identifier+'</option>');
+	   jQuery("[name='todo']").val(this.id);
+	   // jquery combobox for Voting Session Name
+	   var identifier = $('.custom-combobox-input').val();
+	   $("[id*='_identifier']").append('<option value="'+identifier +'" selected="selected">'+identifier+'</option>');
       var temp_name = $("[id*='_name']").attr('value');
       var id = $("[id*='_name']").attr('id').match(/(\w+)_name/);
       var forum_type = id[1];
@@ -615,6 +619,10 @@ var reportUpload = {
 		});
 		jQuery(".template-popup").on('click', "#cancel", function(e) {
 			jQuery('#forum-upload, .forum-upload').hide();
+			return false;
+		});
+		jQuery(".template-popup").on('click', "#moderate", function(e) {
+
 			return false;
 		});
 	},

@@ -41,6 +41,8 @@ TestIvr::Application.routes.draw do
   resources :branch do
     collection do
       get :activate_forum
+      get :sorted_entries
+      post :sorted_entries
     end
   end
   resources :templates do

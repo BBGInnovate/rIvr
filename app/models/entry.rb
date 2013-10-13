@@ -8,6 +8,7 @@ class Entry< ActiveRecord::Base
   before_save :copy_to_public
   has_one :soundkloud, :foreign_key=>"entry_id"
   belongs_to :branch
+  has_one :sorted_entry
   
   cattr_accessor :request_url
   
@@ -22,10 +23,10 @@ class Entry< ActiveRecord::Base
 #    if self.forum_type=='bulletin'  
 #      f = "#{DROPBOX.home}/bbg/#{self.branch.name}/#{self.forum_type}/#{self.dropbox_file}"
 #    else
-      f = "#{DROPBOX.home}/bbg/#{self.branch.name}/#{self.dropbox_file}"
-      f2 = "#{DROPBOX.home}/bbg/#{self.branch.name.downcase}/#{self.dropbox_file}"
+      f = "#{DROPBOX.home}#{self.branch.entry_files_folder}/#{self.dropbox_file}"
+#      f2 = "#{DROPBOX.home}/bbg/#{self.branch.name.downcase}/#{self.dropbox_file}"
 #    end
-    return File.exists?(f) || File.exists?(f2)
+    return File.exists?(f) # || File.exists?(f2)
     
 #    dir = "/system/#{self.branch.name.downcase}"
 #    system_dir = "#{Rails.root}/public/#{dir}"
@@ -368,6 +369,10 @@ class Entry< ActiveRecord::Base
     entries
   end
   
+  def checked?
+     false
+  end
+   
 protected
 
   def dropbox_file_content

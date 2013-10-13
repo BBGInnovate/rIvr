@@ -429,7 +429,18 @@ class Branch< ActiveRecord::Base
       where(:name=>'feed_url').last
     end
   end
+  has_many :sorted_entries
   has_many :entries do
+    def incomings(limit=20)
+      id = proxy_association.owner.id
+      fs_id = proxy_association.owner.active_forum_session.id
+      sorted = SortedEntry.get(id, fs_id).map{|a|a.entry_id}
+      limit = proxy_association.owner.feed_limit if !limit
+      items = where(:forum_session_id=>proxy_association.owner.active_forum_session.id).
+         where("id not in (?)", sorted).
+         order("id desc").limit(limit)
+    end
+    
     def published_to_be_deleted(limit)
       items = where(:is_privite=>false).
          where(:forum_type=>proxy_association.owner.forum_type)
@@ -630,14 +641,10 @@ class Branch< ActiveRecord::Base
   end
   
   def active_forum_session
-    if self.forum_type == 'report'
-      s = OpenStruct.new
-      s.name = 'None'
-      s.id = nil
-      s
-    else
-      self.voting_sessions.where(:is_active=>true).last
-    end 
+    s = OpenStruct.new
+    s.name = 'None'
+    s.id = nil
+    self.voting_sessions.where(:is_active=>true).last || s
   end
   def identifier(identifier=nil)
     identifier || self.active_forum_session.name 
@@ -734,8 +741,10 @@ class Branch< ActiveRecord::Base
       end
     elsif self.forum_type=='vote' || self.forum_type=='bulletin'
       vs = self.active_forum_session
-      arr = entries.where(["forum_session_id=? AND is_private=0", vs.id]).
-         select("dropbox_file").all
+      # arr = entries.where(["forum_session_id=? AND is_private=0", vs.id]).
+      #   select("dropbox_file").all
+         
+      arr = SortedEntry.get(self.id, vs.id)
       arr.each do |f|
         file_pathname  = DROPBOX.home + self.entry_files_folder + "/"+f.dropbox_file
         if File.exists? file_pathname

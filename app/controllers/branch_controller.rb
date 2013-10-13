@@ -114,4 +114,12 @@ class BranchController < ApplicationController
       end
       render :text=>text, :layout=>false,:content_type=>'application/text'
     end
+    
+    def sorted_entries
+      if request.post?
+         SortedEntry.insert(params[:ids])
+      else
+         
+      end
+    end
 end

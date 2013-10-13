@@ -177,6 +177,11 @@ input.btnAction:hover {
   color: green;
   margin: 0 0 10px 0;
 }
+/* sortable widget */
+#moderate-div {
+	display:none;
+	width: 600px;
+}
 /*** editable select box in template-popup ***/
 .custom-combobox {
     position: relative;
@@ -251,7 +256,7 @@ div {
     float: none;
     height: 31px;
     margin-top: 20px;
-    width: 150px;
+    width: 100px;
     font-size: 14px;
 }
 

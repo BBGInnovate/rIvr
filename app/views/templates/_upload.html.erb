@@ -12,40 +12,13 @@
   <div class='notice'>
     <%= flash[:notice] %>
   </div>
-		<%# if template.name =~ /introduction/ %>
-		<% if 1==1 %>
-    	   <% if template.kind_of?(Vote) %>
-		      <div class="title">Enter/Select title for this Vote/Poll</div>		
-		   <!-- <input type="text" name="<%= template.class.name.downcase%>[identifier]" value="<%= template.identifier %>" /> -->
-		      <% options = VotingSession.all.map{|b| [b.name, b.name]}   
-             id = template.identifier||template.branch.identifier
-           %>
-          <%= select_tag "#{template.class.name.downcase}[identifier]", options_for_select(options, id), :style=>'' %>
-		   
-           <% if template.name =~ /_result/  %>
-              <%= render :partial=>'vote_stats', :locals=>{:branch=>@template.branch} %>
-           <% end %>	   
-		   <% end %>
-		<%# elsif !template.find_introduction %>
-		  <!--
-		  <div class='error'>
-       You have to upload Introdution Voice Prompt first
-      </div>
-      -->
-		<% else %>
-		  <!--
-		  <% if (template.kind_of?(Vote)||template.kind_of?(Bulletin))
-         voting_name = template.identifier %>
-         <input type="hidden" name="<%= template.class.name.downcase%>[identifier]" value="<%= voting_name %>" />
-      <% end %>
-    -->
-		<% end %>
-
-
-		<p></p>
+  <% if template.kind_of?(Vote)||template.kind_of?(Bulletin) %>
+    	<%= render :partial=>'select_forum', :locals=>{:template=>@template} %>
+  <% end %>
+  <p></p>
   <h3><% if !!template.audio_link %>
-    You have uploaded a file previously<br/>
-    <% end %>
+         You have uploaded a file previously<br/>
+      <% end %>
     Select your <%= template.name_map(template.name) %> audio file to upload</h3>
   <div class='fileBrowseWrap'>
     <%= f.file_field :sound %>
@@ -53,12 +26,14 @@
   <div class="btnUploadWrap">
     <span><%= submit_tag 'Preview', :id=>"preview", :value=>"Upload", :class=>"btnAction" %></span>
     <% if !!template.audio_link || @preview || @save %>
-      <span><%= submit_tag 'Activate', :id=>"save", :class=>"btnAction" %></span>
+      <span><%= submit_tag 'Save', :id=>"save", :class=>"btnAction" %></span>
     <% end %>
+    <br/>
+    <span><%= submit_tag 'Moderate', :id=>"moderate", :class=>"btnAction" %></span>
     <span><%= submit_tag 'Cancel', :id=>"cancel", :class=>"btnAction" %></span>
   </div>
   <div class="clear">
-    <% if !!template.audio_link || @preview %>
+    <% if !!template.audio_link %>
     <% src="/#{template.audio_link}" %>
     <!--
     <a id="<%=template.id%>" class="audio {ogg:'<%=src%>',downloadable:false,autoplay:false, inLine:true}"

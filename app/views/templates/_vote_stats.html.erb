@@ -1,0 +1,20 @@
+<% stat = branch.vote_results.stats %>
+<br /><br />
+<table border=1>
+  <thead>
+    <tr>
+      <th>Total</th>
+      <th>Yes % </th>
+      <th>No %</th>
+      <th>Undecided % </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><%= stat[:total] %></td>
+      <td><%= stat[:yes_per] %></td>
+      <td><%= stat[:no_per] %></td>
+      <td><%= stat[:none_per] %></td>
+    </tr>
+  </tbody>
+</table>

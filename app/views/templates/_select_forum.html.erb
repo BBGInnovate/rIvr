@@ -1,0 +1,9 @@
+<div class="title">Enter/Select title for this Vote/Poll</div>		
+<!-- <input type="text" name="<%= template.class.name.downcase%>[identifier]" value="<%= template.identifier %>" /> -->
+<% options = VotingSession.all.map{|b| [b.name, b.name]}   
+   id = template.identifier||template.branch.identifier
+%>
+<%= select_tag "#{template.class.name.downcase}[identifier]", options_for_select(options, id), :style=>'' %>
+<% if template.name =~ /_result/  %>
+  <%= render :partial=>'vote_stats', :locals=>{:branch=>@template.branch} %>
+<% end %>	

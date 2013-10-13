@@ -1,12 +1,14 @@
 <div id="forum-template" class="float-left">
-	 <span class="back-button"><a href="/branch?branch=<%=@branch_name%>">Back To Branch Configure</a></span>
+  <span class="back-button"><a href="/branch?branch=<%=@branch_name%>">Back To Branch Configure</a></span>
   <h2><%= forum_type(@branch) %></h2>
   <input type="hidden" name="branch" id="branch-name" value="<%=@branch_name%>" />
-  <!-- <div id="introduction" class="square">Intro</div> -->
   <%= render :partial => @temp_partial %>
 </div>
 <div id="forum-upload" class="float-left">
   
+</div>
+<div id="moderate-div" class="float-left">
+  <%= render :partial=>'/shared/sortable' %>
 </div>
 <script>
   jQuery(document).ready(function () { 
