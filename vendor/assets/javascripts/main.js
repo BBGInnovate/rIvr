@@ -587,6 +587,13 @@ var reportUpload = {
       }
 	   jQuery("[name='todo']").val(this.id);
 	   // jquery combobox for Voting Session Name
+	   
+	   if (this.id=="save") {
+	     ok =  confirm('Save a Forum Result template indicates the Vote/Poll is ended. Continue?');
+	   }
+      if (!ok) {
+        return false;      
+      }
 	   var identifier = $('.custom-combobox-input').val();
 	   $("[id*='_identifier']").append('<option value="'+identifier +'" selected="selected">'+identifier+'</option>');
       var temp_name = $("[id*='_name']").attr('value');
