@@ -180,8 +180,54 @@ input.btnAction:hover {
 /* sortable widget */
 #moderate-div {
 	display:none;
-	width: 600px;
+	margin-top: 50px;
+	width: 500px;
 }
+#moderate-div input.btnAction {
+    float: none;
+    height: 31px;
+    margin-top: 20px;
+    width: auto;
+    font-size: 14px;
+}
+#sortable {
+	border:2px solid grey; overflow: auto;list-style-type: none;  
+	width: 650px;min-height:400px;margin: 0; padding: 0;
+}
+#sortable li { 
+  position:relative;
+  font-size: 1.4em; 
+  height: 30px; /*
+  margin: 0 3px 3px 3px; 
+  padding: 10px; */
+  padding-left: 1.5em; 
+  
+}
+/*
+#sortable li span { position: absolute; margin-left: -1.3em; }
+*/
+#audio {
+	display: inline-block;
+   position:absolute;
+   margin: 0;
+   width: 80%;
+   overflow: hidden;
+}
+#audio .ui-icon {
+	display: inline-block;
+}
+.audio-title {
+  display: inline-block;
+  margin-top: -5px;
+}
+#sortable .mbMiniPlayer {
+    postion: absolute; 
+    vertical-align: middle !important;
+    top:0%;
+    overflow: auto;
+    height: 30px;
+}
+
 /*** editable select box in template-popup ***/
 .custom-combobox {
     position: relative;

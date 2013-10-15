@@ -1,4 +1,9 @@
-<div class="title">Enter/Select title for this Vote/Poll</div>		
+<% if template.kind_of?(Bulletin)
+     str = "Bulletin Board"
+   elsif template.kind_of?(Vote)
+     str = "Vote/Poll"
+   end %>
+<div class="title">Enter/Select title for this <%= str %></div>		
 <!-- <input type="text" name="<%= template.class.name.downcase%>[identifier]" value="<%= template.identifier %>" /> -->
 <% options = VotingSession.all.map{|b| [b.name, b.name]}   
    id = template.identifier||template.branch.identifier

@@ -52,7 +52,7 @@ class TemplatesController < ApplicationController
       vs = VotingSession.find_by_name identifier
       if !vs
         vs = VotingSession.create :name => identifier,
-        :branch_id => branch.id
+            :branch_id => branch.id, :is_active => false
       end
       if @template.kind_of?(Vote) || @template.kind_of?(Bulletin)
         @template.voting_session_id = vs.id
@@ -62,9 +62,6 @@ class TemplatesController < ApplicationController
    
     @preview = false
     if params[:todo] == 'preview'
-      #      if @template.kind_of?(Vote) || @template.kind_of?(Bulletin)
-      #        @template.voting_session_id = vs.id
-      #      end
       # Preview the sound
       if !sound_file
         @preview = true if !!@template.dropbox_file
@@ -84,7 +81,7 @@ class TemplatesController < ApplicationController
         @template.save
         flash[:notice] = "#{@template.name_map(@template.name)} file " +
         File.basename(@template.dropbox_file) +
-        " has been uploaded"
+        " has been saved"
       else
         @save = true
         flash[:error] = @template.class.name + " : " + @template.errors.full_messages.first

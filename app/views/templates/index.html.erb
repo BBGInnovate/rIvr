@@ -13,5 +13,6 @@
 <script>
   jQuery(document).ready(function () { 
     reportUpload.init("<%= @branch.forum_type %>");
+    sortable.init(<%= @branch.id %>);
   });
 </script>

@@ -435,10 +435,13 @@ class Branch< ActiveRecord::Base
       id = proxy_association.owner.id
       fs_id = proxy_association.owner.active_forum_session.id
       sorted = SortedEntry.get(id, fs_id).map{|a|a.entry_id}
+      if sorted.size == 0
+         sorted = 0
+      end
       limit = proxy_association.owner.feed_limit if !limit
       items = where(:forum_session_id=>proxy_association.owner.active_forum_session.id).
-         where("id not in (?)", sorted).
-         order("id desc").limit(limit)
+           where("id not in (?)", sorted).
+           order("id desc").limit(limit)
     end
     
     def published_to_be_deleted(limit)

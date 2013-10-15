@@ -17,19 +17,19 @@
   <% end %>
   <p></p>
   <h3><% if !!template.audio_link %>
-         You have uploaded a file previously<br/>
+         You have uploaded a file previously. Click Save to save this file OR
+         
+         <br/>
       <% end %>
     Select your <%= template.name_map(template.name) %> audio file to upload</h3>
   <div class='fileBrowseWrap'>
     <%= f.file_field :sound %>
   </div>
   <div class="btnUploadWrap">
-    <span><%= submit_tag 'Preview', :id=>"preview", :value=>"Upload", :class=>"btnAction" %></span>
+    <span><%= submit_tag 'Preview', :id=>"preview", :value=>"Upload",:class=>"btnAction" %></span>
     <% if !!template.audio_link || @preview || @save %>
       <span><%= submit_tag 'Save', :id=>"save", :class=>"btnAction" %></span>
     <% end %>
-    <br/>
-    <span><%= submit_tag 'Moderate', :id=>"moderate", :class=>"btnAction" %></span>
     <span><%= submit_tag 'Cancel', :id=>"cancel", :class=>"btnAction" %></span>
   </div>
   <div class="clear">

@@ -118,6 +118,9 @@ class BranchController < ApplicationController
     def sorted_entries
       if request.post?
          SortedEntry.insert(params[:ids])
+         b = Branch.find_by_id params[:branch_id]
+         b.generate_forum_feed_xml if b
+         render :nothing=>true
       else
          
       end

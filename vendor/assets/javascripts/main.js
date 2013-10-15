@@ -516,6 +516,67 @@ String.prototype.titleize = function() {
 	return this.charAt(0).toUpperCase() + this.slice(1);
 }
 
+var sortable = {
+	branch_id : null,
+	init : function(branch_id) {
+	  sortable.branch_id = branch_id;
+	  $("#sortable").sortable();
+     $("#sortable").sortable("disable");
+     $("#sortable").disableSelection();
+     $("#sortable").sortable({
+       out: function( event, ui ) {
+         //$("#sortable").sortable("cancel");
+       }
+     });
+     $("#sortable").mousedown(function(){
+       $("#sortable").sortable("disable");
+     });
+     $("#sortable").mouseup(function(){
+       // $("#sortable").sortable("enable");
+     });
+     $(".audio").mb_miniPlayer({
+     	 //width:240,
+       inLine:false,
+       id3:false,
+       showControls:false,
+       animate:false,
+       showVolumeLevel:false,
+       showTime:true,
+       showRew:false,
+       addShadow:false,
+       onPlay:function() {
+         $("#sortable").sortable("disable");
+       },
+       onEnd:function() {
+         $("#sortable").sortable("enable");
+       }
+     });
+	},
+	
+	showIds : function() {
+     var ids = $("#sortable").sortable("toArray");
+     var arr = [];
+     var url = "/branch/sorted_entries";
+     for (var i in ids) {
+       if ($('#M'+ids[i]).prop('checked')==true) {
+         arr.push(ids[i])
+       }
+     }
+     var data = {
+       ids: arr,
+       branch_id: sortable.branch_id
+     }
+     $.post(url, data, null, 'html');
+   },
+   toggle : function() {
+     var isOff = $("#sortable").sortable( "option", "disabled" );
+     if (isOff) {
+       $("#sortable").sortable("enable");
+     } else {
+	    $("#sortable").sortable("disable");
+     }
+   },
+}
 var reportUpload = {
   myId : '',
 	init : function(forum_type) {
@@ -527,6 +588,7 @@ var reportUpload = {
 			  url = '/templates/headline';
 			} else if (name == 'moderate') {
 			  $('#moderate-div').show();
+			  $('#forum-upload').hide();
 			  return false;
 		  } else {
 		    url = '/templates/new';
@@ -581,27 +643,29 @@ var reportUpload = {
 			var url = '/templates';
 			jQuery(this).css("cursor", "progress");
 			var v = jQuery("[id*='_sound']").val();
-      if(v.length==0 && this.id=="preview") {
-        alert("You must select a upload file first")
-        return false;
-      }
-	   jQuery("[name='todo']").val(this.id);
-	   // jquery combobox for Voting Session Name
+         if(v.length==0 && this.id=="preview") {
+           alert("You must select a upload file first")
+           return false;
+         }
+     
+	      jQuery("[name='todo']").val(this.id);
+	      // jquery combobox for Voting Session Name
 	   
-	   if (this.id=="save") {
-	     ok =  confirm('Save a Forum Result template indicates the Vote/Poll is ended. Continue?');
-	   }
-      if (!ok) {
-        return false;      
-      }
-	   var identifier = $('.custom-combobox-input').val();
-	   $("[id*='_identifier']").append('<option value="'+identifier +'" selected="selected">'+identifier+'</option>');
-      var temp_name = $("[id*='_name']").attr('value');
-      var id = $("[id*='_name']").attr('id').match(/(\w+)_name/);
-      var forum_type = id[1];
-      var description = temp_name.match(/result/);
+	      
+	      var identifier = $('.custom-combobox-input').val();
+	      $("[id*='_identifier']").append('<option value="'+identifier +'" selected="selected">'+identifier+'</option>');
+         var temp_name = $("[id*='_name']").attr('value');
+         var id = $("[id*='_name']").attr('id').match(/(\w+)_name/);
+         var forum_type = id[1];
+         var description = temp_name.match(/result/);
 
-      $( "<input>" ).appendTo('#frm-upload-logo')
+         if (this.id=="save" && description == "result") {
+	         ok =  confirm('Save a Forum Result template indicates the Vote/Poll is ended. Continue?');
+            if (!ok)
+             return false;      
+         }
+     
+         $( "<input>" ).appendTo('#frm-upload-logo')
           .attr( "type", "hidden" )
           .attr( "name", forum_type+"[description]" )
           .val(description);
