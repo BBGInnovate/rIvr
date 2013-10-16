@@ -1,8 +1,17 @@
+
+<p style="border-top: 1px solid #CCC">
+To reorder the rows, drag a row up or down.<br/>
+To save the order, click the checkbox of the items and click Save
+</p>
+<%= submit_tag 'Disable Sorting', :id=>"enable", :class=>"btnAction", :onclick=>'sortTable.toggle();' %>
+<%= submit_tag 'Save', :id=>"moderate", :class=>"btnAction", :onclick=>'sortTable.showIds();' %>
+<br/>
 <table id="search-results-id">
 <% if @results.size > 0 %>
 <%= paginate @results %>
 <thead>
       <tr>
+        <th></th>
         <th>Message</th>
         <th><a id="branches.name">Branch</a></th>
         <th><a id="entries.created_at">Date</a></th>
@@ -15,16 +24,21 @@
 </thead>
 <tbody>
 <% @results.each do |e| %>
-<% title1 = !e.is_private ? 'Message is public' : 'Make Dropbox file public' 
-   title1 = "#{e.id} #{title1}"
+<% 
+   eid = e.kind_of?(Entry) ? e.id : e.entry_id
+   title1 = !e.is_private ? 'Message is public' : 'Make Dropbox file public' 
+   title1 = "#{eid} #{title1}"
+   title2 = !!e.soundkloud ? 'Message is in SoundCloud' : 'Syndicate Dropbox file to SoundCloud' 
 %>
-<% title2 = !!e.soundkloud ? 'Message is in SoundCloud' : 'Syndicate Dropbox file to SoundCloud' %>
-<tr>
+<tr id="<%= eid %>">
+   <td>
+     <input type="checkbox" id="M<%= eid %>" value="" <%= 'checked' if e.checked? %> />
+   </td>
    <td>
      <% if e.dropbox_file_exists? %>
-      <a id='<%=e.id%>' class="audio2 {ogg:'/entries/<%=e.id%>/play',autoplay:false, downloadable:false,inLine:true}"
-       href='/entries/<%=e.id%>/play'><%= e.dropbox_file %></a>
-       <a target="_blank" title="Download <%= e.dropbox_file %>" href='/entries/<%=e.id%>/play'>
+      <a id='<%=eid%>' class="audio2 {ogg:'/entries/<%=eid%>/play',autoplay:false, downloadable:false,inLine:true}"
+       href='/entries/<%=eid%>/play'><%= e.dropbox_file %></a>
+       <a target="_blank" title="Download <%= e.dropbox_file %>" href='/entries/<%=eid%>/play'>
         Download
        </a>
      <% else %>
@@ -38,18 +52,18 @@
       <%= e.created_at.to_s(:db) %>
    </td>
 	 <td title="<%= title1 %>" class="publish-syndicate">
-      <a id='P<%= e.id %>' data-url="/moderation/<%= e.id %>/edit/?publish=1">Publish</a>
+      <a id='P<%= eid %>' data-url="/moderation/<%= eid %>/edit/?publish=1">Publish</a>
    </td>
    <td title="<%= title2 %>" class="publish-syndicate">
-      <a id='S<%= e.id %>' data-url="/moderation/<%= e.id %>/edit/?syndicate=1">Syndicate</a>
+      <a id='S<%= eid %>' data-url="/moderation/<%= eid %>/edit/?syndicate=1">Syndicate</a>
    </td>
    <% if e.is_active == true %>
    <td title="Delete this message" class="publish-syndicate">
-      <a id='D<%= e.id %>' data-url="/moderation/<%= e.id %>/edit/?delete=1">Delete</a>
+      <a id='D<%= eid %>' data-url="/moderation/<%= eid %>/edit/?delete=1">Delete</a>
    </td>
    <% else %>
    <td title="Unelete this message" class="publish-syndicate">
-      <a id='D<%= e.id %>' data-url="/moderation/<%= e.id %>/edit/?undelete=1">Undelete</a>
+      <a id='D<%= eid %>' data-url="/moderation/<%= eid %>/edit/?undelete=1">Undelete</a>
    </td>
    <% end %>
    <td>
@@ -64,11 +78,7 @@
 </table>
 <script>
 jQuery(document).ready(function(){
-    $('.audio2').mb_miniPlayer({
-       width:240,
-       inLine:false,
-       id3:false
-    });
+    sortTable.init("search-results-id","audio2", "enable");
 });
 </script>
 <% else %>

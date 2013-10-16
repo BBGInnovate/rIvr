@@ -35,6 +35,10 @@ class ModerationController < ApplicationController
     # button is checked
     start_date = Branch.message_time_span.days.ago.to_s(:db)
     end_date = Time.now.to_s(:db)
+    
+    @sorted = SortedEntry.where("rank>0").
+        where("created_at"=>start_date..end_date)
+    
     @results = Entry.where("entries.is_private=1 AND entries.is_active=1").
        joins(:branch).where("branches.is_active=1").
        where("entries.created_at"=>start_date..end_date)
@@ -43,8 +47,21 @@ class ModerationController < ApplicationController
     if (params[:branch_id])
       @results = @results.where(["entries.branch_id = ?", params[:branch_id]])
     end
-    @results = @results.order("entries.id desc").page(p)
-    
+    @results = @results.order("entries.id desc") #.page(p)
+
+#    unless @sorted.kind_of?(Array)
+#      @sorted = @sorted.page(p)
+#    else
+#      @sorted = Kaminari.paginate_array(@sorted).page(p)
+#    end
+    sorted_ids = @sorted.map{|s| s.entry_id}
+    @results = @sorted + @results.map{|r| r if !sorted_ids.include?(r.id) }.compact
+    unless @results.kind_of?(Array)
+      @results = @results.page(p)
+    else
+      @results = Kaminari.paginate_array(@results).page(p)
+    end
+
     if params[:ajax]
       # request from paginate links in listen, syndicate  page
       render :partial=>params[:partial], :layout=>false, :content_type=>'text' and return
@@ -123,6 +140,7 @@ class ModerationController < ApplicationController
      
     p = params[:page] || 1
       
+    @sorted = SortedEntry.where("rank>0").all
     @entries_query = Entry.includes([:branch=>:country]).
       where("branches.is_active=1").
       order(order_by)
@@ -135,6 +153,11 @@ class ModerationController < ApplicationController
     end
     if !!branch
        @entries_query = @entries_query.where(["branches.name like ? ", branch])
+       @sorted = []
+       branches = Branch.where(["name like ? ", branch])
+       branches.all.each do |b|
+         @sorted << SortedEntry.get(b.id, b.forum_session_id)
+       end
     end
     if !!location
       @entries_query = @entries_query.where(["countries.name like ? ", location])
@@ -148,12 +171,24 @@ class ModerationController < ApplicationController
       @results = @entries_query.
          where("entries.is_private=0").page(p)
     when 'syndicated'
-            @results = @entries_query.joins(:soundkloud).
-            page(p)
+      @results = @entries_query.joins(:soundkloud).page(p)
     when 'deleted'
       @results = @entries_query.
          where("entries.is_active=0").page(p)
     end
+#    unless @sorted.kind_of?(Array)
+#      @sorted = @sorted.page(p)
+#    else
+#      @sorted = Kaminari.paginate_array(@sorted).page(p)
+#    end
+    sorted_ids = @sorted.map{|s| s.entry_id}
+    @results = @sorted + @results.map{|r| r if !sorted_ids.include?(r.id) }.compact
+    unless @results.kind_of?(Array)
+      @results = @results.page(p)
+    else
+      @results = Kaminari.paginate_array(@results).page(p)
+    end
+    
 #    headers["Content-Type"] = 'text/javascript'
 #    render :partial=>'paginate', :layout=>false, :content_type => 'text/javascript'
     render :partial=>'search_results', :layout=>false, :content_type => 'text'

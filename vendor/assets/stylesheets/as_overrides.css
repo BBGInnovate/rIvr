@@ -646,6 +646,9 @@ input[type=submit]:hover {
 		margin: 0 0 0 10px;
 } 
 */
+#search-results {
+  overflow: auto;
+}
 .publish-syndicate a:hover, #search-results-id a:hover,
 a.square:hover {
   cursor: pointer;

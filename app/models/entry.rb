@@ -370,7 +370,7 @@ class Entry< ActiveRecord::Base
   end
   
   def checked?
-     false
+     sorted_entry ? sorted_entry.checked? : false
   end
    
 protected

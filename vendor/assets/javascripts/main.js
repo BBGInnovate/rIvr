@@ -525,15 +525,21 @@ var sortable = {
      $("#sortable").disableSelection();
      $("#sortable").sortable({
        out: function( event, ui ) {
-         //$("#sortable").sortable("cancel");
+       	/*
+         $("#sortable").sortable("cancel");
+         $("#sortable").sortable("enable"); */
        }
      });
-     $("#sortable").mousedown(function(){
+     /*
+     $('#sortable').on("mousedown",".mbMiniPlayer",function(){
        $("#sortable").sortable("disable");
-     });
-     $("#sortable").mouseup(function(){
-       // $("#sortable").sortable("enable");
-     });
+       $.each($('[id*="mp_"]'), function() { 
+         id = $(this).attr('id').match(/JPL_mp_\d+/);
+         if (id!= null && id.length>0) {
+           // alert($('#'+id).event.playing);
+         }
+       });
+     }); */
      $(".audio").mb_miniPlayer({
      	 //width:240,
        inLine:false,
@@ -563,17 +569,105 @@ var sortable = {
        }
      }
      var data = {
-       ids: arr,
+     	 ids: ids,
+       sorted: arr,
        branch_id: sortable.branch_id
      }
      $.post(url, data, null, 'html');
    },
    toggle : function() {
-     var isOff = $("#sortable").sortable( "option", "disabled" );
+   	  $("#sortable").sortable();
+   	  var isOff = $("#sortable").sortable( "option", "disabled" );
+     // var isOff = $("#sortable").sortable( ".match(/(\w+)_name/);option", "disabled" );
      if (isOff) {
        $("#sortable").sortable("enable");
+       $("#sortable").val("Disable Sorting")
      } else {
 	    $("#sortable").sortable("disable");
+	    $("#sortable").val("Enable Sorting")
+     }
+   },
+}
+ 
+var sortTable = {
+	table_id : null,
+	player_class : null,
+	toggle_id: null,
+	sort_id: null,
+	init : function(table_id, player_class, toggle_id) {
+	  sortTable.table_id = table_id;
+	  sortTable.sort_id = "#"+table_id + " tbody";
+	  sortTable.player_class = "." + player_class;
+	  sortTable.toggle_id = "#"+toggle_id;
+	  $(sortTable.sort_id).sortable();
+     // $(sortTable.sort_id).sortable("disable");
+     $(sortTable.sort_id).disableSelection();
+     $(sortTable.sort_id).sortable({
+       out: function( event, ui ) {
+       	/*
+       	$(sortTable.sort_id).sortable();
+         $(sortTable.sort_id).sortable("cancel");
+         $(sortTable.sort_id).sortable("enable");
+         $(sortTable.toggle_id).val("Disable Sorting"); */
+       }
+     });
+     $(sortTable.sort_id).on("mousedown",".mbMiniPlayer",function(){
+     	 $(sortTable.sort_id).sortable();
+       $(sortTable.sort_id).sortable("disable");
+       $(sortTable.toggle_id).val("Enable Sorting")
+     });
+     $(sortTable.player_class).mb_miniPlayer({
+     	 //width:240,
+       inLine:false,
+       id3:false,
+       showControls:false,
+       animate:false,
+       showVolumeLevel:false,
+       showTime:true,
+       showRew:false,
+       addShadow:false,
+       onPlay:function() {
+         $(sortTable.sort_id).sortable("disable");
+         $(sortTable.toggle_id).val("Enable Sorting")
+       },
+       onEnd:function() {
+         $(sortTable.sort_id).sortable("enable");
+         $(sortTable.toggle_id).val("Disable Sorting")
+       }
+     });
+     $(sortTable.sort_id).on("click","input[type='checkbox']",function(){
+       var op = $(this).prop('checked');
+       if (op==false)
+         $(this).removeProp('checked');
+       else 
+       	$(this).prop('checked', true);
+     });
+	},
+	
+	showIds : function() {
+     var ids = $(sortTable.sort_id).sortable("toArray");
+     var arr = [];
+     var url = "/branch/sorted_entries";
+     for (var i in ids) {
+       if ($('#M'+ids[i]).prop('checked')==true) {
+         arr.push(ids[i])
+       }
+     }
+     var data = {
+     	 ids: ids,
+       sorted: arr,
+     }
+     $.post(url, data, null, 'html');
+   },
+   toggle : function() {
+     var isOff = $(sortTable.sort_id).sortable( "option", "disabled" );
+     $(sortTable.sort_id).sortable();
+     if (isOff) {
+       $(sortTable.sort_id).sortable("enable");
+       $(sortTable.toggle_id).val("Disable Sorting")
+     } else {
+	    $(sortTable.sort_id).sortable("disable");
+	    $(sortTable.toggle_id).val("Enable Sorting")
      }
    },
 }
