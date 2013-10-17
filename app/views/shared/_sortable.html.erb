@@ -1,0 +1,43 @@
+<p style="font-size: 18px"><b><%= @branch.name %></b></p>
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+<%= submit_tag 'Enable/Disable Sorting', :id=>"moderate", :class=>"btnAction", :onclick=>'sortable.toggle();' %>
+<%= submit_tag 'Save', :id=>"moderate", :class=>"btnAction", :onclick=>'sortable.showIds();' %>
+<br/>
+<p>
+To reorder the rows, drag a row up or down.<br/>
+To save the order, click the checkbox of the items and click Save
+</p>
+
+<% 
+   @moderated = SortedEntry.get(@branch.id, @branch.active_forum_session.id)
+   @entries = @moderated + @branch.entries.incomings
+ %>
+<ul id="sortable">
+<% @entries.each do |e| %>
+  <%# next if !e.dropbox_file_exists? %>
+  <% if e.kind_of? Entry
+       eid = e.id
+     else
+       eid = e.entry_id
+     end
+   %>
+  <% src="/entries/#{eid}/play" %>
+  <li id="<%= eid %>">
+  <div id="audio">  
+    <%#= "OK " if e.dropbox_file_exists? %>
+    <span class="ui-icon ui-icon-arrowthick-2-n-s"></span>
+    <span class="audio-title"><%= e.dropbox_file %> <%= e.created_at.to_s(:db) %>
+    <input type="checkbox" id="M<%= eid %>" value="" <%= 'checked' if e.checked? %> /></span>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+  
+    <a name='<%=eid%>' class="audio {ogg:'/entries/<%=eid%>/play',autoplay:false,volume:1,downloadable:false,inLine:true}"
+       href='/entries/<%=eid%>/play'><%= e.dropbox_file %></a>
+
+ <!--   <button onclick="$('#sortable').sortable('disable');$('#<%=eid%>').mb_miniPlayer_play();">play</button>
+    -->  
+  </div> 	
+  </li>
+<% end %>
+</ul>
+
+
