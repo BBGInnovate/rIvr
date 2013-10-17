@@ -1,0 +1,47 @@
+<% content_for :head do %>
+<style>
+  .custom-combobox {
+    position: relative;
+    display: inline-block;
+  }
+  .custom-combobox-toggle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin-left: -1px;
+    padding: 0;
+    /* support: IE7 */
+    *height: 1.7em;
+    *top: 0.1em;
+  }
+  .custom-combobox-input {
+    margin: 0;
+    padding: 0.3em;
+  }
+  </style>
+  <script>
+  $(function() {
+    $( "#record_forum_session_id" ).combobox();
+    $( "#show" ).click(function() {
+      // $( "#record_forum_session_id" ).toggle();
+      var name = $('.custom-combobox-input').val();
+      alert(name);
+    });
+  });
+  
+  </script>
+<% end %>
+<div class="ui-widget">
+  <label>Create or select a session name: </label>
+  <% options = VotingSession.all.map{|b| [b.name, b.id]}
+     options.unshift ['Enter New Session','']
+     id = @forum_session_id || 2
+     %>
+  <%= select_tag 'record[forum_session_id]', options_for_select(options, id), :style=>'' %>
+  <!--
+  <button id="show">Show underlying select</button>
+  -->
+</div>
+
+
+

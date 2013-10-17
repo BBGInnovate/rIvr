@@ -1,0 +1,29 @@
+<div id="activate-forum-div" class="">
+  <div class='notice'>
+    <%= flash[:notice] %>
+  </div>
+  <% 
+     option1 = VotingSession.where(:is_active=>false).all.map{|a| [a.name, a.id]}
+     option1.unshift ['--select forum title --','0']
+     
+     option2 = VotingSession.where(:is_active=>true).all.map{|a| [a.name, a.id]}
+     option2.unshift ['--Already Activated--','-1']
+     
+     options = option1 + option2
+     
+     id = 0 %>
+  
+  <h3>Select a forum title to active:</h3>
+  <div>
+    <%= select_tag 'activate_forum', options_for_select(options, 0), :id=>'activate_forum' %>
+  </div>
+  <div>
+    <span><%= submit_tag 'Activate', :id=>"save",:class=>"btnAction" %></span>
+    <span><%= submit_tag 'Cance',:id=>"cancel",:class=>"btnAction" %></span>
+  </div>
+</div>
+<script>
+  $(document).ready(function () { 
+  
+  });
+</script>
