@@ -328,7 +328,7 @@ class Entry< ActiveRecord::Base
   end
 
   def self.parse_feed(url, limit=10)
-    entries = []
+    items = []
     added = 0
     megabyte = 1024*1024
     begin
@@ -339,34 +339,30 @@ class Entry< ActiveRecord::Base
       enclosure =  i.xpath('enclosure')[0]
       length= enclosure[:length]
       if length
-         if length.to_f/megabyte < 5
-           entry = OpenStruct.new
-           entry.public_url = enclosure[:url]
-           entries << entry
-           added += 1
-         end
-       else
-       # if enclosure not have attr :length, we use itunes:duration
-          time_str = i.xpath('itunes:duration').text
-          if !time_str.empty?
-             time_arr = time_str.split(":")
-             hr = time_arr[0].to_i
-             mn = time_arr[1].to_i
-             ss  = time_arr[2].to_i
-             duration = hr*3600 + mn*60 + ss
-             if duration < 300
-               entry = OpenStruct.new
-               entry.public_url = enclosure[:url]
-               entries << entry
-               added += 1
-             end
-          end
-       end
+        length = length.to_f/megabyte
+      end
+      time_str = i.xpath('itunes:duration').text
+      if !time_str.empty?
+        time_arr = time_str.split(":")
+        hr = time_arr[0].to_i
+        mn = time_arr[1].to_i
+        ss  = time_arr[2].to_i
+        duration = hr*3600 + mn*60 + ss
+      else
+        duration = 0
+      end
+          
+      if length < 5 && duration < 300
+        entry = OpenStruct.new
+        entry.public_url = enclosure[:url]
+        items << entry
+        added += 1
+      end
     end
     rescue
       User.logger.warn "Entry parse_feed: #{$!}"
     end
-    entries
+    items
   end
   
   def checked?

@@ -647,7 +647,10 @@ class Branch< ActiveRecord::Base
     s = OpenStruct.new
     s.name = 'None'
     s.id = nil
-    self.voting_sessions.where(:is_active=>true).last || s
+    if (self.forum_type=='vote' || self.forum_type=='bulletin')
+      s = self.voting_sessions.where(:is_active=>true).last || s
+    end
+    s
   end
   def identifier(identifier=nil)
     identifier || self.active_forum_session.name 
@@ -669,7 +672,7 @@ class Branch< ActiveRecord::Base
       xml.instruct! :xml, :version => "1.0"
       xml.rss :version => "2.0" do
         xml.channel do
-          xml.created_at Time.now.getutc
+          # xml.created_at Time.now.getutc
           xml.forum_type self.forum_type
           xml.forum_session self.active_forum_session.name rescue 'None'
           xml.entry_upload_folder self.entry_files_folder
@@ -699,8 +702,18 @@ class Branch< ActiveRecord::Base
     local_file = self.forum_feed_xml
     dropbox_branch = "#{DROPBOX.home}/bbg/#{self.name}"
     remote_file = "#{dropbox_branch}/#{File.basename(local_file)}"
-      
-    if !Prompt.file_equal?(remote_file, local_file)
+
+    if !Branch.xml_equal?(local_file, remote_file)
+      # add delete_old_files node
+      builder = Nokogiri::XML::Builder.new do
+        delete_old_files 1
+      end
+      doc = Nokogiri::XML(IO.read(local_file))
+      node = doc.xpath('//channel').first
+      node.add_child builder.doc.root
+      file = File.open(local_file,'w')
+      file.puts doc.to_xml
+      file.close
       if Dir.exists? DROPBOX.home
         # dropbox client is installed
         if !Dir.exists?(dropbox_branch)
@@ -722,6 +735,8 @@ class Branch< ActiveRecord::Base
       end
     else
       puts "#{to}#{File.basename(local_file)} unchanged"
+      FileUtils.copy local_file, remote_file
+      puts "Copied #{local_file} to #{remote_file}"
     end
   end
   def listen_messages(limit=10)
@@ -762,6 +777,19 @@ class Branch< ActiveRecord::Base
     items
   end
   
+  def self.xml_equal?(old_file, new_file)
+    # remove delete_old_files node before compare
+    new_content = ""
+    old_content = File.open(old_file).read
+    begin
+      doc = Nokogiri::XML(IO.read(new_file))
+      doc.search('//delete_old_files').remove
+      new_content = doc.to_xml
+    rescue Exception=>e
+      puts "INFO : file_equal?(#{new_file}) : #{e.message}"
+    end
+    (new_content.gsub!(" ","") == old_content.gsub!(" ",""))
+  end
   def forum_prompts
     begin
       records = self.send(self.forum_type.pluralize)
@@ -769,6 +797,25 @@ class Branch< ActiveRecord::Base
     rescue
       []
     end
+  end
+  
+  # find audio files for Report forum and insert to SortedEntries table
+  # TODO add to cron?
+  def insert_report_files
+     Dir["#{DROPBOX.home}#{entry_files_folder}/*"].each_with_index do |f, i|
+       bname = File.basename(f)
+       se = SortedEntry.where(:branch_id=>self.id, 
+          :dropbox_file=>bname, :forum_session_id=>nil).last
+       if !se 
+         e = Entry.create :branch_id=>self.id, :dropbox_file=>bname,
+                :forum_type=>'report', :dropbox_dir=>entry_files_folder,
+                :is_private=>false
+         SortedEntry.create :branch_id=>self.id, :entry_id=>e.id,
+                            :dropbox_file=>bname, :rank=>i+1
+       else
+         se.update_attribute :rank, i+1
+       end
+     end
   end
   
   def clean_prompt_files

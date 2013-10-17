@@ -613,6 +613,11 @@ var sortTable = {
      });
      $(sortTable.sort_id).on("mousedown",".mbMiniPlayer",function(){
      	 $(sortTable.sort_id).sortable();
+       $(sortTable.sort_id).sortable("Enable");
+       $(sortTable.toggle_id).val("Disable Sorting")
+     });
+     $(sortTable.sort_id).on("mouseup",".mbMiniPlayer",function(){
+     	 $(sortTable.sort_id).sortable();
        $(sortTable.sort_id).sortable("disable");
        $(sortTable.toggle_id).val("Enable Sorting")
      });
@@ -636,11 +641,14 @@ var sortTable = {
        }
      });
      $(sortTable.sort_id).on("click","input[type='checkbox']",function(){
+     	/*
        var op = $(this).prop('checked');
        if (op==false)
          $(this).removeProp('checked');
        else 
        	$(this).prop('checked', true);
+       	
+       	*/
      });
 	},
 	

@@ -36,11 +36,13 @@ class ModerationController < ApplicationController
     start_date = Branch.message_time_span.days.ago.to_s(:db)
     end_date = Time.now.to_s(:db)
     
-    @sorted = SortedEntry.where("rank>0").
+    # not get for Report type where forum_session_id == 0
+    @sorted = SortedEntry.where("rank>0 AND forum_session_id>0").
         where("created_at"=>start_date..end_date)
     
     @results = Entry.where("entries.is_private=1 AND entries.is_active=1").
        joins(:branch).where("branches.is_active=1").
+       where("forum_session_id > 0 ").
        where("entries.created_at"=>start_date..end_date)
     #   order("entries.id desc").page(p)
        
@@ -49,11 +51,6 @@ class ModerationController < ApplicationController
     end
     @results = @results.order("entries.id desc") #.page(p)
 
-#    unless @sorted.kind_of?(Array)
-#      @sorted = @sorted.page(p)
-#    else
-#      @sorted = Kaminari.paginate_array(@sorted).page(p)
-#    end
     sorted_ids = @sorted.map{|s| s.entry_id}
     @results = @sorted + @results.map{|r| r if !sorted_ids.include?(r.id) }.compact
     unless @results.kind_of?(Array)
@@ -140,9 +137,11 @@ class ModerationController < ApplicationController
      
     p = params[:page] || 1
       
-    @sorted = SortedEntry.where("rank>0").all
+    # not get for Report type where forum_session_id == 0
+    @sorted = SortedEntry.where("rank>0 AND forum_session_id > 0 ").all
     @entries_query = Entry.includes([:branch=>:country]).
       where("branches.is_active=1").
+      where("forum_session_id > 0 ").
       order(order_by)
 
     if !!start_date && !!end_date
@@ -154,10 +153,12 @@ class ModerationController < ApplicationController
     if !!branch
        @entries_query = @entries_query.where(["branches.name like ? ", branch])
        @sorted = []
+       # get for Report type when branch is specified
        branches = Branch.where(["name like ? ", branch])
        branches.all.each do |b|
-         @sorted << SortedEntry.get(b.id, b.forum_session_id)
+         @sorted << SortedEntry.get(b.id, b.active_forum_session.id)
        end
+       @sorted.flatten!
     end
     if !!location
       @entries_query = @entries_query.where(["countries.name like ? ", location])

@@ -16,9 +16,10 @@
     	<%= render :partial=>'select_forum', :locals=>{:template=>@template} %>
   <% end %>
   <p></p>
-  <h3><% if !!template.audio_link %>
-         You have uploaded a file previously. Click Save to save this file OR
-         
+  <h3><% 
+      saved = template.is_active ? ' and saved' : ''
+      if !!template.audio_link %>
+         You have uploaded a file previously<%= saved %>.
          <br/>
       <% end %>
     Select your <%= template.name_map(template.name) %> audio file to upload</h3>
