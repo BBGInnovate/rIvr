@@ -97,7 +97,7 @@ class Template < ActiveRecord::Base
     client = self.get_dropbox_session
     if !!client && self.dropbox_file
       name = File.basename(self.dropbox_file)
-      link = "system/#{self.branch.name.downcase}/#{self.class.name.downcase}"
+      link = "system/#{self.branch.name}/#{self.class.name.downcase}"
       local="#{Rails.root}/public/#{link}"
       FileUtils.mkdir_p local
       local_file = "#{local}/#{name}"
