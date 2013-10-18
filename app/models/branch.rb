@@ -358,12 +358,12 @@ class Branch< ActiveRecord::Base
   validates :name, :uniqueness => {:scope => :country_id}
 
   def feed_limit
-      return nil if self.new_record?
+      return 10 if self.new_record?
       opt = Option.where(:branch_id=>self.id, :name=>'feed_limit').last
       if opt
-        opt.value
+        opt.value.to_i
       else
-        nil
+        10
       end
   end
 
@@ -749,11 +749,12 @@ class Branch< ActiveRecord::Base
       else
         dir = "#{DROPBOX.home}#{self.entry_files_folder}"
         FileUtils.mkdir_p(dir) if !Dir.exists?(dir)
-        arr = Dir.entries(dir).
-            select{|f| !File.directory? f}
+        # arr = Dir.entries(dir).
+        #    select{|f| !File.directory? f}
+        arr = [SortedEntry.where(:branch_id=>self.id, :forum_session_id=>nil).last]
         arr.each do |f|
           item = OpenStruct.new
-          item.public_url = self.entry_files_folder + "/"+f
+          item.public_url = self.entry_files_folder + "/"+f.dropbox_file
           items << item
         end
       end
@@ -799,6 +800,64 @@ class Branch< ActiveRecord::Base
     end
   end
   
+  def upload_to_dropbox(file)
+    to = self.entry_files_folder
+    remote_dir = DROPBOX.home+to
+    
+    entry = Entry.create :branch_id=>self.id, :forum_type=>'report',
+            :dropbox_dir => self.entry_files_folder,
+            :dropbox_file=>file.original_filename,
+            :mime_type=>file.content_type,
+            :is_private=>false,
+            :is_active=>true
+            
+    if (Dir.exists? DROPBOX.home)
+      # dropbox client is installed
+      # have to be sure the dropbox client is running
+      if !Dir.exists?(remote_dir)
+         FileUtils.mkdir_p remote_dir
+      end
+      FileUtils.copy file.tempfile.path, remote_dir
+      logger.info "Copied #{file.tempfile.path} to #{remote_dir}"
+    else    
+      client = self.get_dropbox_session
+      if !!client
+        begin
+          client.mkdir to
+        rescue
+          logger.warn "Error: upload_to_dropbox : #{$!}"
+          entry.destroy
+          return false
+        end
+        begin
+          re = client.upload(file.tempfile, to, :as=>file.original_filename)
+          logger.warn "INFO: Dropbox uploaded: #{file.original_filename}"
+        rescue Exception=>ex
+          logger.warn "Error #{ex.message}"
+          entry.destroy
+          return false
+        end
+      end
+    end
+    add_sorted_entry(entry)
+    return true
+  end
+
+  def add_sorted_entry(entry)
+    ss = SortedEntry.where(:branch_id =>self.id, :forum_session_id=>nil).order("created_at ASC")
+    # delete files to make room for new file        
+    if ss.size > self.feed_limit
+      ss[0..(ss.size-self.feed_limit-1)].destroy
+    end
+    SortedEntry.create :branch_id=>self.id,
+            :entry_id=>entry.id,
+            :dropbox_file=>entry.dropbox_file,
+            :created_at =>entry.created_at
+    
+    generate_forum_feed_xml
+
+  end
+
   # find audio files for Report forum and insert to SortedEntries table
   # TODO add to cron?
   def insert_report_files

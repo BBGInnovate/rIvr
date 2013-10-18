@@ -10,7 +10,7 @@ class SortedEntry< ActiveRecord::Base
      end
    end
 
-   def self.get(branch_id, forum_session_id)
+   def self.get(branch_id, forum_session_id=nil)
       where(:branch_id=>branch_id, :forum_session_id=>forum_session_id).where("rank>0").order("rank")
    end
    
@@ -58,6 +58,6 @@ class SortedEntry< ActiveRecord::Base
      self.entry.soundkloud
    end
    def checked?
-     rank > 0
+     (rank.to_i > 0)
    end
 end

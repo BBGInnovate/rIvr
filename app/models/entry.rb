@@ -229,7 +229,7 @@ class Entry< ActiveRecord::Base
   end
   
   def add_properties
-    self.dropbox_dir="bbg/#{self.branch.name}"
+    self.dropbox_dir= self.branch.entry_files_folder
   end
   
   def delete_from_dropbox
@@ -254,7 +254,7 @@ class Entry< ActiveRecord::Base
   end
   
   def dropbox_dir
-     read_attribute(:dropbox_dir) || "bbg/#{self.name}"
+     read_attribute(:dropbox_dir) || self.branch.entry_files_folder
   end
 
   def self.sync_dropbox
@@ -327,7 +327,8 @@ class Entry< ActiveRecord::Base
     end
   end
 
-  def self.parse_feed(url, limit=10)
+  # for feed based limit to 1
+  def self.parse_feed(url, limit=1)
     items = []
     added = 0
     megabyte = 1024*1024

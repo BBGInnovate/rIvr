@@ -43,6 +43,7 @@ TestIvr::Application.routes.draw do
       get :activate_forum
       get :sorted_entries
       post :sorted_entries
+      post :upload_report_audio
     end
   end
   resources :templates do

@@ -125,4 +125,20 @@ class BranchController < ApplicationController
          
       end
     end
+    
+    def upload_report_audio
+      branch=Branch.find_by_id params[:branch_id]
+      temp = params[:branch] 
+      sound_file = temp.delete(:sound)
+      if sound_file # from preview
+        uploaded = branch.upload_to_dropbox(sound_file)
+        if uploaded
+           text = "#{sound_file.original_filename} is uploaded"
+           render :text=>text, :layout=>false,:content_type=>'application/text'
+        end
+      else # from save
+        
+      end
+      
+    end
 end

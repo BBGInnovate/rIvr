@@ -1,31 +1,37 @@
 var Modal = {
+	modalID:  null,
 		css : function(height) {
-			height = height || '360';
+			height = height || 360;
 			var newRule = ".helpPopUp {background: none repeat scroll 0 0 #FFFFFF;border: 1px solid #CFE8F5;";
 			newRule = newRule +"border-radius: 11px 11px 11px 11px;padding: 20px;position: absolute;";
-			newRule = newRule +"text-align: center;min-height: " + height + "px;display: none}";
-			$("style").append(newRule);
+			newRule = newRule +"text-align: center; min-height: " + (height) + "px;display: none}";
+			$(Modal.modalID + " style").append(newRule);
 		},
 		open : function (modal_id, anchor_id, height) {
-			height = height || '360';
-			Modal.css(height);
+			height = height || 360;
+	   // modal_id must have a child <style></style> for Modal.css to work
+	   // Modal_id first child must define a width to Modal_id to figure out 
+	   // it's width
       // modal_id modal window placeholder id
       // anchor_id element id, click which trigers the modal window
-      var modalID = "#" + modal_id;
+      Modal.modalID = "#" + modal_id;
+      
+      Modal.css(height);
       var anchorID = "#" + anchor_id;
       // get how many pixels that the calling link is from the top of the page -- to be used later.
       var anchorOffset = Math.floor(jQuery(anchorID).offset().top);
-      var mymodal = $(modalID);
+      var mymodal = $(Modal.modalID);
       
       // get the modal window's height + padding top + padding bottom
       var modalHeight = Math.floor(mymodal.height());
       // the modal's width is based off width of the site area, rather than being set off of another value
       // sitewidth - modal padding left - modal padding right - 20 ... dropping any hanging decimals
       // var modalWidth = 506;
-      var c = mymodal.children('div')[0]
+      // var c = mymodal.children('div')[0]
+      var child = mymodal.children('div')[0];
       // we have pre-define the width of the content div 
       // which is inserted into the modal window
-      var modalWidth = Math.floor($(c).width());
+      var modalWidth = Math.floor($(child).width());
       // set the modal's width, to overwrite any CSS sizes
 
       mymodal.css('width', modalWidth);
@@ -45,8 +51,15 @@ var Modal = {
       mymodal.css('top', newTop);
       // now set the height of the content div inserted into 
       // the modal
-      var child = mymodal.children('div')[0];
-      $(child).css('height', modalHeight)
+      
+      // $(child).css('height', modalHeight)
+      $(child).css({
+      	   'postion': 'relative',
+         'min-height': modalHeight,
+         'background-color': '#CCC',
+         'border': '1px solid #CCC'
+      });
+
       // fade the modal window in
       mymodal.fadeIn();
     }
@@ -530,7 +543,7 @@ var sortable = {
          $("#sortable").sortable("enable"); */
        }
      });
-     /*
+     
      $('#sortable').on("mousedown",".mbMiniPlayer",function(){
        $("#sortable").sortable("disable");
        $.each($('[id*="mp_"]'), function() { 
@@ -539,7 +552,7 @@ var sortable = {
            // alert($('#'+id).event.playing);
          }
        });
-     }); */
+     }); 
      $(".audio").mb_miniPlayer({
      	 //width:240,
        inLine:false,
@@ -581,10 +594,10 @@ var sortable = {
      // var isOff = $("#sortable").sortable( ".match(/(\w+)_name/);option", "disabled" );
      if (isOff) {
        $("#sortable").sortable("enable");
-       $("#sortable").val("Disable Sorting")
+       $("#moderate-enable").val("Disable Sorting")
      } else {
 	    $("#sortable").sortable("disable");
-	    $("#sortable").val("Enable Sorting")
+	    $("#moderate-enable").val("Enable Sorting")
      }
    },
 }
@@ -709,20 +722,22 @@ var reportUpload = {
 			$(".square").removeClass('square-clicked');
 			$('#'+reportUpload.myId).addClass('square-clicked');
 		});
-    /*
-		jQuery("#forum-template").on('click', "#headline", function(e) {
-			var name = this.id;
-			var b = jQuery('#branch-name').val();
-			var url = '/templates/headline';
-			var data = {
-				name : name,
-				type : forum_type,
-				branch : b
-			};
-			jQuery.get(url, data, reportUpload.update, 'html');
-			jQuery('#forum-upload').show();
+    
+		jQuery("#configure_feed_source").on('change', function(e) {
+			var feed_source = $(this).val();
+			if (feed_source=='upload') {
+			  var branch_id = jQuery('#configure_branch_id').val();
+			  var url = '/templates/report';
+			  var data = {
+				  feed_source : feed_source,
+				  branch_id : branch_id
+			  };
+			  // jQuery.get(url, data, reportUpload.update, 'html');
+			  Modal.open("report-upload", 'configure_feed_source', 138);
+			  jQuery('#report-upload').show();
+		   }
 		});
-		*/
+		
 		jQuery("#template-headline").on('click', "#save", function(e) {
 			var url = '/templates/headline';
 			jQuery("[name='todo']").val("save");
@@ -741,6 +756,26 @@ var reportUpload = {
 			};
 			$('#frm-headline').ajaxForm(options);
 		});
+		
+		$("#report-popup").on('click', "#preview-report, #save-report", function(e) {
+			var url = $('#frm-upload-report').attr('action');
+			var options = {
+				beforeSubmit : function(arr, $form, options) {
+				$('#report-popup').css("cursor", "progress");
+				},
+				success : function(data) {
+				  $('#template-popup').css({
+						"cursor" : "hand",
+						"cursor" : "pointer"
+				  });
+				  $("#notice").html(data);
+				}
+			};
+			$('#frm-upload-report').ajaxForm(options);
+		});
+		
+		
+		
 		jQuery("#template-popup").on('click', "#preview, #save", function(e) {
 			var url = '/templates';
 			jQuery(this).css("cursor", "progress");
@@ -777,30 +812,34 @@ var reportUpload = {
 				  // jQuery('#template-popup').css("cursor", "progress");
 				},
 				success : function(data) {
-					jQuery('#template-popup').css({
+					$('#template-popup').css({
 						"cursor" : "hand",
 						"cursor" : "pointer"
 					});
-					jQuery("#forum-upload, .forum-upload").html(data);
-					jQuery(".error").hide();
+					$("#forum-upload, .forum-upload").html(data);
+					$(".error").hide();
 					$("[name*='[identifier]']").attr("readonly", "readonly")
 				}
 			};
 
 			$('#frm-upload-logo').ajaxForm(options);
-			jQuery('#forum-upload, .forum-upload').show();
+			$('#forum-upload, .forum-upload').show();
 		});
-		jQuery(".template-popup").on('click', "#cancel", function(e) {
-			jQuery('#forum-upload, .forum-upload').hide();
+		$(".template-popup").on('click', "#cancel", function(e) {
+			$('#forum-upload, .forum-upload').hide();
 			return false;
 		});
-		jQuery(".template-popup").on('click', "#moderate", function(e) {
-
+		$("#report-popup").on('click', "#cancel-report", function(e) {
+			$('#report-upload').hide();
 			return false;
 		});
+		
+		//$(".template-popup").on('click', "#moderate", function(e) {
+			// return false;
+		//});
 	},
 	update : function(data) {
-		jQuery("#forum-upload").html(data);
+		$("#forum-upload").html(data);
 		$(".square").css("cursor", "pointer");
 	}
 }

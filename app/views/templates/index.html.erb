@@ -4,8 +4,9 @@
   <input type="hidden" name="branch" id="branch-name" value="<%=@branch_name%>" />
   <%= render :partial => @temp_partial %>
 </div>
-<div id="forum-upload" class="float-left">
-  
+<div id="forum-upload" class="float-left"></div>
+<div id="report-upload" class="helpPopUp" style="display:none;">
+  <%= render :partial=>'upload_report' %>
 </div>
 <div id="moderate-div" class="float-left">
   <%= render :partial=>'/shared/sortable' %>
