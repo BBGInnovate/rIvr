@@ -751,7 +751,7 @@ class Branch< ActiveRecord::Base
         FileUtils.mkdir_p(dir) if !Dir.exists?(dir)
         # arr = Dir.entries(dir).
         #    select{|f| !File.directory? f}
-        arr = [SortedEntry.where(:branch_id=>self.id, :forum_session_id=>nil).last]
+        arr = [SortedEntry.where(:branch_id=>self.id, :forum_session_id=>nil).last].compact
         arr.each do |f|
           item = OpenStruct.new
           item.public_url = self.entry_files_folder + "/"+f.dropbox_file
