@@ -35,9 +35,9 @@ class Template < ActiveRecord::Base
 
   def upload_to_dropbox(file, identifier=nil)
     # ext = file.original_filename.split(".")[1]
-    to = self.dropbox_dir
+    to = self.branch.prompt_files_folder
     remote_dir = DROPBOX.home+to
-    if 1==0 && (Dir.exists? DROPBOX.home)
+    if (Dir.exists? DROPBOX.home)
       # dropbox client is installed
       # have to be sure the dropbox client is running
       if !Dir.exists?(remote_dir)
@@ -101,11 +101,15 @@ class Template < ActiveRecord::Base
       local="#{Rails.root}/public/#{link}"
       FileUtils.mkdir_p local
       local_file = "#{local}/#{name}"
-      if !File.exists?(local_file)
-        feed = client.download(self.dropbox_file)
-        File.open(local_file, 'wb') {|f| f.write(feed) }
+      begin
+        if !File.exists?(local_file)
+          feed = client.download(self.dropbox_file)
+          File.open(local_file, 'wb') {|f| f.write(feed) }
+        end
+        link = "#{link}/#{name}"
+      rescue
+        link = nil
       end
-      link = "#{link}/#{name}"
     else
       link = nil
     end

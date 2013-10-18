@@ -79,6 +79,7 @@ class TemplatesController < ApplicationController
       @template.is_active=true
       if @template.valid?
         @template.save
+        @template.branch.generate_forum_feed_xml
         flash[:notice] = "#{@template.name_map(@template.name)} file " +
         File.basename(@template.dropbox_file) +
         " has been saved"

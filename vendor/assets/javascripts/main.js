@@ -764,7 +764,7 @@ var reportUpload = {
 				$('#report-popup').css("cursor", "progress");
 				},
 				success : function(data) {
-				  $('#template-popup').css({
+				  $('#report-popup').css({
 						"cursor" : "hand",
 						"cursor" : "pointer"
 				  });
