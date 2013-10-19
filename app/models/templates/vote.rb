@@ -3,7 +3,7 @@ require 'open-uri'
 require 'builder'
 
 class Vote < Template
-  belongs_to :voting_session
+ # belongs_to :voting_session
   
   HUMANIZED_COLUMNS = {:identifier=>"Vote/Poll Title"}
     

@@ -247,6 +247,12 @@ input.btnAction:hover {
     margin: 0;
     padding: 0.3em;
 }
+/* this is for a tag */
+a.ui-button-icon-only {
+    height: 25px;
+    vertical-align: top;
+    margin: -0px 0 0 0;
+}
 
 #template-popup {
   background-color: #CCCCCC;
@@ -782,6 +788,8 @@ span.link {
 span.link a {
   color: blue;
 }
+
+
 /*
 a.soundcloud:hover {
   background-color:yellow;

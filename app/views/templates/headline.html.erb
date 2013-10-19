@@ -33,5 +33,6 @@
   jQuery(document).ready(function () { 
   // pass forum type
     reportUpload.init("<%= @template.class.name.downcase %>");
+    $("[id*='identifier']").combobox();
   });
 </script>

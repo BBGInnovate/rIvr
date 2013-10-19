@@ -45,6 +45,9 @@ class SortedEntry< ActiveRecord::Base
      end
    end
    
+   def dropbox_dir
+     self.entry.dropbox_dir
+   end
    def is_private
      false
    end

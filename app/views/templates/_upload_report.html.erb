@@ -1,7 +1,17 @@
+<style>
+</style>
 <div id="report-popup" class="template-popup" style="width: 310px;"/>
   <p id="notice"></p>
   <%= form_for @branch, :url=> "/branch/upload_report_audio", :html => {:method=>'post',:multipart => true, :id=>"frm-upload-report"} do |f| %>
-  <input type="hidden" name="branch_id" value="<%= @branch.id %>" /> 
+  <input type="hidden" name="branch_id" value="<%= @branch.id %>" />
+  
+  <div class="title">Enter/Select title for this Report</div>		
+  <% options = VotingSession.where(:branch_id=>@branch.id).map{|b| [b.name, b.name]}
+     options.unshift ["None","None"]
+     id = @branch.active_forum_session.id
+  %>
+  <%= select_tag "branch[identifier]", options_for_select(options, id), :style=>'' %>
+
   <h3>Select your audio file to upload</h3>
   <div class='fileBrowseWrap'>
     <%= f.file_field :sound %>
@@ -25,4 +35,4 @@
    </div>
   <% end %>
 </div>
-<style></style>
+

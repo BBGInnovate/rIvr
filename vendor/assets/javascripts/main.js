@@ -1,6 +1,7 @@
 var Modal = {
 	modalID:  null,
 		css : function(height) {
+			// height is the modal's child height
 			height = height || 360;
 			var newRule = ".helpPopUp {background: none repeat scroll 0 0 #FFFFFF;border: 1px solid #CFE8F5;";
 			newRule = newRule +"border-radius: 11px 11px 11px 11px;padding: 20px;position: absolute;";
@@ -733,7 +734,7 @@ var reportUpload = {
 				  branch_id : branch_id
 			  };
 			  // jQuery.get(url, data, reportUpload.update, 'html');
-			  Modal.open("report-upload", 'configure_feed_source', 138);
+			  Modal.open("report-upload", 'configure_feed_source', 200);
 			  jQuery('#report-upload').show();
 		   }
 		});
@@ -759,6 +760,11 @@ var reportUpload = {
 		
 		$("#report-popup").on('click', "#preview-report, #save-report", function(e) {
 			var url = $('#frm-upload-report').attr('action');
+		   var identifier = $('.custom-combobox-input').val();
+	      $("[id*='_identifier']").append('<option value="'+identifier +'" selected="selected">'+identifier+'</option>');
+         var temp_name = $("[id*='_name']").attr('value');
+         var id = $("[id*='_name']").attr('id').match(/(\w+)_name/);
+         var forum_type = id[1];
 			var options = {
 				beforeSubmit : function(arr, $form, options) {
 				$('#report-popup').css("cursor", "progress");
@@ -993,8 +999,16 @@ var branchManage = {
 						return false;
 					}
 					if (branchManage.myId=='active-forum') {
-                  Modal.open("forum-activate", branchManage.myId, 140);
-					   return false;
+						/* var data = {
+				        branch_id : branch_id,
+				        ajax: 1
+			         };
+			         $.get("/branch/activate_forum", data, function(result) {
+			            $('#forum-activate').html(result);
+			         }, 'html');
+			         */
+			         Modal.open("forum-activate", branchManage.myId, 140);
+			         return false;
 					}
 					
 					$("*").css("cursor", "progress");
@@ -1048,6 +1062,8 @@ var branchManage = {
 		  if (obj.forum=='vote' || obj.forum=='poll') {
 		    jQuery('#go-template-result').attr('href', "/templates?result=1&branch=" + obj.branch);
 		    jQuery('#go-template-result').show();
+		  } else {
+		  	 $('#go-template-result').hide();
 		  }
 		  jQuery('#go-template-hint').html(obj.hint);
 		  

@@ -102,12 +102,12 @@ class BranchController < ApplicationController
       vs = VotingSession.find_by_id params[:id]
       
       if vs
-        if !vs.is_active
+        if 1==1 || !vs.is_active
           vs.is_active = true
           vs.save
           text="Forum : #{vs.name} is activated."
         else
-          text = "Forum : #{vs.name} is already active."
+          # text = "Forum : #{vs.name} is already active."
         end
       else
         text = 'Forum Title Not Found'
@@ -130,8 +130,9 @@ class BranchController < ApplicationController
       branch=Branch.find_by_id params[:branch_id]
       temp = params[:branch] 
       sound_file = temp.delete(:sound)
+      identifier = temp.delete(:identifier)
       if sound_file # from preview
-        uploaded = branch.upload_to_dropbox(sound_file)
+        uploaded = branch.upload_to_dropbox(sound_file, identifier)
         if uploaded
            text = "#{sound_file.original_filename} is uploaded"
            render :text=>text, :layout=>false,:content_type=>'application/text'

@@ -44,8 +44,6 @@ class TemplatesController < ApplicationController
     temp = params[branch.forum_type.to_sym] # || params[:report] || params[:bulletin] || params[:vote]
     @template = Template.find_by_id temp.delete(:id)
     @template.description = temp[:description]
-    #    @template = Template.find_by_id temp[:id]
-    #    branch=Branch.find_by_id temp[:branch_id]
     sound_file = temp.delete(:sound)
     identifier = temp.delete(:identifier)
     if identifier
@@ -54,10 +52,10 @@ class TemplatesController < ApplicationController
         vs = VotingSession.create :name => identifier,
             :branch_id => branch.id, :is_active => false
       end
-      if @template.kind_of?(Vote) || @template.kind_of?(Bulletin)
+      # if @template.kind_of?(Vote) || @template.kind_of?(Bulletin)
         @template.voting_session_id = vs.id
         @template.save
-      end
+      # end
     end
    
     @preview = false
@@ -66,7 +64,7 @@ class TemplatesController < ApplicationController
       if !sound_file
         @preview = true if !!@template.dropbox_file
       else
-        @template.upload_to_dropbox(sound_file)
+        @template.upload_to_dropbox(sound_file, identifier)
         @template.save :validate=>false
         @preview = true
 
@@ -74,7 +72,9 @@ class TemplatesController < ApplicationController
         File.basename(@template.dropbox_file) +
         " was uploaded to temperary folder"
       end
-      # save button pressed
+      
+    # this is not called. replaced by VotingSession#activate_templates
+    # save button pressed
     elsif params[:todo] == 'save'
       @template.is_active=true
       if @template.valid?

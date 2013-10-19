@@ -1,6 +1,6 @@
 class Template < ActiveRecord::Base
   belongs_to :branch
-  
+  belongs_to :voting_session
 #  after_save :generate_forum_feed
 
   self.inheritance_column = "temp_type"
@@ -28,26 +28,31 @@ class Template < ActiveRecord::Base
     end
   end
 
-  # for forum prompt files
-  def dropbox_dir(identifier=nil)
-    self.branch.prompt_files_folder(identifier)
+  # for retrieve forum prompt files
+  def dropbox_dir
+    ss = dropbox_file.split "/"
+    ss[0..(ss.size-2)].join("/")
+    ss
   end
 
   def upload_to_dropbox(file, identifier=nil)
     # ext = file.original_filename.split(".")[1]
-    to = self.branch.prompt_files_folder
+    to = self.branch.prompt_files_folder(identifier)
     remote_dir = DROPBOX.home+to
-    if (Dir.exists? DROPBOX.home)
+    remote_file = remote_dir+"/#{file.original_filename}"
+    
+    # not use local dropbox
+    if 1==0 && (Dir.exists? DROPBOX.home)
       # dropbox client is installed
       # have to be sure the dropbox client is running
       if !Dir.exists?(remote_dir)
          FileUtils.mkdir_p remote_dir
       end
-      FileUtils.copy file.tempfile.path, remote_dir
+      FileUtils.copy file.tempfile.path, remote_file
       self.content_type=file.content_type
       self.dropbox_file=to+"/"+ file.original_filename
       self.save!
-      logger.info "Copied #{file.tempfile.path} to #{remote_dir}"
+      logger.info "Copied #{file.tempfile.path} to #{remote_file}"
     else    
       client = self.get_dropbox_session
       if !!client
@@ -74,7 +79,7 @@ class Template < ActiveRecord::Base
   def save_recording_to_dropbox(data, filename)
       client = self.get_dropbox_session
       if !!client
-        to = self.dropbox_dir
+        to = self.branch.prompt_files_folder
         begin
           client.mkdir to
         rescue
@@ -116,6 +121,10 @@ class Template < ActiveRecord::Base
     link
   end
 
+  def identifier
+    !!voting_session ? voting_session.id : nil
+  end
+  
   def name_map(name)
     name.titleize
   end

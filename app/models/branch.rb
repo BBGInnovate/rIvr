@@ -67,7 +67,8 @@ class Branch< ActiveRecord::Base
     read_attribute(:ivr_call_number) || 'undefined'
   end
   
-  # folder stores voice prompts files
+  
+  # folder where to upload voice prompts files
   def prompt_files_folder(session_name=nil)
     if !session_name
       session_name = active_forum_session.name
@@ -75,7 +76,7 @@ class Branch< ActiveRecord::Base
     folder = "/bbg/#{self.name}/#{self.forum_type}/#{session_name}"  
     folder += "/prompts"
   end
-  # folder stores callers' messages
+  # folder where to upload callers' messages
   def entry_files_folder(session_name=nil)
     if !session_name
       session_name = active_forum_session.name
@@ -232,7 +233,7 @@ class Branch< ActiveRecord::Base
             where(:voting_session_id=>proxy_association.owner.active_forum_session.id)
       select("id, name, dropbox_file, voting_session_id").where(["id in (?)", res.map{|t| t.id}])
     end
-    def original_identifier
+    def original_identifier_to_be_deleted
       coll = latest
       intro = coll.select{|t| t.name=='introduction'}
       if intro.size == 0
@@ -257,7 +258,7 @@ class Branch< ActiveRecord::Base
       end
     end
 
-    def original_identifier
+    def original_identifier_to_be_deleted
       coll = latest
       intro = coll.select{|t| t.name=='introduction'}
       if intro.size == 0
@@ -647,9 +648,9 @@ class Branch< ActiveRecord::Base
     s = OpenStruct.new
     s.name = 'None'
     s.id = nil
-    if (self.forum_type=='vote' || self.forum_type=='bulletin')
+    # if (self.forum_type=='vote' || self.forum_type=='bulletin')
       s = self.voting_sessions.where(:is_active=>true).last || s
-    end
+    # end
     s
   end
   def identifier(identifier=nil)
@@ -747,28 +748,22 @@ class Branch< ActiveRecord::Base
       if self.feed_source == 'static_rss'
         items = Entry.parse_feed(self.feed_url, limit)
       else
-        dir = "#{DROPBOX.home}#{self.entry_files_folder}"
-        FileUtils.mkdir_p(dir) if !Dir.exists?(dir)
-        # arr = Dir.entries(dir).
-        #    select{|f| !File.directory? f}
         arr = [SortedEntry.where(:branch_id=>self.id, :forum_session_id=>nil).last].compact
         arr.each do |f|
-          item = OpenStruct.new
-          item.public_url = self.entry_files_folder + "/"+f.dropbox_file
-          items << item
+          if f.entry.is_active
+            item = OpenStruct.new
+            item.public_url = f.dropbox_dir + "/"+f.dropbox_file
+            items << item
+          end
         end
       end
     elsif self.forum_type=='vote' || self.forum_type=='bulletin'
       vs = self.active_forum_session
-      # arr = entries.where(["forum_session_id=? AND is_private=0", vs.id]).
-      #   select("dropbox_file").all
-         
       arr = SortedEntry.get(self.id, vs.id)
       arr.each do |f|
-        file_pathname  = DROPBOX.home + self.entry_files_folder + "/"+f.dropbox_file
-        if File.exists? file_pathname
+        if (f.entry.dropbox_file_exists?)
           item = OpenStruct.new
-          item.public_url = self.entry_files_folder + "/"+f.dropbox_file
+          item.public_url = f.dropbox_dir + "/" + f.dropbox_file
           items << item
         else
           puts "Not exists! #{file_pathname}"
@@ -800,25 +795,26 @@ class Branch< ActiveRecord::Base
     end
   end
   
-  def upload_to_dropbox(file)
+  def upload_to_dropbox(file, identifier=nil)
     to = self.entry_files_folder
     remote_dir = DROPBOX.home+to
-    
+    remote_file = remote_dir + "/" + file.original_filename
     entry = Entry.create :branch_id=>self.id, :forum_type=>'report',
-            :dropbox_dir => self.entry_files_folder,
+            :dropbox_dir => self.entry_files_folder(identifier),
             :dropbox_file=>file.original_filename,
             :mime_type=>file.content_type,
             :is_private=>false,
-            :is_active=>true
-            
-    if (Dir.exists? DROPBOX.home)
+            :is_active=>false
+       
+    # not use local dropbox     
+    if 1==0 && (Dir.exists? DROPBOX.home)
       # dropbox client is installed
       # have to be sure the dropbox client is running
       if !Dir.exists?(remote_dir)
          FileUtils.mkdir_p remote_dir
       end
-      FileUtils.copy file.tempfile.path, remote_dir
-      logger.info "Copied #{file.tempfile.path} to #{remote_dir}"
+      FileUtils.copy file.tempfile.path, remote_file
+      logger.info "Copied #{file.tempfile.path} to #{remote_file}"
     else    
       client = self.get_dropbox_session
       if !!client

@@ -9,7 +9,7 @@ class Entry< ActiveRecord::Base
   has_one :soundkloud, :foreign_key=>"entry_id"
   belongs_to :branch
   has_one :sorted_entry
-  
+  belongs_to :voting_session, :foreign_key=>"forum_session_id"
   cattr_accessor :request_url
   
   HUMANIZED_COLUMNS = {:size=>"Size (bytes)"}
@@ -20,31 +20,18 @@ class Entry< ActiveRecord::Base
   end
 
   def dropbox_file_exists?
-#    if self.forum_type=='bulletin'  
-#      f = "#{DROPBOX.home}/bbg/#{self.branch.name}/#{self.forum_type}/#{self.dropbox_file}"
-#    else
-      f = "#{DROPBOX.home}#{self.branch.entry_files_folder}/#{self.dropbox_file}"
-#      f2 = "#{DROPBOX.home}/bbg/#{self.branch.name.downcase}/#{self.dropbox_file}"
-#    end
-    return File.exists?(f) # || File.exists?(f2)
-    
-#    dir = "/system/#{self.branch.name.downcase}"
-#    system_dir = "#{Rails.root}/public/#{dir}"
-#    if !File.exists?("#{system_dir}")
-#      FileUtils.mkdir_p "#{system_dir}"
-#    end
-#    url = "#{dir}/#{self.dropbox_file}"
-#    system_path = "#{Rails.root}/public#{url}"
-#    if !File.exists?("#{system_path}")
-#      raw_content = dropbox_file_content
-#      if !!raw_content
-#        f = File.open("#{system_path}", 'wb') {|f| f.write(raw_content) }
-#        url = "#{dir}/#{self.dropbox_file}"
-#      else
-#        url = nil
-#      end
-#    end
-#    url
+    filename = "#{self.dropbox_dir}/#{self.dropbox_file}"
+    f = "#{DROPBOX.home}#{filename}"
+    res = File.exists?(f)
+    if !res
+      client = self.get_dropbox_session
+      begin
+        res = client.metadata filename
+      rescue
+        res = false
+      end
+    end
+    return res
   end
   
   # return hash table key=branch_id, value=number of messages
@@ -369,7 +356,7 @@ class Entry< ActiveRecord::Base
   def checked?
      sorted_entry ? sorted_entry.checked? : false
   end
-   
+  
 protected
 
   def dropbox_file_content

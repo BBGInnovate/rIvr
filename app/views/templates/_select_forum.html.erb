@@ -2,10 +2,12 @@
      str = "Bulletin Board"
    elsif template.kind_of?(Vote)
      str = "Vote/Poll"
+   elsif template.kind_of?(Report)
+     str = "Report"
    end %>
 <div class="title">Enter/Select title for this <%= str %></div>		
-<!-- <input type="text" name="<%= template.class.name.downcase%>[identifier]" value="<%= template.identifier %>" /> -->
-<% options = VotingSession.all.map{|b| [b.name, b.name]}   
+<% options = VotingSession.where(:branch_id=>template.branch_id).map{|b| [b.name, b.name]}
+   options.unshift ["None","None"]
    id = template.identifier||template.branch.identifier
 %>
 <%= select_tag "#{template.class.name.downcase}[identifier]", options_for_select(options, id), :style=>'' %>

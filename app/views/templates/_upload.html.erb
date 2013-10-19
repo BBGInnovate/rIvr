@@ -12,9 +12,9 @@
   <div class='notice'>
     <%= flash[:notice] %>
   </div>
-  <% if template.kind_of?(Vote)||template.kind_of?(Bulletin) %>
-    	<%= render :partial=>'select_forum', :locals=>{:template=>@template} %>
-  <% end %>
+  <%# if template.kind_of?(Vote)||template.kind_of?(Bulletin) %>
+    <%= render :partial=>'select_forum', :locals=>{:template=>@template} %>
+  <%# end %>
   <p></p>
   <h3><% 
       saved = template.is_active ? ' and saved' : ''

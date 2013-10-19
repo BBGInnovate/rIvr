@@ -3,7 +3,7 @@ require 'open-uri'
 require 'builder'
 
 class Bulletin < Template
-  belongs_to :voting_session
+#  belongs_to :voting_session
   def identifier
     # if this template is saved before
     if self.voting_session
