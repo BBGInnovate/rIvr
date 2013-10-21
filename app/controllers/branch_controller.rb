@@ -105,7 +105,7 @@ class BranchController < ApplicationController
         if 1==1 || !vs.is_active
           vs.is_active = true
           vs.save
-          text="Forum : #{vs.name} is activated."
+          text="Forum : #{vs.name} is activated and forum_feed.xml is generated."
         else
           # text = "Forum : #{vs.name} is already active."
         end
