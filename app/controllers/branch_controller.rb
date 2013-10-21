@@ -136,9 +136,14 @@ class BranchController < ApplicationController
         if uploaded
            text = "#{sound_file.original_filename} is uploaded"
            render :text=>text, :layout=>false,:content_type=>'application/text'
+           return
+        else
+          text="Error in uploading report audio file"
+          render :text=>text, :layout=>false,:content_type=>'application/text'
         end
-      else # from save
-        
+      else
+        text="No sound file provided"
+        render :text=>text, :layout=>false,:content_type=>'application/text'
       end
       
     end

@@ -6,7 +6,7 @@
      str = "Report"
    end %>
 <div class="title">Enter/Select title for this <%= str %></div>		
-<% options = VotingSession.where(:branch_id=>template.branch_id).map{|b| [b.name, b.name]}
+<% options = VotingSession.where(:branch_id=>template.branch_id).map{|b| [b.name, b.id]}
    options.unshift ["None","None"]
    id = template.identifier||template.branch.identifier
 %>

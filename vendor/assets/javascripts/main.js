@@ -763,8 +763,8 @@ var reportUpload = {
 		   var identifier = $('.custom-combobox-input').val();
 	      $("[id*='_identifier']").append('<option value="'+identifier +'" selected="selected">'+identifier+'</option>');
          var temp_name = $("[id*='_name']").attr('value');
-         var id = $("[id*='_name']").attr('id').match(/(\w+)_name/);
-         var forum_type = id[1];
+         //var id = $("[id*='_name']").attr('id').match(/(\w+)_name/);
+         //var forum_type = id[1];
 			var options = {
 				beforeSubmit : function(arr, $form, options) {
 				$('#report-popup').css("cursor", "progress");

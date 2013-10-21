@@ -70,7 +70,7 @@ class TemplatesController < ApplicationController
 
         flash[:notice] = "#{@template.name_map(@template.name)} file " +
         File.basename(@template.dropbox_file) +
-        " was uploaded to temperary folder"
+        " was uploaded"
       end
       
     # this is not called. replaced by VotingSession#activate_templates

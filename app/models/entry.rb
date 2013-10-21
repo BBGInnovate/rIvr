@@ -5,7 +5,9 @@ require 'builder'
 class Entry< ActiveRecord::Base
   before_save :add_properties
   after_destroy :delete_from_dropbox
-  before_save :copy_to_public
+  
+  # before_save :copy_to_public
+  
   has_one :soundkloud, :foreign_key=>"entry_id"
   belongs_to :branch
   has_one :sorted_entry
@@ -75,18 +77,14 @@ class Entry< ActiveRecord::Base
       self.save
     end
   end
+  
   def to_dropbox_public
     # Public/#{self.branch} folder will be created if not exixts
     ds = DropboxSession.last
     if !!ds
       client = get_dropbox_session
-      if self.forum_type=='bulletin'
-        to = "Public/#{self.branch.name}/#{self.forum_type}/#{self.dropbox_file}"
-        file_url = DROPBOX.public_dir + "/#{self.branch.name}/#{self.forum_type}/#{self.dropbox_file}"
-      else
-        to = "Public/#{self.branch.name}/#{self.dropbox_file}"
-        file_url = DROPBOX.public_dir + "/#{self.branch.name}/#{self.dropbox_file}"
-      end
+      to = "Public#{self.dropbox_dir}/#{self.dropbox_file}"
+      file_url = DROPBOX.public_dir + "#{self.dropbox_dir}/#{self.dropbox_file}"
       from = file_path
       begin
         self.public_url = file_url
@@ -97,7 +95,7 @@ class Entry< ActiveRecord::Base
         if msg.kind_of? Dropbox::FileNotFoundError
           self.public_url = nil
           self.is_private = true
-          self.errors[:base] << "Dropbox file not found: /#{self.branch.name}/#{self.dropbox_file}. You should delete this record." 
+          self.errors[:base] << "Dropbox file not found: #{self.dropbox_dir}/#{self.dropbox_file}. You should delete this record." 
         end
         logger.debug "to_dropbox_public Error copy #{from} #{to} : #{msg}"
         return false
@@ -108,14 +106,9 @@ class Entry< ActiveRecord::Base
     # return if !self.public_url
     client = Soundcloud.new(:access_token => SOUNDCLOUD.access_token)
     begin
-      # :duration=>self.length ? self.length*1000 : nil,
-#      if !!self.public_url 
-#        content = open(self.public_url)
-#      else
-        raw_content = dropbox_file_content
-        f = File.open('/tmp/'+self.dropbox_file, 'wb') {|f| f.write(raw_content) }
-        content_file = File.open('/tmp/'+self.dropbox_file, 'rb')
-#      end
+      raw_content = dropbox_file_content
+      f = File.open('/tmp/'+self.dropbox_file, 'wb') {|f| f.write(raw_content) }
+      content_file = File.open('/tmp/'+self.dropbox_file, 'rb')
       track = client.post('/tracks', :track=>{
         :title => soundcloud.title,
         :description=>soundcloud.description,
@@ -142,18 +135,13 @@ class Entry< ActiveRecord::Base
     end
   end
   
-  def copy_to_public
-    # Public/#{self.branch} folder will be created if not exixts
+  # deplicated
+  def Xcopy_to_public
     ds = DropboxSession.last
     if !!ds
       client = get_dropbox_session
-      if self.forum_type=='bulletin'
-        to = "Public/#{self.branch.name}/#{self.forum_type}/#{self.dropbox_file}"
-        file_url = DROPBOX.public_dir + "/#{self.branch.name}/#{self.forum_type}/#{self.dropbox_file}"
-      else
-        to = "Public/#{self.branch.name}/#{self.dropbox_file}"
-        file_url = DROPBOX.public_dir + "/#{self.branch.name}/#{self.dropbox_file}"
-      end
+      to = "Public#{self.dropbox_dir}/#{self.dropbox_file}"
+      file_url = DROPBOX.public_dir + "#{self.dropbox_dir}/#{self.dropbox_file}"
       from = file_path
       begin
         if !self.is_private
@@ -169,14 +157,16 @@ class Entry< ActiveRecord::Base
         if msg.kind_of? Dropbox::FileNotFoundError
           self.public_url = nil
           self.is_private = true
-          self.errors[:base] << "Dropbox file not found: /#{self.branch.name}/#{self.dropbox_file}. You should delete this record." 
+          self.errors[:base] << "Dropbox file not found: /#{self.dropbox_dir}/#{self.dropbox_file}. You should delete this record." 
         end
         logger.debug "copy_to_public Error copy #{from} #{to} : #{msg}"
         # do nothing
       end
     end
   end
-  def copy_to_soundcloud(soundcloud)
+  
+  # deplicated
+  def Xcopy_to_soundcloud(soundcloud)
     return if !self.public_url
     client = Soundcloud.new(:access_token => SOUNDCLOUD.access_token)
     begin
@@ -216,7 +206,8 @@ class Entry< ActiveRecord::Base
   end
   
   def add_properties
-    self.dropbox_dir= self.branch.entry_files_folder
+    # this only used when create entry from client api call
+    self.dropbox_dir= self.branch.entry_files_folder if !self.dropbox_dir
   end
   
   def delete_from_dropbox
@@ -366,19 +357,13 @@ protected
       dropbox_session = Dropbox::Session.new(DROPBOX.consumer_key, DROPBOX.consumer_secret)
       dropbox_session.set_access_token ds.token, ds.secret
       dropbox_session.mode = :dropbox
-      # mime_type posted by IVR system may not be correct
-      if self.forum_type=='bulletin'
-        dir = "/bulletin"
-      else
-        dir = ''
-      end
       begin
-        meta = dropbox_session.metadata("bbg/#{self.branch.name}#{dir}/#{self.dropbox_file}")
+        meta = dropbox_session.metadata("#{self.dropbox_dir}/#{self.dropbox_file}")
         myentry = Entry.find_by_id self.id  # self is a readonly record
         myentry.mime_type = meta.mime_type
         myentry.size = meta.bytes
         myentry.save
-        content = dropbox_session.download("bbg/#{self.branch.name}#{dir}/#{self.dropbox_file}")
+        content = dropbox_session.download("#{self.dropbox_dir}/#{self.dropbox_file}")
       rescue
         puts "ERROR dropbox_file_content #{$!}"
       end

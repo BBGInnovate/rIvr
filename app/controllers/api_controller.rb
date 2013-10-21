@@ -73,7 +73,7 @@ protected
     logger.warn "VOTE ATTR #{attr.inspect}"
     # branch_id, identifier, vote_result, caller_id, session_id vote (1,0,-1)
     attr.delete(:identifier) # TODO use this to get voting_session_id ?
-    attr[:voting_session_id]=branch.votes.latest[0].voting_session_id
+    # attr[:voting_session_id]=branch.votes.latest[0].voting_session_id
     VoteResult.create(attr)
   end
   

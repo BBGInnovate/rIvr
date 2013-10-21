@@ -796,16 +796,25 @@ class Branch< ActiveRecord::Base
   end
   
   def upload_to_dropbox(file, identifier=nil)
-    to = self.entry_files_folder
+    to = self.entry_files_folder(identifier)
+    
+    if identifier
+      vs = VotingSession.find_by_name identifier    
+    else
+      vs = active_forum_session
+    end
+
     remote_dir = DROPBOX.home+to
     remote_file = remote_dir + "/" + file.original_filename
     entry = Entry.create :branch_id=>self.id, :forum_type=>'report',
-            :dropbox_dir => self.entry_files_folder(identifier),
+            :dropbox_dir => to,
             :dropbox_file=>file.original_filename,
             :mime_type=>file.content_type,
+            :forum_session_id=>vs.id,
             :is_private=>false,
             :is_active=>false
        
+
     # not use local dropbox     
     if 1==0 && (Dir.exists? DROPBOX.home)
       # dropbox client is installed
@@ -820,7 +829,9 @@ class Branch< ActiveRecord::Base
       if !!client
         begin
           client.mkdir to
-        rescue
+        rescue Dropbox::FileExistsError
+          # it is ok
+        rescue 
           logger.warn "Error: upload_to_dropbox : #{$!}"
           entry.destroy
           return false
@@ -843,7 +854,9 @@ class Branch< ActiveRecord::Base
     ss = SortedEntry.where(:branch_id =>self.id, :forum_session_id=>nil).order("created_at ASC")
     # delete files to make room for new file        
     if ss.size > self.feed_limit
-      ss[0..(ss.size-self.feed_limit-1)].destroy
+      ss[0..(ss.size-self.feed_limit-1)].each do |s| 
+        s.destroy
+      end
     end
     SortedEntry.create :branch_id=>self.id,
             :entry_id=>entry.id,
