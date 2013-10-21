@@ -222,7 +222,7 @@ class Branch< ActiveRecord::Base
   has_many :reports do
     def latest(active=true)
       res = select("max(id) as id").group(:name).where(:is_active=>active).
-          where(:voting_session_id=>nil)
+          where(:voting_session_id=>proxy_association.owner.active_forum_session.id)
       select("id, name, dropbox_file, voting_session_id").where(["id in (?)", res.map{|t| t.id}])
     end
   end

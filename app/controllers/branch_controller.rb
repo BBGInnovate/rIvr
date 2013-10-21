@@ -27,7 +27,7 @@ class BranchController < ApplicationController
     if @branch.forum_type
       tmp = @branch.send "#{@branch.forum_type.pluralize}"
       if tmp.latest.size == 0
-        hint = "You must upload the voice forum audio files by clicking Edit Forum link to the left"
+        # hint = "You must upload the voice forum audio files by clicking Edit Forum link to the left"
       end
     end
 #    audios = render_to_string :partial=>'shared/audio_player', :formats=>["html"]
