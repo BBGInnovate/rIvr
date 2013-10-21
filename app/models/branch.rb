@@ -863,7 +863,7 @@ class Branch< ActiveRecord::Base
             :dropbox_file=>entry.dropbox_file,
             :created_at =>entry.created_at
     
-    generate_forum_feed_xml
+   # generate_forum_feed_xml
 
   end
 
