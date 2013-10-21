@@ -34,7 +34,12 @@
 				<h3>&nbsp;</h3>
 				<p>
 				<label for="branch">Branch:</label>
-				<input name="branch" type="text" placeholder="Branch">
+				<% options = Branch.where(:is_active=>true).map{|b| [b.name,b.id]}
+				   id = 0 %>
+				<%= select_tag "branch", options_for_select(options, id),:multiple=>'multiple', :style=>'' %>
+
+				<!-- input name="branch" type="text" placeholder="Branch" -->
+				
 				<label for="start_date">&nbsp;Location:</label>
 				<input name="location" type="text" placeholder="Location">
 				<input name="search" type="button" value="Filter">

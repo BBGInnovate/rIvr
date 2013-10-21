@@ -254,7 +254,7 @@ var searchEntry = {
       });
       // for search Filter link
       $("body").on('click', "input[name='search']", function(e) {
-        searchEntry.parent_id = "search-results-id";
+        searchEntry.parent_id = "search-results";
         data = searchEntry.getData();
         var url = "/moderation/search"
         jQuery.get(url, data, searchEntry.update, 'html');
@@ -265,13 +265,14 @@ var searchEntry = {
       	$(searchEntry.clicked).css({
         "cursor":"pointer"
       });
+      
       $('#'+searchEntry.parent_id).html(data);
     },
     getData : function() {
       var start_date = $("#start_date").val();
       var end_date = $("#end_date").val();
       var forum_type = $("#forum_type").val();
-      var branch = $('input[name="branch"]').val();
+      var branches = $('select[name="branch"]').val();
       var location = $('input[name="location"]').val();
       var op = $('input:radio[name="moderation"]:checked').val();
       var data = {};
@@ -283,8 +284,12 @@ var searchEntry = {
         data.end_date = end_date;
       if (forum_type!=null && forum_type.length>0)
         data["forum_type[]"] = forum_type;
-      if (branch.length>0)
-        data.branch = branch;
+      if (branches.length>0)
+        var val = [];
+        for(var i=0; i< branches.length; i++) {
+           val[i] = branches[i]
+        }
+        data["branch[]"] = val;
       if (location.length>0)
         data.location = location;
       return data;

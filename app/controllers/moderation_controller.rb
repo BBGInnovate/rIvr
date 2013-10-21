@@ -151,10 +151,10 @@ class ModerationController < ApplicationController
       @entries_query = @entries_query.where(["entries.forum_type in (?)", forum_type])
     end
     if !!branch
-       @entries_query = @entries_query.where(["branches.name like ? ", branch])
+       @entries_query = @entries_query.where(["branches.id in (?) ", branch])
        @sorted = []
        # get for Report type when branch is specified
-       branches = Branch.where(["name like ? ", branch])
+       branches = Branch.where(["id in (?) ", branch])
        branches.all.each do |b|
          @sorted << SortedEntry.get(b.id, b.active_forum_session.id)
        end
