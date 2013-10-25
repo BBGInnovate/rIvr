@@ -9,6 +9,11 @@ class Branch< ActiveRecord::Base
   has_one :health
   belongs_to :country, :foreign_key=>"country_id"
 #  include HealthHelper
+
+  def friendly_name
+    name.parameterize
+  end
+  
   def last_activity
     events.where(["action_id != ?", Action.ping_server]).last.created_at.to_s(:db) rescue 'N/A'
   end
@@ -704,7 +709,7 @@ class Branch< ActiveRecord::Base
     dropbox_branch = "#{DROPBOX.home}/bbg/#{self.name}"
     remote_file = "#{dropbox_branch}/#{File.basename(local_file)}"
 
-    if !Branch.xml_equal?(local_file, remote_file)
+    if !Branch.xml_equal?(remote_file, local_file)
       # add delete_old_files node
       builder = Nokogiri::XML::Builder.new do
         delete_old_files 1
@@ -724,20 +729,20 @@ class Branch< ActiveRecord::Base
         puts "Copied #{local_file} to #{remote_file}"
       else
         begin
-        if !client
-          client = get_dropbox_session
+          if !client
+            client = get_dropbox_session
+          end
+          to = "bbg/#{self.name}/"
+          client.upload local_file, to
+          puts "Uploaded #{local_file} to #{to}"
+        rescue Exception=>e
+          puts "Error generate_xml client.upload(#{local_file}, #{to}) #{e.message}"
         end
-        to = "bbg/#{self.name}/"
-        client.upload local_file, to
-        puts "Uploaded #{local_file} to #{to}"
-      rescue Exception=>e
-        puts "Error generate_xml client.upload(#{local_file}, #{to}) #{e.message}"
-      end
       end
     else
       puts "#{to}#{File.basename(local_file)} unchanged"
-      FileUtils.copy local_file, remote_file
-      puts "Copied #{local_file} to #{remote_file}"
+      # FileUtils.copy local_file, remote_file
+      # puts "Copied #{local_file} to #{remote_file}"
     end
   end
   def listen_messages(limit=10)

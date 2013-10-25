@@ -78,6 +78,13 @@ class ModerationController < ApplicationController
     if (params[:syndicate].to_i == 1) || params[:soundcloud]
       upload_soundlcloud
       render :action=>'soundcloud', :layout=>false, :content_type=>'text' and return
+    elsif (params[:akamai].to_i == 1)
+      if ftp_akamai
+        txt="{\"error\":\"success\",\"message\":\"Uploaded to Akamai\"}"
+      else
+        txt="{\"error\":\"error\",\"message\":\"#{@entry.errors.full_messages.first}\"}"
+      end
+      render :text=>txt,:layout=>false, :content_type=>'text' and return
     elsif params[:publish].to_i == 1
       if publish_dropbox
         @entry.save
@@ -100,6 +107,10 @@ class ModerationController < ApplicationController
       txt="{\"error\":\"error\",\"message\":\"Not know what to do \"}"
       render :text=>txt,:layout=>false, :content_type=>'text' and return
     end
+  end
+  
+  def ftp_akamai
+    @entry.ftp_akamai
   end
   
   def publish_dropbox

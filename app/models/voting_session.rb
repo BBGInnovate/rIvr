@@ -11,6 +11,10 @@ class VotingSession< ActiveRecord::Base
     generate_forum_feed_xml
   end
   
+  def friendly_name
+    name.parameterize
+  end
+  
   protected
   def generate_forum_feed_xml(client=nil)
     if self.is_active

@@ -15,8 +15,9 @@ To save the order, click the checkbox of the items and click Save
         <th>Message</th>
         <th><a id="branches.name">Branch</a></th>
         <th><a id="entries.created_at">Date</a></th>
-        <th></th>
-        <th></th>
+        <th>Dropbox</th>
+        <th>SoundCloud</th>
+        <th>Akamai</th>
         <th></th>
         <th><a id="countries.name">Country/Location</a></th>
         <th><a id="branches.contact">Contact</a></th>
@@ -25,37 +26,63 @@ To save the order, click the checkbox of the items and click Save
 <tbody>
 <% @results.each do |e| %>
 <% 
-   eid = e.kind_of?(Entry) ? e.id : e.entry_id
-   title1 = !e.is_private ? 'Message is public' : 'Make Dropbox file public' 
+   if e.kind_of?(Entry)
+     entry = e
+   else
+     entry = e.entry
+   end
+   eid = entry.id
+   if entry.public_url
+     publish="<a href='#{entry.public_url}' onclick=\"OpenWin('#{entry.public_url}');return  false;\">Dropbox</a>".html_safe
+   else
+     publish = "<a id='P#{eid}' data-url='/moderation/#{eid}/edit/?publish=1'>Publish</a>".html_safe
+   end
+
+   if entry.soundkloud
+     syndicate = "<a href='#{entry.soundkloud.url}' onclick=\"OpenWin('#{entry.soundkloud.url}');return  false;\">SoundCloud</a>".html_safe
+   else
+     syndicate="<a id='S#{eid}' data-url='/moderation/#{eid}/edit/?syndicate=1'>Syndicate</a>".html_safe
+   end
+   if entry.akamai_url
+     akamai="<a href='#{entry.akamai_url}' onclick=\"OpenWin('#{entry.akamai_url}');return  false;\">Akamai</a>".html_safe
+   else
+     akamai = "<a id='P#{eid}' data-url='/moderation/#{eid}/edit/?akamai=1'>Akamai</a>".html_safe
+   end
+   
+   title1 = !entry.is_private ? 'Message is public' : 'Make Dropbox file public' 
    title1 = "#{eid} #{title1}"
-   title2 = !!e.soundkloud ? 'Message is in SoundCloud' : 'Syndicate Dropbox file to SoundCloud' 
+   title2 = !!entry.soundkloud ? 'Message is in SoundCloud' : 'Syndicate Dropbox file to SoundCloud' 
+   title3 = entry.akamai_url ? 'Message is in Akamai' : 'FTP to Akamai' 
 %>
 <tr id="<%= eid %>">
    <td>
-     <input type="checkbox" id="M<%= eid %>" value="" <%= 'checked' if e.checked? %> />
+     <input type="checkbox" id="M<%= eid %>" value="" <%= 'checked' if entry.checked? %> />
    </td>
    <td>
-     <% if e.dropbox_file_exists? %>
+     <% if entry.dropbox_file_exists? %>
       <a id='<%=eid%>' class="audio2 {ogg:'/entries/<%=eid%>/play',autoplay:false, downloadable:false,inLine:true}"
-       href='/entries/<%=eid%>/play'><%= e.dropbox_file %></a>
-       <a target="_blank" title="Download <%= e.dropbox_file %>" href='/entries/<%=eid%>/play'>
+       href='/entries/<%=eid%>/play'><%= entry.dropbox_file %></a>
+       <a target="_blank" title="Download <%= entry.dropbox_file %>" href='/entries/<%=eid%>/play'>
         Download
        </a>
      <% else %>
-     <%= e.dropbox_file %> missing
+     <%= entry.dropbox_file %> missing
      <% end %>
    </td>
    <td>
-      <%= e.branch.name %>
+      <%= entry.branch.name %>
    </td>
    <td>
-      <%= e.created_at.to_s(:db) %>
+      <%= entry.created_at.to_s(:db) %>
    </td>
 	 <td title="<%= title1 %>" class="publish-syndicate">
-      <a id='P<%= eid %>' data-url="/moderation/<%= eid %>/edit/?publish=1">Publish</a>
+	   <%= publish %>
    </td>
    <td title="<%= title2 %>" class="publish-syndicate">
-      <a id='S<%= eid %>' data-url="/moderation/<%= eid %>/edit/?syndicate=1">Syndicate</a>
+      <%= syndicate %>
+   </td>
+   <td title="<%= title3 %>" class="publish-syndicate">
+      <%= akamai %>
    </td>
    <% if e.is_active == true %>
    <td title="Delete this message" class="publish-syndicate">
@@ -67,10 +94,10 @@ To save the order, click the checkbox of the items and click Save
    </td>
    <% end %>
    <td>
-      <%= e.branch.country.name %>
+      <%= entry.branch.country.name %>
    </td>
    <td>
-      <%= e.branch.contact %>
+      <%= entry.branch.contact %>
    </td>
 </tr>
 <% end %>

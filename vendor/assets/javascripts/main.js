@@ -223,7 +223,7 @@ var searchEntry = {
       		searchEntry.clicked = this;
       		$(this).css({
           "cursor":"wait"
-        });
+         });
       		data = searchEntry.getData();
       		data.order=order;
         url = 'moderation/search';
@@ -254,7 +254,11 @@ var searchEntry = {
       });
       // for search Filter link
       $("body").on('click', "input[name='search']", function(e) {
+      	  $(this).css({
+          "cursor":"wait"
+        });
         searchEntry.parent_id = "search-results";
+        searchEntry.clicked = this;
         data = searchEntry.getData();
         var url = "/moderation/search"
         jQuery.get(url, data, searchEntry.update, 'html');
@@ -1132,6 +1136,10 @@ function getwith(to, options) {
 	document.body.removeChild(myForm);
 }
 
+function OpenWin(url) {
+	specs = "";
+   window.open(url,'_blank',specs, false);
+}
 // used in _google_map.html.erb
 function SaveBbgMap(lat, lng)
 {

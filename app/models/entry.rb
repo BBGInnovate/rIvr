@@ -1,8 +1,12 @@
 require 'dropbox'
 require 'open-uri'
 require 'builder'
-
+require 'net/ftp'
 class Entry< ActiveRecord::Base
+  @@ftp = nil
+  
+  alias_attribute :forum_session, :voting_session
+   
   before_save :add_properties
   after_destroy :delete_from_dropbox
   
@@ -48,7 +52,7 @@ class Entry< ActiveRecord::Base
   end
   
   def file_path
-    "/bbg/#{self.branch.name}/#{self.dropbox_file}"
+    "#{self.dropbox_dir}/#{self.dropbox_file}"
   end
 
   def to_label
@@ -85,7 +89,7 @@ class Entry< ActiveRecord::Base
       client = get_dropbox_session
       to = "Public#{self.dropbox_dir}/#{self.dropbox_file}"
       file_url = DROPBOX.public_dir + "#{self.dropbox_dir}/#{self.dropbox_file}"
-      from = file_path
+      from = self.dropbox_dir
       begin
         self.public_url = file_url
         content = client.copy(from, to)
@@ -348,6 +352,47 @@ class Entry< ActiveRecord::Base
      sorted_entry ? sorted_entry.checked? : false
   end
   
+  def self.akamai_connect
+    user = 'masset2'
+    pass = 'masset2!media'
+    @@ftp = Net::FTP.new('voiceofame2.upload.akamai.com', user, pass) if !@@ftp
+    @@ftp
+  end
+  
+  def ftp_akamai
+    localfile = DROPBOX.home + dropbox_dir + "/#{dropbox_file}"
+    if !File.exists?(localfile)
+       logger.error "NOT EXISTS ! #{localfile}"
+       return false
+    end
+    folders = ["/8475/MediaAssets2/bbg/ivr", self.branch.friendly_name, self.forum_session.friendly_name,
+      self.created_at.strftime("%Y"),self.created_at.strftime("%m")]
+    ftp = Entry.akamai_connect
+    
+    remote = folders.join("/")
+    folders.each{ |folder|
+      begin
+        ftp.chdir(folder)
+      rescue Net::FTPPermError, NameError => boom # it doesn't exist
+        ftp.mkdir(folder) 
+        ftp.chdir(folder) 
+        puts "pwd #{ftp.pwd}" 
+      end
+    }
+    begin
+       ftp.putbinaryfile(localfile, dropbox_file)
+       self.akamai_url = "http://www.voanews.com/MediaAssets2/bbg/ivr/" +
+          "#{self.branch.friendly_name}/#{self.forum_session.friendly_name}/" + 
+          "#{self.created_at.strftime('%Y')}/#{self.created_at.strftime('%m')}/" +
+          dropbox_file
+       self.save
+    rescue Net::FTPPermError, NameError => boom # it doesn't exist
+       puts "#{$!}"
+       return false
+    end
+    ftp.close
+    return self.akamai_url
+  end
 protected
 
   def dropbox_file_content
