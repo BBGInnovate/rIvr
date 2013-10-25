@@ -78,6 +78,8 @@ class ModerationController < ApplicationController
     if (params[:syndicate].to_i == 1) || params[:soundcloud]
       upload_soundlcloud
       render :action=>'soundcloud', :layout=>false, :content_type=>'text' and return
+    elsif (params[:playlist].to_i == 1)
+      render :action=>'soundcloud_playlist', :layout=>false, :content_type=>'text' and return
     elsif (params[:akamai].to_i == 1)
       if ftp_akamai
         txt="{\"error\":\"success\",\"message\":\"Uploaded to Akamai\"}"

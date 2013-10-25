@@ -101,7 +101,7 @@ class EntriesController < ApplicationController
       dropbox_session.set_access_token ds.token, ds.secret
       dropbox_session.mode = :dropbox
       # mime_type posted by IVR system may not be correct
-      f = "#{e.branch.entry_files_folder}/#{e.dropbox_file}"
+      f = "#{e.dropbox_dir}/#{e.dropbox_file}"
       meta = dropbox_session.metadata(f)
       e.mime_type = meta.mime_type
       e.size = meta.bytes

@@ -1,3 +1,4 @@
+<style></style>
 <div id="soundcloud-upload">
 	 <h2>Upload Dropbox Public File to SoundCloud</h2>
   <div id="result">
@@ -20,7 +21,7 @@
     </p>
     <p>
     <label class="subtle-genre" for="soundcloud_genre" title="Used as search filter">Genre</label>
-    <input id="soundcloud_genre" name="soundcloud[genre]" type="text" value="<%= @soundcloud.genre || @entry.dropbox_dir.sub("/",'-') %>" />
+    <input id="soundcloud_genre" name="soundcloud[genre]" type="text" value="<%= @soundcloud.genre || @entry.forum_session.name%>" />
     </p>
     <p>
     <label class="subtle-label" for="soundcloud_description">Description</label>

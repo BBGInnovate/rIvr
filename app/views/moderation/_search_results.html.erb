@@ -18,6 +18,7 @@ To save the order, click the checkbox of the items and click Save
         <th>Dropbox</th>
         <th>SoundCloud</th>
         <th>Akamai</th>
+        <th>Widget</th>
         <th></th>
         <th><a id="countries.name">Country/Location</a></th>
         <th><a id="branches.contact">Contact</a></th>
@@ -40,8 +41,10 @@ To save the order, click the checkbox of the items and click Save
 
    if entry.soundkloud
      syndicate = "<a href='#{entry.soundkloud.url}' onclick=\"OpenWin('#{entry.soundkloud.url}');return  false;\">SoundCloud</a>".html_safe
+     playlist="<a id='S#{eid}' data-url='/moderation/#{eid}/edit/?playlist=1'>Playlist</a>".html_safe
    else
      syndicate="<a id='S#{eid}' data-url='/moderation/#{eid}/edit/?syndicate=1'>Syndicate</a>".html_safe
+     palylist = ''   
    end
    if entry.akamai_url
      akamai="<a href='#{entry.akamai_url}' onclick=\"OpenWin('#{entry.akamai_url}');return  false;\">Akamai</a>".html_safe
@@ -83,6 +86,9 @@ To save the order, click the checkbox of the items and click Save
    </td>
    <td title="<%= title3 %>" class="publish-syndicate">
       <%= akamai %>
+   </td>
+   <td title="Get SoundCloud Playlist Widget" class="publish-syndicate">
+      <%= playlist %>
    </td>
    <% if e.is_active == true %>
    <td title="Delete this message" class="publish-syndicate">

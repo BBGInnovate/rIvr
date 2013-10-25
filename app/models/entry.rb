@@ -5,10 +5,10 @@ require 'net/ftp'
 class Entry< ActiveRecord::Base
   @@ftp = nil
   
-  alias_attribute :forum_session, :voting_session
+  # alias_attribute :forum_session, :voting_session
    
-  before_save :add_properties
-  after_destroy :delete_from_dropbox
+  before_create :add_properties
+  before_save :remove_properties
   
   # before_save :copy_to_public
   
@@ -82,6 +82,14 @@ class Entry< ActiveRecord::Base
     end
   end
   
+  def forum_session
+    s = OpenStruct.new
+    s.name = 'None'
+    s.friendly_name = 'None'
+    s.id = nil
+    voting_session || s
+  end
+  
   def to_dropbox_public
     # Public/#{self.branch} folder will be created if not exixts
     ds = DropboxSession.last
@@ -106,6 +114,7 @@ class Entry< ActiveRecord::Base
       end
     end
   end
+  
   def to_soundcloud(soundcloud)
     # return if !self.public_url
     client = Soundcloud.new(:access_token => SOUNDCLOUD.access_token)
@@ -127,6 +136,36 @@ class Entry< ActiveRecord::Base
       })
       content_file.close
       if track.id
+        playlist = nil
+        client.get('/me/playlists').each do |p|
+          if (p.title == self.forum_session.name)
+            playlist = p
+            break
+          end 
+        end
+        if !playlist
+          # create a playlist and add tracks to 
+          playlist = client.post('/playlists', :playlist => {
+            :title => self.forum_session.name,
+            :sharing => 'public',
+            :tracks => [{:id=>track.id}]
+          })
+        else
+          # add tracks to playlist
+          has_track = false
+          # playlist.tracks.each do |t|
+          #  if t.id == track.id
+          #    has_track = true
+          #    break
+          #  end
+          # end
+          if !has_track
+            playlist = client.put(playlist.uri, :playlist => {
+              :tracks => [{:id=>track.id}]
+            })
+          end
+        end
+        soundcloud.playlist_id = playlist.id
         soundcloud.track_id = track.id
         soundcloud.url = track.permalink_url
         soundcloud.entry_id = self.id
@@ -214,13 +253,23 @@ class Entry< ActiveRecord::Base
     self.dropbox_dir= self.branch.entry_files_folder if !self.dropbox_dir
   end
   
+  def remove_properties
+    if !self.is_active
+      delete_from_dropbox
+      delete_from_soundcloud
+      delete_from_akamai
+    end
+  end
+  
+  # only delete public entry
   def delete_from_dropbox
     s = get_dropbox_session
     begin
-      s.delete self.file_path
-      delete_from_soundcloud
+      self.update_attribute public_url, nil
+      to = "Public#{self.dropbox_dir}/#{self.dropbox_file}"
+      s.delete(to)
     rescue Exception => msg
-      logger.debug "#{msg}"
+      logger.info "#{msg}"
     end
   end
   def delete_from_soundcloud
@@ -230,13 +279,33 @@ class Entry< ActiveRecord::Base
         client.delete "/tracks/#{self.soundkloud.track_id}"
         self.soundkloud.destroy
       rescue Exception => msg
-        logger.debug "ERROR: delete_from_soundcloud #{self.soundkloud.url} #{msg}"
+        logger.info "ERROR: delete_from_soundcloud #{self.soundkloud.url} #{msg}"
+      end
+    end
+  end
+  def delete_from_akamai
+    if self.akamai_url
+      uri = URI.parse e.akamai_url
+      tmp=uri.path.split("/")
+      dir = tmp[0..(tmp.size-2)].join("/")
+      ftp = Entry.akamai_connect
+      begin
+        ftp.chdir "/8475"+dir
+        ftp.delete "/8475"+uri.path
+        self.update_attribute akamai_url,nil
+      rescue Exception => msg
+        logger.info "#{msg}"
       end
     end
   end
   
   def dropbox_dir
-     read_attribute(:dropbox_dir) || self.branch.entry_files_folder
+    dir = "/bbg/#{self.branch.name}/#{self.forum_type}/#{self.forum_session.name}/entries"
+    dir2 = read_attribute(:dropbox_dir)
+    if dir != dir2
+      self.update_attribute(:dropbox_dir, dir)
+    end
+    dir
   end
 
   def self.sync_dropbox
@@ -365,8 +434,11 @@ class Entry< ActiveRecord::Base
        logger.error "NOT EXISTS ! #{localfile}"
        return false
     end
-    folders = ["/8475/MediaAssets2/bbg/ivr", self.branch.friendly_name, self.forum_session.friendly_name,
-      self.created_at.strftime("%Y"),self.created_at.strftime("%m")]
+    folders = ["/8475/MediaAssets2/bbg/ivr", self.branch.friendly_name, 
+      self.forum_type,
+      self.forum_session.friendly_name,
+      self.created_at.strftime("%Y"),
+      self.created_at.strftime("%m")]
     ftp = Entry.akamai_connect
     
     remote = folders.join("/")
@@ -382,7 +454,7 @@ class Entry< ActiveRecord::Base
     begin
        ftp.putbinaryfile(localfile, dropbox_file)
        self.akamai_url = "http://www.voanews.com/MediaAssets2/bbg/ivr/" +
-          "#{self.branch.friendly_name}/#{self.forum_session.friendly_name}/" + 
+          "#{self.forum_type}/#{self.branch.friendly_name}/#{self.forum_session.friendly_name}/" + 
           "#{self.created_at.strftime('%Y')}/#{self.created_at.strftime('%m')}/" +
           dropbox_file
        self.save

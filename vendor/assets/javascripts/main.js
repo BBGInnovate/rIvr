@@ -397,6 +397,7 @@ var editHealth = {
 var loadSoundCloud = {
     entry_id : 0,
     modalId : 'modal-window',
+    modalHeight : 350,
     init : function() {
       $("body").on('click','.publish-syndicate a', function(e) {
         loadSoundCloud.entry_id=this.id;
@@ -404,13 +405,19 @@ var loadSoundCloud = {
           "cursor" : "wait"
         });
         var url= $(this).attr("data-url");
+        var myRe = /\?(\w+)=/;
+        var myArr = myRe.exec(url);
+        if (myArr[1] == 'playlist') {
+           loadSoundCloud.modalHeight = 250;
+        } else {
+        	  loadSoundCloud.modalHeight = 350;
+        }
+        	  
         if ( loadSoundCloud.entry_id.charAt(0) == 'P')
           jQuery.get(url, {}, loadSoundCloud.updated, 'html')
         else if ( loadSoundCloud.entry_id.charAt(0) == 'S')
           jQuery.get(url, {}, loadSoundCloud.change, 'html')
         else {
-        	  var myRe = /\?(\w+)=/;
-        	  var myArr = myRe.exec(url);
         	$('<div></div>').appendTo('body')
           .html('<div><h3>Are you sure you want to '+myArr[1]+' this message?</h3></div>')
           .dialog({
@@ -456,7 +463,7 @@ var loadSoundCloud = {
       });
       var o = jQuery('#'+loadSoundCloud.modalId)
       o.html(data);
-      Modal.open(loadSoundCloud.modalId, loadSoundCloud.entry_id);
+      Modal.open(loadSoundCloud.modalId, loadSoundCloud.entry_id, loadSoundCloud.modalHeight);
     },
     json : function(data) {
       $('.publish-syndicate a').css({
