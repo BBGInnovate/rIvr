@@ -5,6 +5,9 @@ To save the order, click the checkbox of the items and click Save
 </p>
 <%= submit_tag 'Disable Sorting', :id=>"enable", :class=>"btnAction", :onclick=>'sortTable.toggle();' %>
 <%= submit_tag 'Save', :id=>"moderate", :class=>"btnAction", :onclick=>'sortTable.showIds();' %>
+<% if @controller=='templates' %>
+  <%= submit_tag 'Cancel', :id=>"cancel", :class=>"btnAction" %>
+<% end %>
 <br/>
 <table id="search-results-id">
 <% if @results.size > 0 %>

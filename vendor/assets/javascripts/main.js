@@ -11,6 +11,7 @@ var Modal = {
 		open : function (modal_id, anchor_id, height) {
 			height = height || 360;
 	   // modal_id must have a child <style></style> for Modal.css to work
+	   // modal id must have a class helpPopUp for modal.css to work
 	   // Modal_id first child must define a width to Modal_id to figure out 
 	   // it's width
       // modal_id modal window placeholder id
@@ -720,6 +721,7 @@ var reportUpload = {
 			  url = '/templates/headline';
 			} else if (name == 'moderate') {
 			  $('#moderate-div').show();
+			  Modal.open("moderate-div", 'moderate', 400);
 			  $('#forum-upload').hide();
 			  return false;
 		  } else {
@@ -848,7 +850,7 @@ var reportUpload = {
 			$('#forum-upload, .forum-upload').show();
 		});
 		$(".template-popup").on('click', "#cancel", function(e) {
-			$('#forum-upload, .forum-upload').hide();
+			$('#forum-upload, .forum-upload, .helpPopUp').hide();
 			return false;
 		});
 		$("#report-popup").on('click', "#cancel-report", function(e) {

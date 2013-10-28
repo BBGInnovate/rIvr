@@ -8,8 +8,12 @@
 <div id="report-upload" class="helpPopUp" style="display:none;">
   <%= render :partial=>'upload_report' %>
 </div>
-<div id="moderate-div" class="float-left">
-  <%= render :partial=>'/shared/sortable' %>
+<div id="moderate-div" class="helpPopUp float-left">
+  <%#= render :partial=>'/shared/sortable' %>
+  <div style="width: 700px" class="template-popup">
+  <style></style>
+  <%= render :partial=>'/moderation/search_results' %>
+  </div>
 </div>
 <script>
   jQuery(document).ready(function () { 

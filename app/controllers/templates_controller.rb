@@ -12,6 +12,17 @@ class TemplatesController < ApplicationController
     if params[:result] && ['vote','poll'].include?(@branch.forum_type)
       @temp_partial = @temp_partial + "_result"
     end
+    if @branch.forum_type != 'report'
+      @moderated = SortedEntry.get(@branch.id, @branch.active_forum_session.id)
+    else
+      @moderated = []
+    end
+    @results = @moderated + @branch.entries.incomings
+    unless @results.kind_of?(Array)
+      @results = @results.page(p)
+    else
+      @results = Kaminari.paginate_array(@results).page(p)
+    end
   end
 
   # For upload voice prompt voice forum
