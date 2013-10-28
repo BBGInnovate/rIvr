@@ -34,6 +34,27 @@
   <% options = forum_options 
      id = @branch.forum_type %>
   <%= f.select :forum_type, options_for_select(options, id), :style=>'' %>
+  
+  <p></p>
+  <label for="akamai_user">Akamai user </label>
+  <%= f.text_field :akamai_user, :placeholder=>"", :value=>"#{@branch.akamai_user}" %>
+  <p></p>
+  <label for="akamai_pwd">Akamai Pwd </label>
+  <%= f.text_field :akamai_pwd, :placeholder=>"", :value=>"#{@branch.akamai_pwd}" %>
+  <p></p>
+  <label for="akamai_path">Akamai Path </label>
+  <%= f.text_field :akamai_path, :placeholder=>"", :value=>"#{@branch.akamai_path}" %>
+  
+  <p></p>
+  <label for="soundcloud_client_id">soundcloud_client_id </label>
+  <%= f.text_field :soundcloud_client_id, :placeholder=>"", :value=>"#{@branch.soundcloud_client_id}" %>
+  <p></p>
+  <label for="soundcloud_client_secret">Soundcloud Client_secret </label>
+  <%= f.text_field :soundcloud_client_secret, :placeholder=>"", :value=>"#{@branch.soundcloud_client_secret}" %>
+  <p></p>
+  <label for="soundcloud_access_token">soundcloud_Access Token </label>
+  <%= f.text_field :soundcloud_access_token, :placeholder=>"", :value=>"#{@branch.soundcloud_access_token}" %>
+  
   <!--
   <p></p>
   <%# id=@branch.feed_source

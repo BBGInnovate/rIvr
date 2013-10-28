@@ -117,7 +117,7 @@ class Entry< ActiveRecord::Base
   
   def to_soundcloud(soundcloud)
     # return if !self.public_url
-    client = Soundcloud.new(:access_token => SOUNDCLOUD.access_token)
+    client = Soundcloud.new(:access_token => (self.branch.soundcloud_access_token || SOUNDCLOUD.access_token))
     begin
       raw_content = dropbox_file_content
       f = File.open('/tmp/'+self.dropbox_file, 'wb') {|f| f.write(raw_content) }
@@ -275,7 +275,7 @@ class Entry< ActiveRecord::Base
   def delete_from_soundcloud
     if self.soundkloud
       begin
-        client = Soundcloud.new(:access_token => SOUNDCLOUD.access_token)
+        client = Soundcloud.new(:access_token => (self.branch.soundcloud_access_token || SOUNDCLOUD.access_token))
         client.delete "/tracks/#{self.soundkloud.track_id}"
         self.soundkloud.destroy
       rescue Exception => msg
@@ -288,10 +288,11 @@ class Entry< ActiveRecord::Base
       uri = URI.parse e.akamai_url
       tmp=uri.path.split("/")
       dir = tmp[0..(tmp.size-2)].join("/")
-      ftp = Entry.akamai_connect
+      ftp = akamai_connect
       begin
-        ftp.chdir "/8475"+dir
-        ftp.delete "/8475"+uri.path
+        root = (self.branch.akamai_path || AKAMAI.path).split('/').first
+        ftp.chdir "/#{root}"+dir
+        ftp.delete "/#{root}"+uri.path
         self.update_attribute akamai_url,nil
       rescue Exception => msg
         logger.info "#{msg}"
@@ -421,10 +422,11 @@ class Entry< ActiveRecord::Base
      sorted_entry ? sorted_entry.checked? : false
   end
   
-  def self.akamai_connect
-    user = 'masset2'
-    pass = 'masset2!media'
-    @@ftp = Net::FTP.new('voiceofame2.upload.akamai.com', user, pass) if !@@ftp
+  def akamai_connect
+    user = self.branch.akamai_user || AKAMAI.user
+    pass = self.branch.akamai_pwd || AKAMAI.pwd
+    server = self.branch.akamai_server || AKAMAI.server
+    @@ftp = Net::FTP.new(server, user, pass) if !@@ftp
     @@ftp
   end
   
@@ -434,12 +436,13 @@ class Entry< ActiveRecord::Base
        logger.error "NOT EXISTS ! #{localfile}"
        return false
     end
-    folders = ["/8475/MediaAssets2/bbg/ivr", self.branch.friendly_name, 
+    akamai_path = self.branch.akamai_path || AKAMAI.path
+    folders = [akamai_path, self.branch.friendly_name, 
       self.forum_type,
       self.forum_session.friendly_name,
       self.created_at.strftime("%Y"),
       self.created_at.strftime("%m")]
-    ftp = Entry.akamai_connect
+    ftp = akamai_connect
     
     remote = folders.join("/")
     folders.each{ |folder|
