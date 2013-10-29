@@ -215,7 +215,7 @@ class Entry< ActiveRecord::Base
     if !self.is_active
       delete_from_dropbox
       delete_from_soundcloud
-      delete_from_akamai
+      delete_from_ftp
     end
   end
   
@@ -241,17 +241,17 @@ class Entry< ActiveRecord::Base
       end
     end
   end
-  def delete_from_akamai
-    if self.akamai_url
-      uri = URI.parse e.akamai_url
+  def delete_from_ftp
+    if self.ftp_url
+      uri = URI.parse e.ftp_url
       tmp=uri.path.split("/")
       dir = tmp[0..(tmp.size-2)].join("/")
-      ftp = akamai_connect
+      ftp = ftp_connect
       begin
-        root = (self.branch.akamai_path || AKAMAI.path).split('/').first
+        root = (self.branch.ftp_path || FTP.path).split('/').first
         ftp.chdir "/#{root}"+dir
         ftp.delete "/#{root}"+uri.path
-        self.update_attribute akamai_url,nil
+        self.update_attribute ftp_url,nil
       rescue Exception => msg
         logger.info "#{msg}"
       end
@@ -382,10 +382,10 @@ class Entry< ActiveRecord::Base
      sorted_entry ? sorted_entry.checked? : false
   end
   
-  def akamai_connect
-    user = self.branch.akamai_user || AKAMAI.user
-    pass = self.branch.akamai_pwd || AKAMAI.pwd
-    server = self.branch.akamai_server || AKAMAI.server
+  def ftp_connect
+    user = self.branch.ftp_user || FTP.user
+    pass = self.branch.ftp_pwd || FTP.pwd
+    server = self.branch.ftp_server || FTP.server
     @@ftp = Net::FTP.new(server, user, pass) if !@@ftp
     @@ftp
   end
@@ -396,13 +396,13 @@ class Entry< ActiveRecord::Base
        logger.error "NOT EXISTS ! #{localfile}"
        return false
     end
-    akamai_path = self.branch.akamai_path || AKAMAI.path
-    folders = [akamai_path, self.branch.friendly_name, 
+    ftp_path = self.branch.ftp_path || FTP.path
+    folders = [ftp_path, self.branch.friendly_name, 
       self.forum_type,
       self.forum_session.friendly_name,
       self.created_at.strftime("%Y"),
       self.created_at.strftime("%m")]
-    ftp = akamai_connect
+    ftp = ftp_connect
     
     remote = folders.join("/")
     folders.each{ |folder|
@@ -416,7 +416,7 @@ class Entry< ActiveRecord::Base
     }
     begin
        ftp.putbinaryfile(localfile, dropbox_file)
-       self.akamai_url = "http://www.voanews.com/MediaAssets2/bbg/ivr/" +
+       self.ftp_url = "#{self.branch.ftp_url_base || FTP.url_base}" +
           "#{self.forum_type}/#{self.branch.friendly_name}/#{self.forum_session.friendly_name}/" + 
           "#{self.created_at.strftime('%Y')}/#{self.created_at.strftime('%m')}/" +
           dropbox_file
@@ -426,7 +426,7 @@ class Entry< ActiveRecord::Base
        return false
     end
     ftp.close
-    return self.akamai_url
+    return self.ftp_url
   end
 protected
 

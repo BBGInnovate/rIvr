@@ -3,14 +3,17 @@ development:
   user: masset2
   pwd: masset2!media
   path: /8475/MediaAssets2/bbg/ivr/
+  url_base: http://www.voanews.com/MediaAssets2/bbg/ivr/
 staging:
   server: voiceofame2.upload.akamai.com
   user: masset2
   pwd: masset2!media
   path: /8475/MediaAssets2/bbg/ivr/
+  url_base: http://www.voanews.com/MediaAssets2/bbg/ivr/
 production:
   server: voiceofame2.upload.akamai.com
   user: masset2
   pwd: masset2!media
   path: /8475/MediaAssets2/bbg/ivr/
+  url_base: http://www.voanews.com/MediaAssets2/bbg/ivr/
   
