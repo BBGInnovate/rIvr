@@ -1,3 +1,4 @@
+require 'soundcloud'
 class BranchController < ApplicationController
   layout 'branch'
   
@@ -68,20 +69,24 @@ class BranchController < ApplicationController
         
       if !@branch.valid?
         text = %{{"error": "error", "msg": "Invalid #{@branch.errors.full_messages.first}"}}
+        render :text=>text,:content_type=>"application/text", :layout => false
       else 
         begin
           @branch.save
+          redirect_to "/branch/exchange_token?id=#{@branch.clien_id}&sec=#{@branch.clien_secret}" and return
           # @branch.feed_source = feed_source
           # @branch.feed_url = feed_url
           # @branch.feed_limit = feed_limit
-          text = %{{"error": "notice", "msg": "Branch #{msg}", "branch":"#{@branch.id}"}} 
+          # text = %{{"error": "notice", "msg": "Branch #{msg}", "branch":"#{@branch.id}"}} 
         rescue Mysql2::Error => e
           text = %{{"error": "error", "msg": "MySQL error #{e.message}"}}
+          render :text=>text,:content_type=>"application/text", :layout => false
         rescue Exception=>e
           text = %{{"error": "error", "msg": "Exception #{e.message}"}}
+          render :text=>text,:content_type=>"application/text", :layout => false
         end
       end
-      render :text=>text,:content_type=>"application/text", :layout => false
+      
     end
     def destroy
       branch=Branch.find_by_id params[:id]
@@ -147,4 +152,40 @@ class BranchController < ApplicationController
       end
       
     end
+    
+  def exchange_token
+    u = URI.parse request.original_url
+    port = u.port=='80' ? '' : ":#{u.port}"
+    server = "#{u.scheme}://#{u.host}#{port}/branch/exchange_token"
+   
+    if params[:sec]
+      client_id=params[:id]
+      client_secret=params[:sec]
+      session[:client_id] = client_id
+      session[:client_secret] = client_secret
+      # create client object with app credentials
+      client = Soundcloud.new(:client_id => client_id,
+                        :client_secret => client_secret,
+                        :redirect_uri => "#{server}")
+      # redirect user to authorize URL
+      redirect_to client.authorize_url(:scope=>'non-expiring')
+      # "https://soundcloud.com/connect?scope=non-expiring&response_type=code_and_token&client_id=#{client_id}&redirect_uri=#{server}"
+    elsif params[:code]
+      code = params[:code]
+      client = Soundcloud.new(:client_id => session[:client_id],
+                        :client_secret => session[:client_secret],
+                        :redirect_uri => "#{server}")
+      # exchange authorization code for access token
+      code = params[:code]
+      access_token = client.exchange_token(:code => code)
+      #branch = Branch.find_by_soundcloud_client_id session[:client_id]
+      #if branch
+      #  branch.soundcloud_access_token = access_token.access_token
+      #  branch.save
+      #end
+      render :nothing=>true # :action=>"close_me"
+    else
+      logger.info "Error #{request.url}"
+    end
+  end
 end

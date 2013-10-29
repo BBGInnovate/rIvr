@@ -320,5 +320,16 @@ your style specs here
 	padding-bottom: 20px;	
 	overflow: auto;
 }
-.branch-configuration form { float: left; margin-right: 30px; }
+.select-branch form { 
+  float: left; 
+  margin-right: 30px; 
+}
+#new-branch { 
+ margin-top: 200px; 
+}
+#new-branch form { 
+ float: left; 
+ margin-right: 30px; 
+ width: 350px;
+}
 .create-branch { background: #039; color: #fff; font-weight: bold; margin: 0 0 10px 30px; border: none; border-radius:5px; padding: 5px; float: left; }

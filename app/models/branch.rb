@@ -477,78 +477,6 @@ class Branch< ActiveRecord::Base
       numbers = where(:created_at=>start_date..end_date).
         select("count(entries.id) AS total").last.total
     end
-        
-    # these messages are for caller to listen
-    def forum_messages_to_be_deleted(limit=10)
-      logger.warn("DEPRECATION WARNING: #{this_method_name} replaced by messages_to_listen")
-      brch = proxy_association.owner
-      opt = Configure.conf(brch)
-      forum = brch.forum_type
-      limit = [limit, opt.feed_limit].max
-      # if forum !='bulletin'
-      conditions="entries.forum_type='#{forum}'"
-      # end
-      if opt.feed_source == 'dropbox'
-        #        if forum == 'report'
-        # upload report forum messages to "/Public/oddi/#{forum}/"
-        entries = []
-        client = brch.get_dropbox_session
-        begin
-          records = client.list("Public/#{brch.name}/#{forum}")
-          records.each do |record|
-            if !record.is_dir
-              entry = OpenStruct.new
-              entry.public_url = record.path
-              entries << entry
-            end
-          end
-        rescue
-
-        end
-        entries
-      else # from static_rss
-        entries = Entry.parse_feed(opt.feed_url, limit)
-      end
-    end
-
-  end
-
-  # generate forum.xml in dropbox public/<branch>
-  def generate_forum_feed_to_be_deleted(client=nil)
-    logger.warn('DEPRECATION WARNING: generate_forum_feed replaced by generate_forum_feed_xml')   
-    local_file = self.forum_feed
-    remote_file = "#{DROPBOX.public_dir}/#{self.name}/#{File.basename(local_file)}"
-    to = "Public/#{self.name}/"
-    if !Prompt.file_equal?(remote_file, local_file)
-      begin
-        if !client
-          client = get_dropbox_session
-        end
-        client.upload local_file, to
-        puts "Uploaded #{local_file} to #{to}"
-      rescue Exception=>e
-        puts "Error generate_xml client.upload(#{local_file}, #{to}) #{e.message}"
-      end
-    else
-      puts "#{to}#{File.basename(local_file)} unchanged"
-    end
-  end
-
-  # for old voice forum voice prompts
-  def generate_prompts_feed_to_be_deleted(client=nil)
-    # In Branch, Prompt tables Branch is not downcased
-    local_file = self.prompts_feed
-    remote_file = "#{DROPBOX.public_dir}/#{name}/#{File.basename(local_file)}"
-    to = "Public/#{name}/"
-    if !Prompt.file_equal?(remote_file, local_file)
-      if !client
-        client = get_dropbox_session
-      end
-      client.upload local_file, to
-      puts "Uploaded #{local_file} to #{to}"
-    else
-      puts "#{to}#{File.basename(local_file)} unchanged"
-    end
   end
 
   # in seconds
@@ -577,77 +505,6 @@ class Branch< ActiveRecord::Base
     self.first :conditions=>["id=? or name=?", attr, attr]
   end
 
-  def forum_feed_to_be_deleted(limit=10)
-    logger.warn('DEPRECATION WARNING: forum_feed replaced by forum_feed_xml')
-    # get public messages
-    entries = self.entries.forum_messages(limit)
-    # get custom voice prompts
-    # forum_type must be 'report' or 'bulletin'
-    # call branch.reports() or branch.bulletins()
-    prompts = self.forum_prompts
-    tmp = "#{DROPBOX.tmp_dir}/#{self.name}"
-    # tmp = "#{DROPBOX.tmp_dir}"
-    FileUtils.mkdir_p tmp
-    if ::Rails.env != 'development'
-      system("sudo chmod -R 777 #{tmp}")
-    end
-    file_path = "#{tmp}/forum.xml"
-    File.open(file_path, "w") do |file|
-      xml = ::Builder::XmlMarkup.new(:target => file, :indent => 2)
-      xml.instruct! :xml, :version => "1.0"
-      xml.rss :version => "2.0" do
-        xml.channel do
-          xml.created_at Time.now.getutc
-          xml.forum_type self.forum_type
-          xml.identifier self.identifier
-          xml.status (self.forum_type=="vote" && self.votes.ended) ? "vote ended" : "OK"
-          xml.branch self.name
-          xml.count entries.size
-          for m in prompts
-            xml.prompt do
-              # <introduction>/bbg/tripoli/bulletin/introduction.wav</introduction>
-              xml.method_missing(m.name, m.dropbox_file)
-            end
-          end
-          for m in entries
-            # these dropbox_file is to copy to ../Uploads in client
-            xml.item do
-              xml.link m.public_url.gsub("https","http")
-            end
-          end
-        end
-      end
-    end
-    return file_path
-  end
-
-  # should not be used
-  def prompts_feed_to_be_deleted
-    logger.warn('DEPRECATION WARNING: forum_feed replaced by forum_feed_xml')
-    return nil
-    
-    records = self.prompts
-    tmp = "#{DROPBOX.tmp_dir}/#{self.name}"
-    FileUtils.mkdir_p tmp
-    file_path = "#{tmp}/prompts.xml"
-    File.open(file_path, "w") do |file|
-      xml = ::Builder::XmlMarkup.new(:target => file, :indent => 2)
-      xml.instruct! :xml, :version => "1.0"
-      xml.rss :version => "2.0" do
-        xml.channel do
-          xml.forum_type self.forum_type
-          xml.branch self.name
-          xml.count records.size
-          for m in records
-            xml.item do
-              xml.method_missing(m.name, m.url)
-            end
-          end
-        end
-      end
-    end
-    return file_path
-  end
   
   def active_forum_session
     s = OpenStruct.new
@@ -663,9 +520,9 @@ class Branch< ActiveRecord::Base
   end
   
   # replace def forum_feed
-  def forum_feed_xml(limit=10)
+  def forum_feed_xml
     # get public messages
-    items = self.listen_messages(limit)
+    items = self.listen_messages
     prompts = self.forum_prompts
     tmp = "#{DROPBOX.tmp_dir}/#{self.name}"
     FileUtils.mkdir_p tmp
@@ -745,8 +602,8 @@ class Branch< ActiveRecord::Base
       # puts "Copied #{local_file} to #{remote_file}"
     end
   end
-  def listen_messages(limit=10)
-    limit = self.feed_limit if !limit
+  def listen_messages
+    limit = self.feed_limit
     items = []
     arr = []
     if self.forum_type=='report'

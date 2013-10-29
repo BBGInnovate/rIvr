@@ -388,7 +388,7 @@ input.btnAction:hover, .branch-name:hover {
 	margin: 0 0 0 20px;
 }
 #new-branch {
-  margin: 0 0 0 10px;
+ /* margin: 0 0 0 10px; */
 }
 #new-branch label {
   width: 110px;

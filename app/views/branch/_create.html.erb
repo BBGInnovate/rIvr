@@ -1,4 +1,5 @@
-<div id="template-popup" class="template-popup">
+<style></style>
+<div id="Atemplate-popup" class="Atemplate-popup" style="width: 450px;">
 <h2 id="create-branch">Create Branch</h2>
 <%= form_for @branch, :url=> "/branch", :html => {:method=>'post',:multipart => true, :id=>"frm-new-branch"} do |f| %>
 <div class="inputSpacing">
@@ -36,24 +37,28 @@
   <%= f.select :forum_type, options_for_select(options, id), :style=>'' %>
   
   <p></p>
-  <label for="akamai_user">Akamai user </label>
-  <%= f.text_field :akamai_user, :placeholder=>"", :value=>"#{@branch.akamai_user}" %>
-  <p></p>
-  <label for="akamai_pwd">Akamai Pwd </label>
-  <%= f.text_field :akamai_pwd, :placeholder=>"", :value=>"#{@branch.akamai_pwd}" %>
-  <p></p>
-  <label for="akamai_path">Akamai Path </label>
-  <%= f.text_field :akamai_path, :placeholder=>"", :value=>"#{@branch.akamai_path}" %>
-  
-  <p></p>
-  <label for="soundcloud_client_id">soundcloud_client_id </label>
+  <label for="soundcloud_client_id">Soundcloud ClientId </label>
   <%= f.text_field :soundcloud_client_id, :placeholder=>"", :value=>"#{@branch.soundcloud_client_id}" %>
   <p></p>
-  <label for="soundcloud_client_secret">Soundcloud Client_secret </label>
+  <label for="soundcloud_client_secret">Soundcloud ClientSecret </label>
   <%= f.text_field :soundcloud_client_secret, :placeholder=>"", :value=>"#{@branch.soundcloud_client_secret}" %>
   <p></p>
-  <label for="soundcloud_access_token">soundcloud_Access Token </label>
+  <label for="soundcloud_access_token">Soundcloud AccessToken </label>
   <%= f.text_field :soundcloud_access_token, :placeholder=>"", :value=>"#{@branch.soundcloud_access_token}" %>
+  <span><a href="#" id="get-access_token">Get&nbsp;Access&nbsp;Token</a></span>
+  <p></p>
+  <label for="ftp_user">FTP Server </label>
+  <%= f.text_field :ftp_server, :placeholder=>"", :value=>"#{@branch.ftp_server}" %>
+  <p></p>
+  <p></p>
+  <label for="ftp_user">FTP User </label>
+  <%= f.text_field :ftp_user, :placeholder=>"", :value=>"#{@branch.ftp_user}" %>
+  <p></p>
+  <label for="ftp_pwd">FTP Pwd </label>
+  <%= f.text_field :ftp_pwd, :placeholder=>"", :value=>"#{@branch.ftp_pwd}" %>
+  <p></p>
+  <label for="ftp_path">FTP Path </label>
+  <%= f.text_field :ftp_path, :placeholder=>"", :value=>"#{@branch.ftp_path}" %>
   
   <!--
   <p></p>

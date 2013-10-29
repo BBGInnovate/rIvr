@@ -875,10 +875,11 @@ var branchManage = {
 	  var branch_id = $("#record_id").val()
 	  if (branch_id > 0 ) {
 	    var url = '/branch/' + branch_id;
-      var data = {};
-      jQuery.get(url, data, branchManage.updateForumType, 'html');
+       var data = {};
+       jQuery.get(url, data, branchManage.updateForumType, 'html');
 	  };
-		jQuery("#branch").on('click', "#create", function(e) {
+	  
+	  jQuery("#branch").on('click', "#create", function(e) {
 			var name = this.id;
 			var url = '/branch/new';
 			var branch_id = $("#record_id").val();
@@ -892,6 +893,19 @@ var branchManage = {
 			jQuery.get(url, data, branchManage.update, 'html');
 			jQuery('#new-branch').show();
 			return false
+		});
+		jQuery("#get-access_token").on('click', function(e) {
+			var id = $('#branch_soundcloud_client_id').val();
+			var sec = $('#branch_soundcloud_client_secret').val();
+	      if (id.length>0 && sec.length>0) {
+		     var url = '/branch/exchange_token?id='+id+"&sec="+sec;
+		     OpenWin(url);
+			  return false;
+	      } else {
+	      	  alert("Enter Client ID and Client Secret first");
+	      	  return false;
+	      }
+			
 		});
 		jQuery("#branch").on('click', "#delete", function(e) {
 			var branch_id = $("#record_id").val();
@@ -1092,7 +1106,8 @@ var branchManage = {
 		}
 	},
 	update : function(data) {
-		jQuery("#new-branch").html(data);
+		$("#new-branch").html(data);
+		Modal.open('new-branch', 'TabbedPanels1', 800);
 		$('#create-branch').html(branchManage.branchAction)
 	},
 	updateForum : function(data) {

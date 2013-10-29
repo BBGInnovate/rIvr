@@ -44,6 +44,7 @@ TestIvr::Application.routes.draw do
       get :sorted_entries
       post :sorted_entries
       post :upload_report_audio
+      get :exchange_token
     end
   end
   resources :templates do

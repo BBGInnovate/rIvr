@@ -152,18 +152,16 @@ class Entry< ActiveRecord::Base
           })
         else
           # add tracks to playlist
-          has_track = false
+          # has_track = false
           # playlist.tracks.each do |t|
           #  if t.id == track.id
           #    has_track = true
           #    break
           #  end
           # end
-          if !has_track
-            playlist = client.put(playlist.uri, :playlist => {
-              :tracks => [{:id=>track.id}]
-            })
-          end
+          playlist = client.put(playlist.uri, :playlist => {
+              :tracks => playlist.tracks << {:id=>track.id}
+          })
         end
         soundcloud.playlist_id = playlist.id
         soundcloud.track_id = track.id
@@ -206,46 +204,6 @@ class Entry< ActiveRecord::Base
         # do nothing
       end
     end
-  end
-  
-  # deplicated
-  def Xcopy_to_soundcloud(soundcloud)
-    return if !self.public_url
-    client = Soundcloud.new(:access_token => SOUNDCLOUD.access_token)
-    begin
-      # :duration=>self.length ? self.length*1000 : nil,
-      track = client.post('/tracks', :track=>{
-        :title => soundcloud.title,
-        :description=>soundcloud.description,
-        :downloadable => true,
-        :sharing=>'public',
-        :track_type=>'bbg',
-        :types=>"bbg",
-        :label_name=>SOUNDCLOUD.upload_by,
-        :genre=>soundcloud.genre,
-        :tag_list=>self.dropbox_dir.sub("/",' '),
-        :asset_data   => open(self.public_url)
-      })
-#      logger.debug "TRACK #{track.inspect}"
-#      delete_from_soundcloud #delete old one first
-      if track.id
-        soundcloud.track_id = track.id
-        soundcloud.url = track.permalink_url
-        soundcloud.entry_id = self.id
-        soundcloud.save
-#        not working here
-#        if !self.length || self.length < 1
-#           track = client.get "/tracks/#{track.id}"
-#           self.length = track.duration/1000
-#           self.save
-#        end
-      end
-      return soundcloud.url
-    rescue
-       logger.warn "Entry#copy_to_soundcloud #{$!.message}"
-       return "#{$!.message}"
-    end
-    
   end
   
   def add_properties
@@ -304,7 +262,9 @@ class Entry< ActiveRecord::Base
     dir = "/bbg/#{self.branch.name}/#{self.forum_type}/#{self.forum_session.name}/entries"
     dir2 = read_attribute(:dropbox_dir)
     if dir != dir2
-      self.update_attribute(:dropbox_dir, dir)
+      # self may be a readonly 
+      my = Entry.find_by_id self.id
+      my.update_attribute(:dropbox_dir, dir) if my
     end
     dir
   end
