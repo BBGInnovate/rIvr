@@ -26,7 +26,7 @@ class ApiController < ApplicationController
     else
       forum_session = nil
     end
-    vs = VotingSession.find_by_name forum_session
+    vs = VotingSession.find_me forum_session
     if !!vs 
       entry[:forum_session_id] = vs.id if !!entry
       vote_result[:voting_session_id] = vs.id if !!vote_result
@@ -44,7 +44,7 @@ class ApiController < ApplicationController
 
 protected
   def create_entry(attr)
-    branch = Branch.find_by_name attr.delete(:branch)
+    branch = Branch.find_me attr.delete(:branch)
     if branch.forum_type=='bulletin'
       page_id = Page.recordBulletin
     elsif branch.forum_type=='vote'
@@ -65,7 +65,7 @@ protected
   end
 
   def create_vote_result(attr)
-    branch = Branch.find_by_name attr.delete(:branch)
+    branch = Branch.find_me attr.delete(:branch)
     attr[:branch_id] = branch.id
     if attr[:caller_id] =~ /System/
       VoteResult.delete_all "branch_id='#{branch.id}' AND caller_id = 'System'"
@@ -78,7 +78,7 @@ protected
   end
   
   def create_event(attr)
-    branch = Branch.find_by_name attr.delete(:branch)
+    branch = Branch.find_me attr.delete(:branch)
     attr[:branch_id] = branch.id
     if attr[:caller_id] =~ /System/
       Event.delete_all "branch_id='#{branch.id}' AND caller_id = 'System'"

@@ -1,15 +1,7 @@
 require 'soundcloud'
 class BranchController < ApplicationController
   layout 'branch'
-  
-#  def active_forum
-#    @branch= Branch.find_me(params[:id])
-#    f = @branch.branch_forum_types.last
-#    if f
-#      f.save
-#    end
-#  end
-  
+
   def index
     if params[:branch]
       @branch = Branch.find_by_name params[:branch]
@@ -20,7 +12,7 @@ class BranchController < ApplicationController
   def show
     @branch= Branch.find_me(params[:id])
     if params[:forum_type]
-      @branch.forum_type = params[:forum_type]  # .split("_").last
+      @branch.forum_type = params[:forum_type]
       @branch.save
      # render :text=>branch.forum_type and return 
     end
@@ -69,24 +61,20 @@ class BranchController < ApplicationController
         
       if !@branch.valid?
         text = %{{"error": "error", "msg": "Invalid #{@branch.errors.full_messages.first}"}}
-        render :text=>text,:content_type=>"application/text", :layout => false
       else 
         begin
           @branch.save
-          redirect_to "/branch/exchange_token?id=#{@branch.clien_id}&sec=#{@branch.clien_secret}" and return
           # @branch.feed_source = feed_source
           # @branch.feed_url = feed_url
           # @branch.feed_limit = feed_limit
-          # text = %{{"error": "notice", "msg": "Branch #{msg}", "branch":"#{@branch.id}"}} 
+          text = %{{"error": "notice", "msg": "Branch #{msg}", "branch":"#{@branch.id}"}} 
         rescue Mysql2::Error => e
           text = %{{"error": "error", "msg": "MySQL error #{e.message}"}}
-          render :text=>text,:content_type=>"application/text", :layout => false
         rescue Exception=>e
           text = %{{"error": "error", "msg": "Exception #{e.message}"}}
-          render :text=>text,:content_type=>"application/text", :layout => false
         end
       end
-      
+      render :text=>text,:content_type=>"application/text", :layout => false
     end
     def destroy
       branch=Branch.find_by_id params[:id]
@@ -107,13 +95,9 @@ class BranchController < ApplicationController
       vs = VotingSession.find_by_id params[:id]
       
       if vs
-        if 1==1 || !vs.is_active
-          vs.is_active = true
-          vs.save
-          text="Forum : #{vs.name} is activated and forum_feed.xml is generated."
-        else
-          # text = "Forum : #{vs.name} is already active."
-        end
+        vs.is_active = true
+        vs.save
+        text="Forum : #{vs.name} is activated and forum_feed.xml is generated."
       else
         text = 'Forum Title Not Found'
       end

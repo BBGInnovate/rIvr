@@ -61,7 +61,6 @@ class Template < ActiveRecord::Base
         rescue
           logger.warn "Error: upload_to_dropbox : #{$!}"
         end
-        name = self.name
         begin
           re = client.upload(file.tempfile, to, :as=>file.original_filename)
           # path="/bbg/oddi/report/introduction.mp3"
@@ -102,7 +101,7 @@ class Template < ActiveRecord::Base
     client = self.get_dropbox_session
     if !!client && self.dropbox_file
       name = File.basename(self.dropbox_file)
-      link = "system/#{self.branch.name}/#{self.class.name.downcase}"
+      link = "system/#{self.branch.friendly_name}/#{self.class.name.downcase}"
       local="#{Rails.root}/public/#{link}"
       FileUtils.mkdir_p local
       local_file = "#{local}/#{name}"

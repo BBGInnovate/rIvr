@@ -3,6 +3,9 @@ require 'open-uri'
 
 class Branch< ActiveRecord::Base
   acts_as_gmappable :process_geocoding => true
+  
+  before_save :update_friendly_name
+  
   self.table_name = "branches"
   attr_accessor :vote_result
 
@@ -10,8 +13,17 @@ class Branch< ActiveRecord::Base
   belongs_to :country, :foreign_key=>"country_id"
 #  include HealthHelper
 
+  def update_friendly_name
+    friendly_name = name.parameterize
+  end
+  
   def friendly_name
-    name.parameterize
+    fr = read_attribute(:friendly_name)
+    if fr 
+      fr
+    else    
+      name.parameterize
+    end
   end
   
   def last_activity
@@ -78,7 +90,7 @@ class Branch< ActiveRecord::Base
     if !session_name
       session_name = active_forum_session.name
     end
-    folder = "/bbg/#{self.name}/#{self.forum_type}/#{session_name}"  
+    folder = "/bbg/#{self.friendly_name}/#{self.forum_type}/#{session_name.parameterize}"  
     folder += "/prompts"
   end
   # folder where to upload callers' messages
@@ -86,7 +98,7 @@ class Branch< ActiveRecord::Base
     if !session_name
       session_name = active_forum_session.name
     end
-    folder = "/bbg/#{self.name}/#{self.forum_type}/#{session_name}"
+    folder = "/bbg/#{self.friendly_name}/#{self.forum_type}/#{session_name.parameterize}"
     folder += "/entries"
   end
     
@@ -238,14 +250,6 @@ class Branch< ActiveRecord::Base
             where(:voting_session_id=>proxy_association.owner.active_forum_session.id)
       select("id, name, dropbox_file, voting_session_id").where(["id in (?)", res.map{|t| t.id}])
     end
-    def original_identifier_to_be_deleted
-      coll = latest
-      intro = coll.select{|t| t.name=='introduction'}
-      if intro.size == 0
-        return nil
-      end
-      identifier = intro.last.voting_session.name
-    end
   end
 
   # is a vote template
@@ -261,15 +265,6 @@ class Branch< ActiveRecord::Base
       else
         items
       end
-    end
-
-    def original_identifier_to_be_deleted
-      coll = latest
-      intro = coll.select{|t| t.name=='introduction'}
-      if intro.size == 0
-        return nil
-      end
-      identifier = intro.last.voting_session.name
     end
 
     def candidate_result
@@ -502,21 +497,24 @@ class Branch< ActiveRecord::Base
   end
 
   def self.find_me(attr)
-    self.first :conditions=>["id=? or name=?", attr, attr]
+    self.first :conditions=>["id=? or name=? or friendly_name=?", attr, attr, attr]
   end
 
   
   def active_forum_session
     s = OpenStruct.new
     s.name = 'None'
+    s.friendly_name = s.name.parameterize
     s.id = nil
-    # if (self.forum_type=='vote' || self.forum_type=='bulletin')
-      s = self.voting_sessions.where(:is_active=>true).last || s
-    # end
+    s = self.voting_sessions.where(:is_active=>true).last || s
     s
   end
   def identifier(identifier=nil)
-    identifier || self.active_forum_session.name 
+    if !identifier
+      identifier.parameterize
+    else
+      self.active_forum_session.friendly_name
+    end
   end
   
   # replace def forum_feed
@@ -524,7 +522,7 @@ class Branch< ActiveRecord::Base
     # get public messages
     items = self.listen_messages
     prompts = self.forum_prompts
-    tmp = "#{DROPBOX.tmp_dir}/#{self.name}"
+    tmp = "#{DROPBOX.tmp_dir}/#{self.friendly_name}"
     FileUtils.mkdir_p tmp
     if ::Rails.env != 'development'
       system("sudo chmod -R 777 #{tmp}")
@@ -537,11 +535,11 @@ class Branch< ActiveRecord::Base
         xml.channel do
           # xml.created_at Time.now.getutc
           xml.forum_type self.forum_type
-          xml.forum_session self.active_forum_session.name rescue 'None'
+          xml.forum_session self.active_forum_session.friendly_name
           xml.entry_upload_folder self.entry_files_folder
           xml.prompt_upload_folder self.prompt_files_folder
           xml.status (self.forum_type=="vote" && self.votes.ended) ? "vote ended" : "OK"
-          xml.branch self.name
+          xml.branch self.friendly_name
           xml.count items.size
           for m in prompts
             xml.prompt do
@@ -563,7 +561,7 @@ class Branch< ActiveRecord::Base
   # generate forum.xml in dropbox public/<branch>
   def generate_forum_feed_xml(client=nil)
     local_file = self.forum_feed_xml
-    dropbox_branch = "#{DROPBOX.home}/bbg/#{self.name}"
+    dropbox_branch = "#{DROPBOX.home}/bbg/#{self.friendly_name}"
     remote_file = "#{dropbox_branch}/#{File.basename(local_file)}"
 
     if !Branch.xml_equal?(remote_file, local_file)
@@ -638,7 +636,7 @@ class Branch< ActiveRecord::Base
   def self.xml_equal?(old_file, new_file)
     # remove delete_old_files node before compare
     new_content = ""
-    old_content = File.open(old_file).read
+    old_content = File.exists?(old_file) ? File.open(old_file).read : "A"
     begin
       doc = Nokogiri::XML(IO.read(new_file))
       doc.search('//delete_old_files').remove

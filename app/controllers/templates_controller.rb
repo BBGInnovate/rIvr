@@ -4,7 +4,7 @@ class TemplatesController < ApplicationController
   layout 'branch'
 
   def index
-    @branch_name = params[:branch] || 'oddi'
+    @branch_name = params[:branch]
     @branch = Branch.find_me(@branch_name)
     set_variables
     @temp_partial = @branch.forum_type
@@ -58,7 +58,7 @@ class TemplatesController < ApplicationController
     sound_file = temp.delete(:sound)
     identifier = temp.delete(:identifier)
     if identifier
-      vs = VotingSession.find_by_name identifier
+      vs = VotingSession.find_me identifier
       if !vs
         vs = VotingSession.create :name => identifier,
             :branch_id => branch.id, :is_active => false
@@ -138,18 +138,7 @@ class TemplatesController < ApplicationController
            val  = opt[feed]
            @option = Configure.find_me(branch, feed.to_s)
            @option.update_attribute :value, val
-        end
-           
-#        feed_source= opt[:feed_source]
-#        feed_limit= opt[:feed_limit]
-#        feed_url= opt[:feed_url]
-#        @option = Configure.find_me(branch, "feed_source")
-#        @option.update_attribute :value, feed_source
-#        @option = Configure.find_me(branch, "feed_limit")
-#        @option.update_attribute :value, feed_limit
-#        @option = Configure.find_me(branch, "feed_url")
-#        @option.update_attribute :value, feed_url
-        
+        end 
         branch.generate_forum_feed_xml
         flash[:notice] = "FEED updated"
       end
@@ -165,7 +154,7 @@ class TemplatesController < ApplicationController
     branch = Branch.find_by_name params[:branch]
     if branch
       branch.generate_forum_feed_xml
-      tmp_file = "#{DROPBOX.tmp_dir}/#{branch.name}/forum_feed.xml"
+      tmp_file = "#{DROPBOX.tmp_dir}/#{branch.friendly_name}/forum_feed.xml"
       content = File.open(tmp_file, "r") {|file| file.read}
       send_data content,
       :filename=>"forum_feed.xml",

@@ -259,7 +259,7 @@ class Entry< ActiveRecord::Base
   end
   
   def dropbox_dir
-    dir = "/bbg/#{self.branch.name}/#{self.forum_type}/#{self.forum_session.name}/entries"
+    dir = "/bbg/#{self.branch.friendly_name}/#{self.forum_type}/#{self.forum_session.friendly_name}/entries"
     dir2 = read_attribute(:dropbox_dir)
     if dir != dir2
       # self may be a readonly 
@@ -328,8 +328,8 @@ class Entry< ActiveRecord::Base
   def self.upload_static_message(client, entry, branch)
     file_name = File.basename(entry.public_url)
     static_url = entry.public_url
-    dropbox_file_url = "#{DROPBOX.public_dir}/#{branch.name}/#{file_name}"
-    to = "Public/#{branch.name}/"
+    dropbox_file_url = "#{DROPBOX.public_dir}/#{branch.friendly_name}/#{file_name}"
+    to = "Public/#{branch.friendly_name}/"
     if !Prompt.file_equal?(dropbox_file_url, static_url)
       puts "#{Time.now.utc} Uploading #{static_url} to #{to}/"
       client.upload open(static_url), to, :as=>file_name

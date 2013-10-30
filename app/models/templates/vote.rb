@@ -18,10 +18,10 @@ class Vote < Template
   def identifier
     # if this template is saved before
     if self.voting_session
-      self.voting_session.name
+      self.voting_session.friendly_name
     # if introduction template is saved before
     elsif !!self.branch.votes.last && self.branch.votes.last.voting_session
-      self.branch.votes.last.voting_session.name rescue nil
+      self.branch.votes.last.voting_session.friendly_name rescue nil
     else
       nil
     end
