@@ -1,7 +1,7 @@
 class ModerationController < ApplicationController
   #  doorkeeper_for :create
   skip_before_filter :verify_authenticity_token, :only => [:create]
-  before_filter :init
+
   #rails g kaminari:config
   layout 'moderation'
   # to deal with "HEAD true" request
@@ -12,10 +12,7 @@ class ModerationController < ApplicationController
         Rails.logger.info "Derp #{request.method}"
     end
   end
-  # override application#init
-  def init
-    @controller = request.filtered_parameters['controller']
-  end
+
   def index
     uri = request.env['REQUEST_URI']
     uri.slice!(request.path)

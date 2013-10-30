@@ -540,7 +540,10 @@ img.red-light, img.green-light {
 	 margin-left: 0;
 }
 .module {
-	 margin-left: 50px;
+/*	 margin-left: 50px; */
+}
+.branch-configuration-body {
+  margin-left: 30px;
 }
 .TabbedPanels ul li {
     border: 1px solid #CCCCCC;

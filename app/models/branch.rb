@@ -626,7 +626,7 @@ class Branch< ActiveRecord::Base
           item.public_url = f.dropbox_dir + "/" + f.dropbox_file
           items << item
         else
-          puts "Not exists! #{file_pathname}"
+          puts "Not exists! #{f.dropbox_dir}/#{f.dropbox_file}"
         end
       end
     end

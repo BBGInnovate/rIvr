@@ -1,29 +1,10 @@
 <div id="modal-window" class="helpPopUp"></div>
-<h2>Moderation</h2>
-<h3>Moderate Messages</h3>
-<!--
-<div id="TabbedPanels1" class="TabbedPanels moderation-tools">
-  <ul class="TabbedPanelsTabGroup">
-    <li class="TabbedPanelsTab listen" tabindex="0">
-      <a href="#" class="listen">Listen</a>
-    </li>
-    <li class="TabbedPanelsTab syndicate" tabindex="0">
-      <a href="#" class="syndicate">Syndicate</a>
-    </li>
-				<span id="publish-to-dropbox"></span>
-  </ul>
-  <div class="TabbedPanelsContentGroup">
-    <div id="listen" class="TabbedPanelsContent listen">
-      <%#= render :partial=>'listen' %>
-    </div>
-    <div id="syndicate" class="TabbedPanelsContent syndicate">
-      <%#= render :partial=>'syndicate' %>
-    </div>
-  </div>
+<div class="branch-configuration-body">
+  <h2>Moderation</h2>
+  <h3>Moderate Messages</h3>
+  <!-- Start Search results box. -->
+  <!-- This box can be modified and used in other sections of the site. A form is used so that the radio buttons and search feature can work, but the functionality of the search feature is left up to Liwen to accomplish. -->
+  <%= render :partial=>'search' %>
+  <!-- End Moderation search results box -->
 </div>
--->
-<!-- Start Search results box. -->
-<!-- This box can be modified and used in other sections of the site. A form is used so that the radio buttons and search feature can work, but the functionality of the search feature is left up to Liwen to accomplish. -->
-<!--Moderation search results box-->
-<%= render :partial=>'search' %>
-<!-- End Moderation search results box -->
+

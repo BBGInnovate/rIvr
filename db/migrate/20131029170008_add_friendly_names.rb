@@ -1,7 +1,11 @@
 class AddFriendlyNames < ActiveRecord::Migration
   def up
-    add_column :branches, :friendly_name, :string
-    add_column :voting_sessions, :friendly_name, :string
+    if !ActiveRecord::Base.connection.column_exists?('branches', 'friendly_name')
+      add_column :branches, :friendly_name, :string
+    end
+    if !ActiveRecord::Base.connection.column_exists?('voting_sessions', 'friendly_name')
+      add_column :voting_sessions, :friendly_name, :string
+    end
     Branch.reset_column_information
     VotingSession.reset_column_information
     Branch.all.each do |b| 

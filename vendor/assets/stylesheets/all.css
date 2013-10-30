@@ -197,9 +197,12 @@ h2 {
 
 
 
-/*4. Moderation page styles*/
-.module.moderation, .module.analytics, .module.branch-configuration, .module.health { padding: 20px; }
-.module.moderation h2, .module.analytics h2, .module.branch-configuration h2, .module.health h2 { margin: 0; }
+/*4. Moderation page styles
+.module.moderation, .module.analytics, .module.branch-configuration, .module.health { 
+  padding: 0px; }
+.module.moderation h2, .module.analytics h2, .module.branch-configuration h2, .module.health h2 { 
+  margin: 0; }
+*/
 
 .TabbedPanels {
 	padding: 0;

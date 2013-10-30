@@ -97,7 +97,7 @@ var autoRefreshHeader = {
       var obj = jQuery.parseJSON(data);
       $('#alerts').html(obj.alerts + ' Alerts');
       $('#calls').html(obj.calls + ' Number of Calls');
-      $('#messages').html(obj.messages+' Messages');
+      $('#messages').html(obj.messages+' New Voice Mail');
       $('.activity').html(obj.activity);
     },
 }

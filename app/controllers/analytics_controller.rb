@@ -33,6 +33,7 @@ class AnalyticsController < ApplicationController
     @calls = @stats.number_of_calls
     @call_times = @stats.call_times
     @listened = @stats.listened
+    @alerts = @stats.alerted
     branch_report_title
     branch_report_rows
     cache
