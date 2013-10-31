@@ -7,25 +7,32 @@ class VotingSession< ActiveRecord::Base
   after_save :activate_templates
   
   def update_friendly_name
-    friendly_name = name.parameterize
+    self.friendly_name=self.name.parameterize
   end
   
   def activate_templates
     if self.is_active == true
-      templates.update_all :is_active=>true
+      templates.where("description != 'result'").update_all :is_active=>true
       entries.update_all :is_active=>true
       generate_forum_feed_xml
     end
   end
   
-  def friendly_name
-    fr = read_attribute(:friendly_name)
-    if fr 
-      fr
-    else    
-      name.parameterize
+  def activate_result_templates
+    if self.is_active == true
+      self.branch.votes.result_templates.update_all :is_active=>true
+      generate_forum_feed_xml
     end
   end
+  
+#  def friendly_name
+#    fr = read_attribute(:friendly_name)
+#    if fr 
+#      fr
+#    else    
+#      name.parameterize
+#    end
+#  end
   
   def self.find_me(attr)
     self.first :conditions=>["id=? or name=? or friendly_name=?", attr, attr, attr]

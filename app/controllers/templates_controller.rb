@@ -63,10 +63,8 @@ class TemplatesController < ApplicationController
         vs = VotingSession.create :name => identifier,
             :branch_id => branch.id, :is_active => false
       end
-      # if @template.kind_of?(Vote) || @template.kind_of?(Bulletin)
-        @template.voting_session_id = vs.id
-        @template.save
-      # end
+      @template.voting_session_id = vs.id
+      @template.save
     end
    
     @preview = false
@@ -127,7 +125,7 @@ class TemplatesController < ApplicationController
     render :action=>'new', :layout => false
   end
 
-  # UI for selecting feed source from dropbox or static rss
+  # UI for selecting feed source from upload or static rss
   def headline
     if request.post?
       if params[:todo] == 'save'
@@ -144,8 +142,8 @@ class TemplatesController < ApplicationController
       end
       render :layout => false
     else
-      branch = Branch.find_me(params[:branch])
-      @option = Configure.find_me(branch, "feed_source")
+      @branch = Branch.find_me(params[:branch])
+      @option = Configure.find_me(@branch, "feed_source")
       render :layout => false
     end
   end

@@ -47,24 +47,47 @@ module ApplicationHelper
   def audio_players(branch)
     audios = []
     template = branch.forum_type.camelcase.constantize
-    intro = template.find_me(branch.id, 'introduction')
-    audios << ['Introduction', audio_tag(intro), edit_tag(intro)]  
+     
     case branch.forum_type
-    when 'report' 
-      headline = template.find_me(branch.id, 'headline')
-      audios << ['Headline News', 'Feed Source', edit_tag(headline)]  
+    when 'report'
+      intro = template.find_me(branch.id, 'introduction')
+      audios << ['Introduction', audio_tag(intro), edit_tag(intro)] 
+      headline = branch.reports.headline
+      if branch.feed_source != 'static_rss'
+        audio = audio_tag(headline)
+      else
+        audio = 'Static RSS'
+      end
+      audios << ['Headline News', audio, edit_tag(headline)]  
       bye = template.find_me(branch.id, 'goodbye')
       audios << ['Goodbye', audio_tag(bye), edit_tag(bye)]  
     when 'vote'
+      intro = template.find_me(branch.id, 'introduction')
+      audios << ['Introduction', audio_tag(intro), edit_tag(intro)] 
       vote = template.find_me(branch.id, 'candidate')
-      audios << ['Participate', audio_tag(vote), edit_tag(vote)]  
+      audios << ['Participate', audio_tag(vote), edit_tag(vote)]
+      
+      comment = template.find_me(branch.id, 'comment')
+      audios << ['Leave Comment', audio_tag(comment), edit_tag(comment)]
+      
+      intro = template.find_me(branch.id, 'introduction_result')
+      audios << ['Introduction Result', audio_tag(intro), edit_tag(intro)] 
+      vote = template.find_me(branch.id, 'candidate_result')
+      audios << ['Vote Result', audio_tag(vote), edit_tag(vote)]
+      listen = template.find_me(branch.id, 'listen_result')
+      audios << ['Opinion Board', audio_tag(listen), edit_tag(listen)] 
     when 'bulletin' 
+      intro = template.find_me(branch.id, 'introduction')
+      audios << ['Introduction', audio_tag(intro), edit_tag(intro)] 
       bulletin = template.find_me(branch.id, 'bulletin_question')
       audios << ['Ask the communite', audio_tag(bulletin), edit_tag(bulletin)]  
+      listen = template.find_me(branch.id, 'listen')
+      audios << ['Listen Messages', audio_tag(listen), edit_tag(listen)] 
     end
   end
   def audio_tag(template)
-    if template.audio_link
+    audio_link = !!template.audio_link ? template.audio_link : nil
+    if audio_link
     html = %{<a id="#{template.id}" class="audio {ogg:'#{template.audio_link}',downloadable:false,autoplay:false, inLine:true}"
           href="#{template.audio_link}">
           #{template.audio_link}</a>
@@ -76,7 +99,7 @@ module ApplicationHelper
     html.html_safe    
   end 
   def edit_tag(template)
-  html = %{<input id="branch-name" type="hidden" value="#{template.branch_id}" name="branch" /><input type="hidden" value="#{template.branch.forum_type}" name="forum-type"/><a href='' class='square' id='#{template.name}'>&nbsp;&nbsp;Edit</a>}
+  html = %{<input id="branch-name" type="hidden" value="#{template.branch_id}" name="branch" /><input type="hidden" value="#{template.branch.forum_type}" name="forum-type"/><a href='' class='square' id='#{template.name}'>&nbsp;&nbsp;Edit Forum</a>}
     html.html_safe
   end
 end

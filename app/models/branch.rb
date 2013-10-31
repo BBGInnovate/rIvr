@@ -14,16 +14,7 @@ class Branch< ActiveRecord::Base
 #  include HealthHelper
 
   def update_friendly_name
-    friendly_name = name.parameterize
-  end
-  
-  def friendly_name
-    fr = read_attribute(:friendly_name)
-    if fr 
-      fr
-    else    
-      name.parameterize
-    end
+    self.friendly_name=self.name.parameterize
   end
   
   def last_activity
@@ -242,6 +233,9 @@ class Branch< ActiveRecord::Base
           where(:voting_session_id=>proxy_association.owner.active_forum_session.id)
       select("id, name, dropbox_file, voting_session_id").where(["id in (?)", res.map{|t| t.id}])
     end
+    def headline(active=false)
+      items = where(:name=>'headline', :is_active=>active).last
+    end
   end
   # for bulletin prompts
   has_many :bulletins do
@@ -258,8 +252,10 @@ class Branch< ActiveRecord::Base
     def latest(active=true)
       res = select("max(id) as id").group(:name).where(:is_active=>active).
             where(:voting_session_id=>proxy_association.owner.active_forum_session.id)
-      items = select("id, name, dropbox_file, voting_session_id, description").where(["id in (?)", res.map{|t| t.id}])
-      vote_result_items = items.select{|i| i.description=='result'}
+      all_items = select("id, name, dropbox_file, voting_session_id, description").where(["id in (?)", res.map{|t| t.id}])
+      items = all_items.select{|i| i.description != 'result'}
+            
+      vote_result_items = all_items.select{|i| i.description == 'result'}
       if vote_result_items.size == 3
         vote_result_items
       else
@@ -267,7 +263,14 @@ class Branch< ActiveRecord::Base
       end
     end
 
-    def candidate_result
+    def result_templates
+      res = select("max(id) as id").group(:name).where("description='result'")
+         where(:voting_session_id=>proxy_association.owner.active_forum_session.id)
+      items = select("id, name, dropbox_file, voting_session_id, description").where(["id in (?)", res.map{|t| t.id}])
+      
+    end
+    
+    def Acandidate_result
       coll = latest
       intro = coll.select{|t| t.name=='introduction'}
       if intro.size == 0
@@ -287,7 +290,6 @@ class Branch< ActiveRecord::Base
 
     # if candidate_result prompt was uploaded indicating poll has ended
     def ended
-      # !!candidate_result
       if latest.size > 0
         latest.last.description == 'result'
       else
@@ -510,7 +512,7 @@ class Branch< ActiveRecord::Base
     s
   end
   def identifier(identifier=nil)
-    if !identifier
+    if !!identifier
       identifier.parameterize
     else
       self.active_forum_session.friendly_name
@@ -575,7 +577,8 @@ class Branch< ActiveRecord::Base
       file = File.open(local_file,'w')
       file.puts doc.to_xml
       file.close
-      if Dir.exists? DROPBOX.home
+      # not use dropbox client.
+      if (1==0) && Dir.exists?(DROPBOX.home)
         # dropbox client is installed
         if !Dir.exists?(dropbox_branch)
           FileUtils.mkdir_p dropbox_branch
@@ -608,7 +611,9 @@ class Branch< ActiveRecord::Base
       if self.feed_source == 'static_rss'
         items = Entry.parse_feed(self.feed_url, limit)
       else
-        arr = [SortedEntry.where(:branch_id=>self.id, :forum_session_id=>nil).last].compact
+        # get the last entry for now
+        arr = [SortedEntry.where(:branch_id=>self.id, 
+          :forum_session_id=>branch.active_forum_session.id).last].compact
         arr.each do |f|
           if f.entry.is_active
             item = OpenStruct.new
@@ -655,78 +660,6 @@ class Branch< ActiveRecord::Base
     end
   end
   
-  def upload_to_dropbox(file, identifier=nil)
-    to = self.entry_files_folder(identifier)
-    
-    if identifier
-      vs = VotingSession.find_by_name identifier    
-    else
-      vs = active_forum_session
-    end
-
-    remote_dir = DROPBOX.home+to
-    remote_file = remote_dir + "/" + file.original_filename
-    entry = Entry.create :branch_id=>self.id, :forum_type=>'report',
-            :dropbox_dir => to,
-            :dropbox_file=>file.original_filename,
-            :mime_type=>file.content_type,
-            :forum_session_id=>vs.id,
-            :is_private=>false,
-            :is_active=>false
-       
-
-    # not use local dropbox     
-    if 1==0 && (Dir.exists? DROPBOX.home)
-      # dropbox client is installed
-      # have to be sure the dropbox client is running
-      if !Dir.exists?(remote_dir)
-         FileUtils.mkdir_p remote_dir
-      end
-      FileUtils.copy file.tempfile.path, remote_file
-      logger.info "Copied #{file.tempfile.path} to #{remote_file}"
-    else    
-      client = self.get_dropbox_session
-      if !!client
-        begin
-          client.mkdir to
-        rescue Dropbox::FileExistsError
-          # it is ok
-        rescue 
-          logger.warn "Error: upload_to_dropbox : #{$!}"
-          entry.destroy
-          return false
-        end
-        begin
-          re = client.upload(file.tempfile, to, :as=>file.original_filename)
-          logger.warn "INFO: Dropbox uploaded: #{file.original_filename}"
-        rescue Exception=>ex
-          logger.warn "Error #{ex.message}"
-          entry.destroy
-          return false
-        end
-      end
-    end
-    add_sorted_entry(entry)
-    return true
-  end
-
-  def add_sorted_entry(entry)
-    ss = SortedEntry.where(:branch_id =>self.id, :forum_session_id=>nil).order("created_at ASC")
-    # delete files to make room for new file        
-    if ss.size > self.feed_limit
-      ss[0..(ss.size-self.feed_limit-1)].each do |s| 
-        s.destroy
-      end
-    end
-    SortedEntry.create :branch_id=>self.id,
-            :entry_id=>entry.id,
-            :dropbox_file=>entry.dropbox_file,
-            :created_at =>entry.created_at
-    
-   # generate_forum_feed_xml
-
-  end
-
   # find audio files for Report forum and insert to SortedEntries table
   # TODO add to cron?
   def insert_report_files

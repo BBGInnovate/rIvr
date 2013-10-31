@@ -12,8 +12,6 @@
 
 */
 
-
-
 /* 1. Main Structure and Text Styles */
 html {height:100%;}
 body {
@@ -281,7 +279,7 @@ your style specs here
 */
 
 .search-results {
-	width: 810px;
+	width: 820px;
 	border: solid 1px #ccc;	
 	padding: 15px;
 	margin: 30px auto;

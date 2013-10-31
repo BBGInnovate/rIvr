@@ -8,6 +8,13 @@
      <br/></br/>
   <% end %>
 </div>
+
+<% if @branch.forum_type=="report" %>
+<div id="report-upload" class="helpPopUp" style="display:none;">
+  <%= render :partial=>'/templates/upload_report' %>
+</div>
+<% end %>
+
 <script>
 jQuery(document).ready(function(){
   $(".audio").mb_miniPlayer({

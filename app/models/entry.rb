@@ -343,6 +343,8 @@ class Entry< ActiveRecord::Base
   def self.parse_feed(url, limit=1)
     items = []
     added = 0
+    length = nil
+    duration = nil
     megabyte = 1024*1024
     begin
       doc = Nokogiri::XML(open(url))
@@ -362,10 +364,10 @@ class Entry< ActiveRecord::Base
         ss  = time_arr[2].to_i
         duration = hr*3600 + mn*60 + ss
       else
-        duration = 0
+        
       end
           
-      if length < 5 && duration < 300
+      if (!!length || !!duration) && length < 5 && duration < 300
         entry = OpenStruct.new
         entry.public_url = enclosure[:url]
         items << entry

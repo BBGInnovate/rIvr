@@ -1,6 +1,6 @@
 <style>
 </style>
-<div id="report-popup" class="template-popup" style="width: 310px;"/>
+<div id="report-popup" class="template-popup" style="width: 310px;">
   <p id="notice"></p>
   <%= form_for @branch, :url=> "/branch/upload_report_audio", :html => {:method=>'post',:multipart => true, :id=>"frm-upload-report"} do |f| %>
   <input type="hidden" name="branch_id" value="<%= @branch.id %>" />
@@ -18,15 +18,14 @@
   </div>
   <div class="btnUploadWrap">
     <span><%= submit_tag 'Preview', :id=>"preview-report", :value=>"Upload",:class=>"btnAction" %></span>
-    <!-- span><%#= submit_tag 'Save', :id=>"save-report", :class=>"btnAction" %></span -->
     <span><%= submit_tag 'Cancel', :id=>"cancel-report", :class=>"btnAction" %></span>
   </div>
    <div class="clear"> 
     <% 
-       [SortedEntry.get(@branch.id).last].compact.each do |e|
-       src = "/entries/#{e.entry_id}/play" %>
+       [@branch.reports.headline].each do |e|
+       src = e.audio_link %>
        <object data="<%= src %>" type="application/x-mplayer2" width="260" height="30" autoplay="false">
-         <param name="filename" value="<%#= src %>" />
+         <param name="filename" value="<%= src %>" />
          <param name="controller" value="true" /> 
          <param name="autoplay" value="false" />
          <param name="autostart" value="0" />

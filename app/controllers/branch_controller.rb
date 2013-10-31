@@ -23,10 +23,8 @@ class BranchController < ApplicationController
         # hint = "You must upload the voice forum audio files by clicking Edit Forum link to the left"
       end
     end
-#    audios = render_to_string :partial=>'shared/audio_player', :formats=>["html"]
-#    text=%{{"":"hint":"#{hint}","forum":"#{@branch.forum_type}","forum_ui":"#{@branch.forum_type_ui}", "branch":"#{@branch.name}"}}
-#    render :text =>text ,:content_type=>'application/text',:layout=>false and return
-    render :json=>{:audios=>'',
+    audios = render_to_string :partial=>'shared/audio_player', :formats=>["html"]
+    render :json=>{:audios=>audios,
                    :hint=>hint,
                    :forum=>@branch.forum_type,
                    :forum_ui=>@branch.forum_type_ui,
@@ -120,8 +118,12 @@ class BranchController < ApplicationController
       temp = params[:branch] 
       sound_file = temp.delete(:sound)
       identifier = temp.delete(:identifier)
+      vs = VotingSession.find_me identifier
       if sound_file # from preview
-        uploaded = branch.upload_to_dropbox(sound_file, identifier)
+        headline = Report.create :branch_id=>branch.id,
+           :name=>'headline', :voting_session_id=>vs.id
+           
+        uploaded = headline.upload_to_dropbox(sound_file)
         if uploaded
            text = "#{sound_file.original_filename} is uploaded"
            render :text=>text, :layout=>false,:content_type=>'application/text'

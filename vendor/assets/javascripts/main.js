@@ -744,6 +744,7 @@ var reportUpload = {
     
 		jQuery("#configure_feed_source").on('change', function(e) {
 			var feed_source = $(this).val();
+			// alert("line 747")
 			if (feed_source=='upload') {
 			  var branch_id = jQuery('#configure_branch_id').val();
 			  var url = '/templates/report';
@@ -753,7 +754,7 @@ var reportUpload = {
 			  };
 			  // jQuery.get(url, data, reportUpload.update, 'html');
 			  Modal.open("report-upload", 'configure_feed_source', 200);
-			  jQuery('#report-upload').show();
+			  $('#forum-audio-upload').hide();
 		   }
 		});
 		
@@ -785,10 +786,10 @@ var reportUpload = {
          //var forum_type = id[1];
 			var options = {
 				beforeSubmit : function(arr, $form, options) {
-				$('#report-popup').css("cursor", "progress");
+				$('#report-popup, .btnAction').css({"cursor":"progress"});
 				},
 				success : function(data) {
-				  $('#report-popup').css({
+				  $('#report-popup, .btnAction').css({
 						"cursor" : "hand",
 						"cursor" : "pointer"
 				  });
@@ -821,9 +822,9 @@ var reportUpload = {
          var description = temp_name.match(/result/);
 
          if (this.id=="save" && description == "result") {
-	         ok =  confirm('Save a Forum Result template indicates the Vote/Poll is ended. Continue?');
+	         ok =  confirm('Save a Forum Result template indicates the Vote is ending. Continue?');
             if (!ok)
-             return false;      
+              return false;      
          }
      
          $( "<input>" ).appendTo('#frm-upload-logo')
@@ -853,8 +854,9 @@ var reportUpload = {
 			$('#forum-upload, .forum-upload, .helpPopUp').hide();
 			return false;
 		});
-		$("#report-popup").on('click', "#cancel-report", function(e) {
+		$("#cancel-report").on('click', function(e) {
 			$('#report-upload').hide();
+			$('#report-upload style').html('');
 			return false;
 		});
 		
@@ -872,7 +874,7 @@ var branchManage = {
   branchAction : '',
   myId : '',
 	init : function() {
-	  var branch_id = $("#record_id").val()
+	  var branch_id = $("#record_id").val();
 	  if (branch_id > 0 ) {
 	    var url = '/branch/' + branch_id;
        var data = {};
@@ -941,7 +943,7 @@ var branchManage = {
       });
 		 
 		});
-		jQuery("#branch").on('change', "#record_id", function(e) {
+		$("#branch").on('change', "#record_id", function(e) {
 			var branch_id = this.value;
 			branchManage.myId = this.id
 			$("#branch").css("cursor", "progress");
@@ -956,8 +958,8 @@ var branchManage = {
 			var url = '/branch/' + branch_id;
 			var data = {};
 			// reset the notice msg
-			jQuery('#return-msg').html('');
-			jQuery.get(url, data, branchManage.updateForumType, 'html');
+			$('#return-msg').html('');
+			$.get(url, data, branchManage.updateForumType, 'html');
 		});
 		jQuery("#frm-new-branch").on('click', "#save", function(e) {
 			var url = '/branch';
@@ -986,6 +988,7 @@ var branchManage = {
 		});
 		$("#branch").on('click', ".square", function(e) {
 			branchManage.myId = this.id
+			//alert("line 990")
 			var name = this.id; // this div id is used as template.name
 			var url;
 			if (name == 'headline') {
@@ -1019,8 +1022,7 @@ var branchManage = {
 			return false;
 		});
 		jQuery("#branch").on(
-				'click',
-				".TabbedPanelsTab, input[name='forum_type']",
+				'click', ".TabbedPanelsTab, input[name='forum_type']",
 				function(e) {	
 					var forum_type = this.id;
 					branchManage.myId = this.id;
@@ -1031,17 +1033,14 @@ var branchManage = {
 						return false;
 					}
 					if (branchManage.myId=='active-forum') {
-						/* var data = {
-				        branch_id : branch_id,
-				        ajax: 1
-			         };
-			         $.get("/branch/activate_forum", data, function(result) {
-			            $('#forum-activate').html(result);
-			         }, 'html');
-			         */
 			         Modal.open("forum-activate", branchManage.myId, 140);
 			         return false;
 					}
+					// if the tab is already selected
+					if ($(this).hasClass('TabbedPanelsTabSelected')) {
+					   return false;
+					}
+					
 					
 					$("*").css("cursor", "progress");
 		         $(".TabbedPanelsTab").removeClass('TabbedPanelsTabSelected');
@@ -1084,14 +1083,14 @@ var branchManage = {
 	  $('#create').val('Edit Branch');
 		var obj = jQuery.parseJSON(data);
 		if (obj.forum.length>0) {
-			// $('#audio-player-div').html(obj.audios);
+		  $('#audio-player-div').html(obj.audios);
 		  jQuery(".TabbedPanelsTab").removeClass('TabbedPanelsTabSelected');
 		  jQuery("#" + obj.forum).addClass('TabbedPanelsTabSelected');
 		  jQuery("#forum_type_" + obj.forum).prop('checked', true);
 		  
 		  jQuery('#go-template').attr('href', "/templates?branch=" + obj.branch);
 		  jQuery('#go-template').show();
-		  if (obj.forum=='vote' || obj.forum=='poll') {
+		  if (obj.forum=='vote') {
 		    jQuery('#go-template-result').attr('href', "/templates?result=1&branch=" + obj.branch);
 		    jQuery('#go-template-result').show();
 		  } else {

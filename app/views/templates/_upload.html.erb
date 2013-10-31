@@ -12,6 +12,10 @@
   <div class='notice'>
     <%= flash[:notice] %>
   </div>
+  <div class='error'>
+    <%= flash[:error] %>
+  </div>
+  
   <%# if template.kind_of?(Vote)||template.kind_of?(Bulletin) %>
     <%= render :partial=>'select_forum', :locals=>{:template=>@template} %>
   <%# end %>
@@ -28,19 +32,15 @@
   </div>
   <div class="btnUploadWrap">
     <span><%= submit_tag 'Preview', :id=>"preview", :value=>"Upload",:class=>"btnAction" %></span>
-    <%# if !!template.audio_link || @preview || @save %>
-      <!-- span><%= submit_tag 'Save', :id=>"save", :class=>"btnAction" %></span -->
-    <%# end %>
+    <% if (template.name=~/_result/) && !!template.audio_link %>
+      <span><%= submit_tag 'Save', :id=>"save", :class=>"btnAction" %></span>
+    <% end %>
     <span><%= submit_tag 'Cancel', :id=>"cancel", :class=>"btnAction" %></span>
   </div>
   <div class="clear">
     <% if !!template.audio_link %>
     <% src="/#{template.audio_link}" %>
-    <!--
-    <a id="<%=template.id%>" class="audio {ogg:'<%=src%>',downloadable:false,autoplay:false, inLine:true}"
-         href="<%=src%>"><%= template.audio_link %>
-    </a>
-    -->
+   
     <object data="<%= src %>" type="application/x-mplayer2" width="300" height="60" autoplay="false">
       <param name="filename" value="<%= src %>" />
       <param name="controller" value="true" /> 
