@@ -758,20 +758,21 @@ var reportUpload = {
 		   }
 		});
 		
-		jQuery("#template-headline").on('click', "#save", function(e) {
+		$("#template-headline").on('click', "#save", function(e) {
 			var url = '/templates/headline';
-			jQuery("[name='todo']").val("save");
+			$("[name='todo']").val("save");
 			var options = {
 				beforeSubmit : function(arr, $form, options) {
 					jQuery('#template-popup').css("cursor", "progress");
 				},
 				success : function(data) {
-					jQuery('#template-popup').css({
+					$('#template-popup').css({
 						"cursor" : "hand",
 						"cursor" : "pointer"
 					});
-					jQuery("#forum-upload").html(data);
-					jQuery(".error").hide();
+					// $("#forum-upload").html(data);
+					$(".error").hide();
+					$('.notice').html('Feeds Updated')
 				}
 			};
 			$('#frm-headline').ajaxForm(options);
