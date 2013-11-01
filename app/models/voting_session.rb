@@ -14,7 +14,7 @@ class VotingSession< ActiveRecord::Base
     if self.is_active == true
       templates.where("description != 'result'").update_all :is_active=>true
       entries.update_all :is_active=>true
-      generate_forum_feed_xml
+      # generate_forum_feed_xml moved to BranchCotroller#activate_forum
     end
   end
   

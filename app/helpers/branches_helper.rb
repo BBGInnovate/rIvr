@@ -1,5 +1,13 @@
 module BranchesHelper
   
+  def branch_forum(forum_session)
+    if forum_session.branch
+      "#{forum_session.branch.name} : #{forum_session.name}"
+    else
+      nil
+    end
+  end
+  
   def forum_options
     [[Branch.forum_type_ui('report'),'report'],
      [Branch.forum_type_ui('bulletin'),'bulletin'],

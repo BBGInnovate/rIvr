@@ -100,6 +100,7 @@ class BranchController < ApplicationController
             v.update_attribute :is_active,true
           end
         end
+        vs.branch.generate_forum_feed_xml
         text="Forum : #{vs.name} is activated and forum_feed.xml is generated."
       else
         text = 'Forum Title Not Found'

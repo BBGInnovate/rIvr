@@ -3,10 +3,10 @@
     <%= flash[:notice] %>
   </div>
   <% 
-     option1 = VotingSession.where(:is_active=>false).all.map{|a| [a.name, a.id]}
+     option1 = VotingSession.where(:is_active=>false).all.map{|a| [branch_forum(a), a.id] if branch_forum(a) }.compact
      option1.unshift ['--select forum title --','0']
      
-     option2 = VotingSession.where(:is_active=>true).all.map{|a| [a.name, a.id]}
+     option2 = VotingSession.where(:is_active=>true).all.map{|a| [branch_forum(a), a.id] if branch_forum(a) }.compact
      option2.unshift ['--Already Activated--','-1']
      
      options = option1 + option2
