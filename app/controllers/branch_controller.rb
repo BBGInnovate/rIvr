@@ -93,8 +93,13 @@ class BranchController < ApplicationController
       vs = VotingSession.find_by_id params[:id]
       
       if vs
-        vs.is_active = true
-        vs.save
+        vs.branch.voting_sessions.each do |v|
+          if v.id != vs.id
+            v.update_attribute :is_active,false
+          else
+            v.update_attribute :is_active,true
+          end
+        end
         text="Forum : #{vs.name} is activated and forum_feed.xml is generated."
       else
         text = 'Forum Title Not Found'

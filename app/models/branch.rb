@@ -562,10 +562,22 @@ class Branch< ActiveRecord::Base
   end
   # generate forum.xml in dropbox public/<branch>
   def generate_forum_feed_xml(client=nil)
+    if !client
+      client = get_dropbox_session
+    end
     local_file = self.forum_feed_xml
     dropbox_branch = "#{DROPBOX.home}/bbg/#{self.friendly_name}"
     remote_file = "#{dropbox_branch}/#{File.basename(local_file)}"
-
+    remote_forum_file = "#{dropbox_branch}/#{self.active_forum_session.friendly_name}/#{File.basename(local_file)}"
+    if !Branch.xml_equal?(remote_forum_file, local_file)    
+      begin
+        to = "bbg/#{self.friendly_name}/#{self.active_forum_session.friendly_name}"
+        client.upload local_file, to
+        logger.info "Uploaded #{local_file} to #{to}"
+      rescue Exception=>e
+        logger.info "Error generate_xml client.upload(#{local_file}, #{to}) #{e.message}"
+      end
+    end
     if !Branch.xml_equal?(remote_file, local_file)
       # add delete_old_files node
       builder = Nokogiri::XML::Builder.new do
@@ -584,21 +596,18 @@ class Branch< ActiveRecord::Base
           FileUtils.mkdir_p dropbox_branch
         end
         FileUtils.copy local_file, remote_file
-        puts "Copied #{local_file} to #{remote_file}"
+        logger.info "Copied #{local_file} to #{remote_file}"
       else
         begin
-          if !client
-            client = get_dropbox_session
-          end
-          to = "bbg/#{self.name}/"
+          to = "bbg/#{self.friendly_name}/"
           client.upload local_file, to
-          puts "Uploaded #{local_file} to #{to}"
+          logger.info "Uploaded #{local_file} to #{to}"
         rescue Exception=>e
-          puts "Error generate_xml client.upload(#{local_file}, #{to}) #{e.message}"
+          logger.info "Error generate_xml client.upload(#{local_file}, #{to}) #{e.message}"
         end
       end
     else
-      puts "#{to}#{File.basename(local_file)} unchanged"
+      logger.info "#{to}#{File.basename(local_file)} unchanged"
       # FileUtils.copy local_file, remote_file
       # puts "Copied #{local_file} to #{remote_file}"
     end

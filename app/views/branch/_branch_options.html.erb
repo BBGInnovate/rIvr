@@ -1,0 +1,6 @@
+<% options = Branch.where("is_active=1").map{|b| [b.name, b.id]}
+  options.unshift ["--Select Branch--","0"] 
+  id = !!@branch ? @branch.id : 0
+%>
+<%= options_for_select(options, id) %>
+    
