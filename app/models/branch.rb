@@ -233,8 +233,13 @@ class Branch< ActiveRecord::Base
           where(:voting_session_id=>proxy_association.owner.active_forum_session.id)
       select("id, name, dropbox_file, voting_session_id").where(["id in (?)", res.map{|t| t.id}])
     end
-    def headline(active=false)
-      items = where(:name=>'headline', :is_active=>active).last
+    def headline()
+      item = where(:name=>'headline').last
+      if !item
+        item = Report.create :name=>'headline', :branch_id=>proxy_association.owner.id
+          
+      end
+      item
     end
   end
   # for bulletin prompts

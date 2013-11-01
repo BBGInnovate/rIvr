@@ -58,11 +58,7 @@ class TemplatesController < ApplicationController
     sound_file = temp.delete(:sound)
     identifier = temp.delete(:identifier)
     if identifier
-      vs = VotingSession.find_me identifier
-      if !vs
-        vs = VotingSession.create :name => identifier,
-            :branch_id => branch.id, :is_active => false
-      end
+      vs = VotingSession.find_me identifier,branch
       @template.voting_session_id = vs.id
       @template.save
     end

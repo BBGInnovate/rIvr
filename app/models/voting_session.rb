@@ -34,8 +34,12 @@ class VotingSession< ActiveRecord::Base
 #    end
 #  end
   
-  def self.find_me(attr)
-    self.first :conditions=>["id=? or name=? or friendly_name=?", attr, attr, attr]
+  def self.find_me(attr, branch=nil)
+    vs = self.first :conditions=>["id=? or name=? or friendly_name=?", attr, attr, attr]
+    if !vs && branch
+      vs = create :name=>attr, :branch_id=>branch.id, :is_active=>false
+    end
+    vs
   end
   
   protected

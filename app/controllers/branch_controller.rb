@@ -124,7 +124,7 @@ class BranchController < ApplicationController
       temp = params[:branch] 
       sound_file = temp.delete(:sound)
       identifier = temp.delete(:identifier)
-      vs = VotingSession.find_me identifier
+      vs = VotingSession.find_me identifier, branch
       if sound_file # from preview
         headline = Report.create :branch_id=>branch.id,
            :name=>'headline', :voting_session_id=>vs.id

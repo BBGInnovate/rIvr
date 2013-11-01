@@ -98,10 +98,12 @@ class Template < ActiveRecord::Base
     end
   # name = 'introduction','message'
   def audio_link
+    link = nil
     client = self.get_dropbox_session
-    if !!client && self.dropbox_file
+    if !!client && self.dropbox_file && self.voting_session
       name = File.basename(self.dropbox_file)
-      link = "system/#{self.branch.friendly_name}/#{self.class.name.downcase}/#{self.voting_session.friendly_name}"
+      forum_title = self.voting_session.friendly_name
+      link = "system/#{self.branch.friendly_name}/#{self.class.name.downcase}/#{forum_title}"
       local="#{Rails.root}/public/#{link}"
       FileUtils.mkdir_p local
       local_file = "#{local}/#{name}"
@@ -112,10 +114,7 @@ class Template < ActiveRecord::Base
         end
         link = "#{link}/#{name}"
       rescue
-        link = nil
       end
-    else
-      link = nil
     end
     link
   end

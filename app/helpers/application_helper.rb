@@ -86,6 +86,10 @@ module ApplicationHelper
     end
   end
   def audio_tag(template)
+    html = 'No audio file uploaded'
+    if !template
+      return html
+    end
     audio_link = !!template.audio_link ? template.audio_link : nil
     if audio_link
     html = %{<a id="#{template.id}" class="audio {ogg:'#{template.audio_link}',downloadable:false,autoplay:false, inLine:true}"
@@ -94,10 +98,10 @@ module ApplicationHelper
         <button onclick="$('##{template.id}').mb_miniPlayer_stop();">stop</button>
         <button onclick="$('##{template.id}').mb_miniPlayer_play();">play</button>}
     else
-      html = 'No audio file uploaded'
+      
     end
     html.html_safe    
-  end 
+  end
   def edit_tag(template)
   html = %{<input id="branch-name" type="hidden" value="#{template.branch_id}" name="branch" /><input type="hidden" value="#{template.branch.forum_type}" name="forum-type"/><a href='' class='square' id='#{template.name}'>&nbsp;&nbsp;Edit Forum</a>}
     html.html_safe
