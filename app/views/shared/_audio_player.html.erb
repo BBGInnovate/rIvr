@@ -1,5 +1,6 @@
 <% if @branch %>
-<div>
+<style></style>
+<div style="width: 400px;">
   <h2>Preview Voice Forum</h2>
   <% audios = audio_players(@branch) %>
    <% audios.each do |a| %>
@@ -8,6 +9,9 @@
      <span><%= a[2] %></span>
      <br/></br/>
   <% end %>
+  <div>
+    <span><%= submit_tag 'Cancel',:id=>"cancel",:class=>"btnAction" %></span>
+  </div>
 </div>
 
 <% if @branch.forum_type=="report" %>
@@ -23,6 +27,15 @@ jQuery(document).ready(function(){
     inLine:false,
     id3:false
   });
+  
+  $("#cancel").on('click', function(e) {
+    $('#audio-player-div').removeClass('helpPopUp');
+	 $('#audio-player-div').hide();
+	 return false;
+  });
+		
 });
 </script>
 <% end %>
+
+		

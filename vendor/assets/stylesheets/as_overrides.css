@@ -796,6 +796,7 @@ span.link a {
   color: blue;
 }
 
+.vertical-line {height:60px;border-left: 1px solid #CCC;}
 
 /*
 a.soundcloud:hover {

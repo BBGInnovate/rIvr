@@ -41,6 +41,9 @@ TestIvr::Application.routes.draw do
   resources :branch do
     collection do
       get :activate_forum
+      get :preview_forum
+      get :syndicate
+      post :syndicate
       get :sorted_entries
       post :sorted_entries
       post :upload_report_audio

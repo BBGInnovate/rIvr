@@ -1,11 +1,11 @@
 var Modal = {
 	modalID:  null,
 		css : function(height) {
-			// height is the modal's child height
+			// height is the modal's min-height
 			height = height || 360;
-			var newRule = ".helpPopUp {background: none repeat scroll 0 0 #FFFFFF;border: 1px solid #CFE8F5;";
+			var newRule = ".helpPopUp {z-index:10;background: none repeat scroll 0 0 #FFFFFF;border: 1px solid #CFE8F5;";
 			newRule = newRule +"border-radius: 11px 11px 11px 11px;padding: 20px;position: absolute;";
-			newRule = newRule +"text-align: center; min-height: " + (height) + "px;display: none}";
+			newRule = newRule +"text-align: left; min-height: " + (height) + "px;display: none}";
 			$(Modal.modalID + " style").append(newRule);
 		},
 		open : function (modal_id, anchor_id, height) {
@@ -872,8 +872,9 @@ var reportUpload = {
 }
 
 var branchManage = {
-  branchAction : '',
-  myId : '',
+   branchAction : '',
+   myId : '',
+   forumTypes: ["report", "bulletin", "vote"],
 	init : function() {
 	  var branch_id = $("#record_id").val();
 	  if (branch_id > 0 ) {
@@ -889,7 +890,7 @@ var branchManage = {
 			var data={};
 	    if (branch_id > 0 ) {
 	      branchManage.branchAction = 'Edit Branch'
-			  data = {branch_id: branch_id}
+			data = {branch_id: branch_id}
 	    } else {
 	      branchManage.branchAction = 'Create Branch'
 	    }
@@ -1025,55 +1026,67 @@ var branchManage = {
 		jQuery("#branch").on(
 				'click', ".TabbedPanelsTab, input[name='forum_type']",
 				function(e) {	
-					var forum_type = this.id;
+				   var divMap = {"privew-voice-forum":{"id":"audio-player-div", "height":"400"}, 
+				               	  "active-forum":{"id":"forum-activate", "height":"140"},
+				               	  "syndicate-voice-forum":{"id":"search-results", "height":"400"}
+				               };
 					branchManage.myId = this.id;
-					branch_id = $("#record_id").val();
+					var branch_id = $("#record_id").val();
 					if (branch_id == '0') {
 						$('#return-msg').html('Please select a branch')
 						$("*").css("cursor", "default");
 						return false;
 					}
-					if (branchManage.myId=='active-forum') {
-			         Modal.open("forum-activate", branchManage.myId, 140);
-			         return false;
-					}
-					// if the tab is already selected
-					if ($(this).hasClass('TabbedPanelsTabSelected')) {
-					   return false;
-					}
+				
+					var action_type = branchManage.forumTypes.indexOf(branchManage.myId); 
 					
-					
-					$("*").css("cursor", "progress");
-		         $(".TabbedPanelsTab").removeClass('TabbedPanelsTabSelected');
-		         $("#" + forum_type).addClass('TabbedPanelsTabSelected');
-					
-					var url = '/branch/' + branch_id;
-					var data = {
-						forum_type : forum_type
-					};
-					$.get(url, data, function(data) {
-						$("*").css({
-						  "cursor" : "default"
-						});
-						var obj = jQuery.parseJSON(data);
-					   jQuery('#audio-player-div').html(obj.audios);
-						jQuery('#return-msg').html(
+					if (action_type == -1 ) {
+					  if (branchManage.myId=='active-forum') {
+			           Modal.open(divMap[branchManage.myId].id,branchManage.myId, divMap[branchManage.myId].height);
+			           return false;
+					  } else {
+					    var url = $(this).attr('data-url');
+					    $("*").css("cursor", "progress");
+					    $.get(url,{"id":branch_id}, function(data) {
+						   $("*").css({
+						      "cursor" : "default"
+						   });
+						   var obj = jQuery.parseJSON(data);
+						   alert(divMap[branchManage.myId].id)
+					      $('#'+divMap[branchManage.myId].id).html(obj.html);
+						   Modal.open(divMap[branchManage.myId].id, "branch", divMap[branchManage.myId].height);
+					    }, 'html');
+					    return false;
+					  }
+				   } else {
+					   
+					   // if the tab is already selected
+					   if ($(this).hasClass('TabbedPanelsTabSelected')) {
+					      return false;
+					   }
+					   $("*").css("cursor", "progress");
+		            $(".TabbedPanelsTab").removeClass('TabbedPanelsTabSelected');
+		            $("#" + branchManage.myId).addClass('TabbedPanelsTabSelected');
+					   // for /branch/show
+					   var url = '/branch/' + branch_id;
+					   var data = {
+						   action_type : action_type
+					   };
+					   $.get(url, data, function(data) {
+						   $("*").css({
+						      "cursor" : "default"
+						   });
+						   var obj = jQuery.parseJSON(data);
+					      // $('#audio-player-div').html(obj.html);
+						   $('#return-msg').html(
 								"Forum Type changed to " + obj.forum_ui.titleize());
-						/*
-						jQuery('#go-template').show();
-						jQuery('#go-template').attr('href',"/templates?branch=" + obj.branch);
-						if (forum_type=="poll" || forum_type=="vote") {
-						  jQuery('#go-template-result').show();
-	                 jQuery('#go-template-result').attr('href',"/templates?result=1&branch=" + obj.branch);
-						} else {
-						  jQuery('#go-template-result').hide();
-						}
-						*/
-					}, 'html');
+					   }, 'html');
+					}
 
 				});
-		jQuery("#frm-new-branch, #forum-activate").on('click', "#cancel", function(e) {
-			jQuery('#new-branch, #forum-activate').hide();
+		jQuery("#cancel").on('click', function(e) {
+			jQuery('#new-branch,#forum-activate,#audio-player-div').removeClass('helpPopUp');
+			jQuery('#new-branch,#forum-activate,#audio-player-div').hide();
 			return false;
 		});
 	},
@@ -1084,7 +1097,7 @@ var branchManage = {
 	  $('#create').val('Edit Branch');
 		var obj = jQuery.parseJSON(data);
 		if (obj.forum.length>0) {
-		  $('#audio-player-div').html(obj.audios);
+		  // $('#audio-player-div').html(obj.audios);
 		  jQuery(".TabbedPanelsTab").removeClass('TabbedPanelsTabSelected');
 		  jQuery("#" + obj.forum).addClass('TabbedPanelsTabSelected');
 		  jQuery("#forum_type_" + obj.forum).prop('checked', true);

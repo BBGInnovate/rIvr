@@ -99,6 +99,10 @@ class Branch< ActiveRecord::Base
       group(:branch_id).order("events.created_at desc").limit(3)
   end
   
+  def self.forum_types
+    ['report','bulletin','vote']
+  end
+  
   def self.forum_type_ui(forum_type)
       case forum_type
       when 'vote'

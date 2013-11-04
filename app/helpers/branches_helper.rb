@@ -9,10 +9,11 @@ module BranchesHelper
   end
   
   def forum_options
-    [[Branch.forum_type_ui('report'),'report'],
-     [Branch.forum_type_ui('bulletin'),'bulletin'],
-     [Branch.forum_type_ui('vote'),'vote'],
-     [Branch.forum_type_ui('vote_ended'),'vote_ended']]
+    re = []
+    Branch.forum_types.each do |t|
+      re << [Branch.forum_type_ui(t),t]
+    end
+    re
   end
   def forum_type_form_column(record, input_name)
     id = record.forum_type

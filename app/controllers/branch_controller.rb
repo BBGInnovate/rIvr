@@ -11,10 +11,11 @@ class BranchController < ApplicationController
   end
   def show
     @branch= Branch.find_me(params[:id])
-    if params[:forum_type]
-      @branch.forum_type = params[:forum_type]
+    action_type = Branch.forum_types.detect{|e| e==params[:action_type]}
+    if action_type 
+      @branch.forum_type = action_type
       @branch.save
-     # render :text=>branch.forum_type and return 
+      audios = ''
     end
     hint = ''
     if @branch.forum_type
@@ -23,8 +24,10 @@ class BranchController < ApplicationController
         # hint = "You must upload the voice forum audio files by clicking Edit Forum link to the left"
       end
     end
-    audios = render_to_string :partial=>'shared/audio_player', :formats=>["html"]
-    render :json=>{:audios=>audios,
+    if params[:action_type] == 'privew-voice-forum'
+      audios = render_to_string :partial=>'shared/audio_player', :formats=>["html"]
+    end
+    render :json=>{:html=>audios,
                    :hint=>hint,
                    :forum=>@branch.forum_type,
                    :forum_ui=>@branch.forum_type_ui,
@@ -32,7 +35,21 @@ class BranchController < ApplicationController
             :content_type=>"text", 
             :layout=>false
   end
-  
+  def preview_forum
+    @branch= Branch.find_me(params[:id])
+    audios = render_to_string :partial=>'shared/audio_player', :formats=>["html"]
+    render :json=>{:html=>audios},
+            :content_type=>"text", 
+            :layout=>false
+  end
+  def syndicate
+    @branch= Branch.find_me(params[:id])
+    @results=[]
+    html = render_to_string :partial=>'modals/search_rsults', :formats=>["html"]
+    render :json=>{:html=>html},
+            :content_type=>"text", 
+            :layout=>false
+  end
   def new
       flash[:notice] = nil
       if params[:branch_id]
