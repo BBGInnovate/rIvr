@@ -56,12 +56,12 @@ class TemplatesController < ApplicationController
     @template = Template.find_by_id temp.delete(:id)
     @template.description = temp[:description]
     sound_file = temp.delete(:sound)
-    identifier = temp.delete(:identifier)
-    if identifier
-      vs = VotingSession.find_me identifier,branch
-      @template.voting_session_id = vs.id
+    # identifier = temp.delete(:identifier)
+    # if identifier
+    #  vs = VotingSession.find_me identifier,branch
+      @template.voting_session_id = branch.current_forum_session.id
       @template.save
-    end
+    # end
    
     @preview = false
     if params[:todo] == 'preview'
@@ -69,7 +69,7 @@ class TemplatesController < ApplicationController
       if !sound_file
         @preview = true if !!@template.dropbox_file
       else
-        @template.upload_to_dropbox(sound_file, identifier)
+        @template.upload_to_dropbox(sound_file, branch.current_forum_session.name)
         @template.save :validate=>false
         @preview = true
 
@@ -97,23 +97,23 @@ class TemplatesController < ApplicationController
   end
 
   # save recording after user clicked Send Data
-  def create_recording
-    branch=Branch.find_by_id temp[0]
+  def record
+    arr = params[:record].split("ZZZ")
     filename = Time.now.strftime("%Y%m%d%H%M%S")+'.wav'
     data = request.raw_post
-    #   save recorded sound to file
+    # # TEST save recorded sound to file
     #    File.open(filename, 'wb') do |file|
     #      file.write(request.raw_post)
     #    end
-
-    identifier = temp.delete(:identifier)
-    @template = Template.find_by_id temp[1]
-    if !@template
-      @template = branch.forum_type.camelcase.constantize.new :branch_id=>temp[0],
-      :name=>temp[2]
-    end
+    branch_id = arr[0]
+    @branch = Branch.find_me(branch_id)
+    identifier = arr[1]
+    vs = VotingSession.find_me identifier
+    id = arr[2]
+    @template = Template.find_by_id id
+    @template.voting_session_id = vs.id
     @template.save_recording_to_dropbox(data, filename)
-    @template.is_active=true
+    
     @template.save :validate=>false
     flash[:notice] = "#{@template.name_map(@template.name)} file " +
     File.basename(@template.dropbox_file) +
@@ -126,28 +126,35 @@ class TemplatesController < ApplicationController
     if request.post?
       if params[:todo] == 'save'
         # params[:configure][:branch_id] == 'oddi'
-        opt = params[:configure]
-        branch = Branch.find_by_id opt[:branch_id]
+        opt = params[:branch]
+        @branch = Branch.find_by_id opt[:id]
         [:feed_source, :feed_limit, :feed_url].each do | feed |
            val  = opt[feed]
-           @option = Configure.find_me(branch, feed.to_s)
-           @option.update_attribute :value, val
+           @branch.send(feed.to_s + "=", val)
+           # @option = Configure.find_me(branch, feed.to_s)
+           # @option.update_attribute :value, val
         end 
-        branch.generate_forum_feed_xml
+        # branch.generate_forum_feed_xml
+        @option = @branch
         flash[:notice] = "FEED updated"
       end
       render :layout => false
     else
       @branch = Branch.find_me(params[:branch])
-      @option = Configure.find_me(@branch, "feed_source")
+      # @template = Template.find_me @branch.id, params[:name]
+      @option = @branch # Configure.find_me(@branch, "feed_source")
       render :layout => false
     end
   end
 
   def forum_feed
-    branch = Branch.find_by_name params[:branch]
+    branch = Branch.find_me(params[:b] || params[:branch])
     if branch
-      branch.generate_forum_feed_xml
+      if params[:p].to_i == 0
+         branch.test_forum_feed_xml
+      else
+         branch.forum_feed_xml
+      end
       tmp_file = "#{DROPBOX.tmp_dir}/#{branch.friendly_name}/forum_feed.xml"
       content = File.open(tmp_file, "r") {|file| file.read}
       send_data content,

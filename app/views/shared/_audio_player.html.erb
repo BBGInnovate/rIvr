@@ -1,7 +1,7 @@
 <% if @branch %>
 <style></style>
 <div style="width: 400px;">
-  <h2>Preview Voice Forum</h2>
+  <h2 title="/shared/_audio_player">Preview Voice Forum</h2>
   <% audios = audio_players(@branch) %>
    <% audios.each do |a| %>
      <span><b><%= a[0] %></b></span>
@@ -15,7 +15,7 @@
 </div>
 
 <% if @branch.forum_type=="report" %>
-<div id="report-upload" class="helpPopUp" style="display:none;">
+<div id="report-upload" class="helpPopUp popup" style="display:none;">
   <%= render :partial=>'/templates/upload_report' %>
 </div>
 <% end %>
@@ -29,8 +29,8 @@ jQuery(document).ready(function(){
   });
   
   $("#cancel").on('click', function(e) {
-    $('#audio-player-div').removeClass('helpPopUp');
-	 $('#audio-player-div').hide();
+    $('#forum-preview').removeClass('helpPopUp');
+	 $('#forum-preview').hide();
 	 return false;
   });
 		

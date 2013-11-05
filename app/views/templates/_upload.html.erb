@@ -1,3 +1,4 @@
+<style></style>
 <div id="template-popup" class="template-popup">
 <%= form_for template, :url=> templates_path, :html => {:method=>'post',:multipart => true, :id=>"frm-upload-logo"} do |f| %>
 <div class="inputSpacing"> 
@@ -17,8 +18,14 @@
   </div>
   
   <%# if template.kind_of?(Vote)||template.kind_of?(Bulletin) %>
-    <%= render :partial=>'select_forum', :locals=>{:template=>@template} %>
+    <%#= render :partial=>'select_forum', :locals=>{:template=>@template} %>
   <%# end %>
+  <!--
+  <div style="margin: 10px;">
+    <input type="radio" name="recording" value="Browse" checked> Browse </input>
+    <input type="radio" name="recording" value="Record"> Record</input>
+  </div>  
+  -->
   <p></p>
   <h3><% 
       saved = template.is_active ? ' and saved' : ''
@@ -26,10 +33,17 @@
          You have uploaded a file previously<%= saved %>.
          <br/>
       <% end %>
+      
+  
     Select your <%= template.name_map(template.name) %> audio file to upload</h3>
   <div class='fileBrowseWrap'>
     <%= f.file_field :sound %>
   </div>
+  
+  <div id="recorder" class='btnUploadWrap recorder'>
+    <%= render :partial=>'recorder' %>
+  </div>
+  
   <div class="btnUploadWrap">
     <span><%= submit_tag 'Preview', :id=>"preview", :value=>"Upload",:class=>"btnAction" %></span>
     <% if (template.name=~/_result/) && !!template.audio_link %>
@@ -54,4 +68,9 @@
 </div>
 <% end %>
 </div>
-
+<script>
+var record = '<%= template.class.name.downcase%>';
+$(function() { 
+  
+});
+</script>

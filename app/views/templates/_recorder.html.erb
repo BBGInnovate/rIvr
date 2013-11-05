@@ -1,3 +1,5 @@
+<style></style>
+<script src="/assets/jRecorder.js?f=#{Time.now.to_i}"></script>
 <div style="background-color: #eeeeee; border: 1px solid #cccccc">
   Time: <span id="time">00:00</span>
 </div>
@@ -19,8 +21,8 @@
 </div>
 <script type="text/javascript">
   $('#record').click(function() {
-    // max recording 60 seconds
-    $.jRecorder.record(60);
+    // max recording 300 seconds
+    $.jRecorder.record(300);
   })
   $('#stop').click(function() {
     $.jRecorder.stop();

@@ -1,18 +1,19 @@
-<div id="template-headline" class="template-popup">
+<style></style>
+<div id="template-headline" class="template-popup" style="width:240px;">
   <%= form_for @option, :url=> headline_templates_path, :html => {:method=>'post',:id=>"frm-headline"} do |f| %>
-  <%= f.hidden_field :branch_id %>
+  <%= f.hidden_field :id %>
   <input type="hidden" name="todo" value="" />
   <div class='notice'>
     <%= flash[:notice] %>
   </div>
+  
   <% options = [['--select--',''],['upload','upload'],['static_rss','static_rss']]
   id = @option.feed_source %>
-  
-  <h3>Select a Headline News Source:</h3>
+  <h3 title="/templates/headline.erb">Select a Headline News Source:</h3>
   <div>
     <%= f.select :feed_source, options_for_select(options, id), :style=>"width:100px" %>
   </div>
-  
+ 
   <h3>Limit of news items:</h3>
   <div>
     <%= f.text_field :feed_limit, :style=>"width:100px" %>
@@ -25,9 +26,12 @@
   
   <div>
     <span><%= submit_tag 'Save', :id=>"save",:class=>"btnAction" %></span>
-    <span><%= submit_tag 'Cance',:id=>"cancel",:class=>"btnAction" %></span>
+    <span><%= submit_tag 'Cancel',:id=>"cancel",:class=>"btnAction" %></span>
   </div>
   <% end %>
+</div>
+<div id="report-upload" class="helpPopUp" style="display:none;">
+  <%= render :partial=>'upload_report' %>
 </div>
 <script>
   jQuery(document).ready(function () { 

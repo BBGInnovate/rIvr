@@ -7,9 +7,10 @@ class Branch< ActiveRecord::Base
   before_save :update_friendly_name
   
   self.table_name = "branches"
-  attr_accessor :vote_result
+  attr_accessor :vote_result, :test
 
   has_one :health
+  has_many :branch_feeds
   belongs_to :country, :foreign_key=>"country_id"
 #  include HealthHelper
 
@@ -232,15 +233,23 @@ class Branch< ActiveRecord::Base
   
   # for report prompts
   has_many :reports do
+    def current()
+      res = select("max(id) as id").group(:name).where("name!='headline'").
+          where(:voting_session_id=>proxy_association.owner.current_forum_session.id)
+      select("id, name, branch_id, dropbox_file, voting_session_id").where(["id in (?)", res.map{|t| t.id}])
+    end
     def latest(active=true)
-      res = select("max(id) as id").group(:name).where(:is_active=>active).
+      res = select("max(id) as id").group(:name).where(:is_active=>active).where("name!='headline'").
           where(:voting_session_id=>proxy_association.owner.active_forum_session.id)
-      select("id, name, dropbox_file, voting_session_id").where(["id in (?)", res.map{|t| t.id}])
+      select("id, name, branch_id, dropbox_file, voting_session_id").where(["id in (?)", res.map{|t| t.id}])
     end
     def headline()
-      item = where(:name=>'headline').last
+      item = where(:name=>'headline' ).
+        where(:voting_session_id=>proxy_association.owner.current_forum_session.id).last
       if !item
-        item = Report.create :name=>'headline', :branch_id=>proxy_association.owner.id
+        item = Report.create :name=>'headline', 
+              :branch_id=>proxy_association.owner.id,
+              :voting_session_id=>proxy_association.owner.current_forum_session.id
           
       end
       item
@@ -248,20 +257,39 @@ class Branch< ActiveRecord::Base
   end
   # for bulletin prompts
   has_many :bulletins do
+    def current()
+      res = select("max(id) as id").group(:name).
+            where(:voting_session_id=>proxy_association.owner.current_forum_session.id)
+      select("id, name, branch_id, dropbox_file, voting_session_id").where(["id in (?)", res.map{|t| t.id}])
+    end
     def latest(active=true)
       res = select("max(id) as id").group(:name).where(:is_active=>active).
             where(:voting_session_id=>proxy_association.owner.active_forum_session.id)
-      select("id, name, dropbox_file, voting_session_id").where(["id in (?)", res.map{|t| t.id}])
+      select("id, name, branch_id,dropbox_file, voting_session_id").where(["id in (?)", res.map{|t| t.id}])
     end
+    
   end
 
   # is a vote template
   # for vote prompts
   has_many :votes do
+    def current()
+      res = select("max(id) as id").group(:name).
+            where(:voting_session_id=>proxy_association.owner.current_forum_session.id)
+      all_items = select("id, name, branch_id,dropbox_file, voting_session_id, description").where(["id in (?)", res.map{|t| t.id}])
+      items = all_items.select{|i| i.description != 'result'}
+            
+      vote_result_items = all_items.select{|i| i.description == 'result'}
+      if vote_result_items.size == 3
+        vote_result_items
+      else
+        items
+      end
+    end
     def latest(active=true)
       res = select("max(id) as id").group(:name).where(:is_active=>active).
             where(:voting_session_id=>proxy_association.owner.active_forum_session.id)
-      all_items = select("id, name, dropbox_file, voting_session_id, description").where(["id in (?)", res.map{|t| t.id}])
+      all_items = select("id, name, branch_id, dropbox_file, voting_session_id, description").where(["id in (?)", res.map{|t| t.id}])
       items = all_items.select{|i| i.description != 'result'}
             
       vote_result_items = all_items.select{|i| i.description == 'result'}
@@ -275,7 +303,7 @@ class Branch< ActiveRecord::Base
     def result_templates
       res = select("max(id) as id").group(:name).where("description='result'")
          where(:voting_session_id=>proxy_association.owner.active_forum_session.id)
-      items = select("id, name, dropbox_file, voting_session_id, description").where(["id in (?)", res.map{|t| t.id}])
+      items = select("id, name, branch_id, dropbox_file, voting_session_id, description").where(["id in (?)", res.map{|t| t.id}])
       
     end
     
@@ -369,37 +397,45 @@ class Branch< ActiveRecord::Base
   validates_presence_of :name
   validates :name, :uniqueness => {:scope => :country_id}
 
+  # replace options table
+  def my_feed
+    if !!self.test
+      forum = self.current_forum_session
+    else
+      forum = self.active_forum_session
+    end
+    branch_feeds.find_or_create_by_forum_session_id(forum.id)
+  end
   def feed_limit
-      return 10 if self.new_record?
-      opt = Option.where(:branch_id=>self.id, :name=>'feed_limit').last
-      if opt
-        opt.value.to_i
-      else
-        10
-      end
+      my_feed.feed_limit || 3
+      # return 10 if self.new_record?
+      # opt = Option.where(:branch_id=>self.id, :name=>'feed_limit').last
+      # !!opt ? opt.value : nil
   end
-
   def feed_source
-      return nil if self.new_record?
-      opt = Option.where(:branch_id=>self.id, :name=>'feed_source').last
-      if opt
-        opt.value
-      else
-        nil
-      end
+      my_feed.feed_source      
+      # return nil if self.new_record?
+      # opt = Option.where(:branch_id=>self.id, :name=>'feed_source').last
+      # !!opt ? opt.value : nil
   end
-
   def feed_url
-      return nil if self.new_record?
-      opt = Option.where(:branch_id=>self.id, :name=>'feed_url').last
-      if opt
-        opt.value
-      else
-        nil
-      end
+      my_feed.feed_url
+      # return nil if self.new_record?
+      # opt = Option.where(:branch_id=>self.id, :name=>'feed_url').last
+      # !!opt ? opt.value : nil
+     
   end
-    
   def feed_limit=(val)
+     my_feed.update_attribute :feed_limit,val
+  end
+  def feed_source=(val)
+     my_feed.update_attribute :feed_source,val
+  end
+  def feed_url=(val)
+     my_feed.update_attribute :feed_url,val
+  end
+  
+  def Xfeed_limit=(val)
       opt = Option.where(:branch_id=>self.id, :name=>'feed_limit').last
       if opt
         opt.value = val
@@ -408,8 +444,7 @@ class Branch< ActiveRecord::Base
         Option.create :branch_id=>self.id, :name=>'feed_limit', :value=>val
       end
   end
-
-  def feed_source=(val)
+  def Xfeed_source=(val)
       opt = Option.where(:branch_id=>self.id, :name=>'feed_source').last
       if opt
         opt.value = val
@@ -418,8 +453,7 @@ class Branch< ActiveRecord::Base
         Option.create :branch_id=>self.id, :name=>'feed_source', :value=>val
       end
   end
-
-  def feed_url=(val)
+  def Xfeed_url=(val)
       opt = Option.where(:branch_id=>self.id, :name=>'feed_url').last
       if opt
         opt.value = val
@@ -511,6 +545,10 @@ class Branch< ActiveRecord::Base
     self.first :conditions=>["id=? or name=? or friendly_name=?", attr, attr, attr]
   end
 
+  def current_forum_session
+    s = self.voting_sessions.last
+    self.voting_sessions.find_by_current(true) || s
+  end
   
   def active_forum_session
     s = OpenStruct.new
@@ -533,6 +571,9 @@ class Branch< ActiveRecord::Base
     # get public messages
     items = self.listen_messages
     prompts = self.forum_prompts
+    
+    forum= !!self.test ? current_forum_session : active_forum_session
+    
     tmp = "#{DROPBOX.tmp_dir}/#{self.friendly_name}"
     FileUtils.mkdir_p tmp
     if ::Rails.env != 'development'
@@ -546,9 +587,9 @@ class Branch< ActiveRecord::Base
         xml.channel do
           # xml.created_at Time.now.getutc
           xml.forum_type self.forum_type
-          xml.forum_session self.active_forum_session.friendly_name
-          xml.entry_upload_folder self.entry_files_folder
-          xml.prompt_upload_folder self.prompt_files_folder
+          xml.forum_session forum.friendly_name
+          xml.entry_upload_folder self.entry_files_folder(forum.friendly_name)
+          xml.prompt_upload_folder self.prompt_files_folder(forum.friendly_name)
           xml.status (self.forum_type=="vote" && self.votes.ended) ? "vote ended" : "OK"
           xml.branch self.friendly_name
           xml.count items.size
@@ -569,18 +610,26 @@ class Branch< ActiveRecord::Base
     end
     return file_path
   end
+  
+  def test_forum_feed_xml(client=nil)
+     self.test = true
+     self.forum_feed_xml
+     self.test = false
+  end
+  
   # generate forum.xml in dropbox public/<branch>
   def generate_forum_feed_xml(client=nil)
     if !client
       client = get_dropbox_session
     end
+    forum= !!self.test ? current_forum_session : active_forum_session
     local_file = self.forum_feed_xml
     dropbox_branch = "#{DROPBOX.home}/bbg/#{self.friendly_name}"
     remote_file = "#{dropbox_branch}/#{File.basename(local_file)}"
-    remote_forum_file = "#{dropbox_branch}/#{self.active_forum_session.friendly_name}/#{File.basename(local_file)}"
+    remote_forum_file = "#{dropbox_branch}/#{forum.friendly_name}/#{File.basename(local_file)}"
     if !Branch.xml_equal?(remote_forum_file, local_file)    
       begin
-        to = "bbg/#{self.friendly_name}/#{self.active_forum_session.friendly_name}"
+        to = "bbg/#{self.friendly_name}/#{forum.friendly_name}"
         client.upload local_file, to
         logger.info "Uploaded #{local_file} to #{to}"
       rescue Exception=>e
@@ -606,7 +655,7 @@ class Branch< ActiveRecord::Base
         end
         FileUtils.copy local_file, remote_file
         logger.info "Copied #{local_file} to #{remote_file}"
-      else
+      elsif !self.test
         begin
           to = "bbg/#{self.friendly_name}/"
           client.upload local_file, to
@@ -621,7 +670,13 @@ class Branch< ActiveRecord::Base
       # puts "Copied #{local_file} to #{remote_file}"
     end
   end
-  def listen_messages
+  def listen_messages()
+    logger.info "AAAA !!self.test #{!!self.test} self.feed_source=#{self.feed_source}"
+    if !!self.test
+      forum = self.current_forum_session
+    else
+      forum = self.active_forum_session
+    end
     limit = self.feed_limit
     items = []
     arr = []
@@ -631,9 +686,9 @@ class Branch< ActiveRecord::Base
       else
         # get the last entry for now
         arr = [SortedEntry.where(:branch_id=>self.id, 
-          :forum_session_id=>branch.active_forum_session.id).last].compact
+          :forum_session_id=>forum.id).last].compact
         arr.each do |f|
-          if f.entry.is_active
+          if !!self.test || f.entry.is_active
             item = OpenStruct.new
             item.public_url = f.dropbox_dir + "/"+f.dropbox_file
             items << item
@@ -641,7 +696,7 @@ class Branch< ActiveRecord::Base
         end
       end
     elsif self.forum_type=='vote' || self.forum_type=='bulletin'
-      vs = self.active_forum_session
+      vs = forum
       arr = SortedEntry.get(self.id, vs.id)
       arr.each do |f|
         if (f.entry.dropbox_file_exists?)
@@ -669,10 +724,15 @@ class Branch< ActiveRecord::Base
     end
     (new_content.gsub!(" ","") == old_content.gsub!(" ",""))
   end
-  def forum_prompts
+  
+  def forum_prompts()
     begin
       records = self.send(self.forum_type.pluralize)
-      records.latest
+      if !!self.test
+         records.current
+      else
+         records.latest
+      end
     rescue
       []
     end

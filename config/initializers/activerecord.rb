@@ -10,6 +10,15 @@ class ActiveRecord::Base
     end
     dropbox_session
   end
+  
+  # Return the first object which matches the attributes hash
+  # - or -
+  # Create new object with the given attributes
+  #
+  def self.find_or_create(attributes)
+    where(attributes).last || create(attributes)
+  end
+
 end
 module Kernel
 private

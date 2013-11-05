@@ -35,21 +35,7 @@ class BranchController < ApplicationController
             :content_type=>"text", 
             :layout=>false
   end
-  def preview_forum
-    @branch= Branch.find_me(params[:id])
-    audios = render_to_string :partial=>'shared/audio_player', :formats=>["html"]
-    render :json=>{:html=>audios},
-            :content_type=>"text", 
-            :layout=>false
-  end
-  def syndicate
-    @branch= Branch.find_me(params[:id])
-    @results=[]
-    html = render_to_string :partial=>'modals/search_rsults', :formats=>["html"]
-    render :json=>{:html=>html},
-            :content_type=>"text", 
-            :layout=>false
-  end
+  
   def new
       flash[:notice] = nil
       if params[:branch_id]
@@ -104,25 +90,77 @@ class BranchController < ApplicationController
       end
     end
     
-    def activate_forum
-      # /branch/activate_forum
-      # :branch_id is voting_session_id
-      vs = VotingSession.find_by_id params[:id]
-      
-      if vs
-        vs.branch.voting_sessions.each do |v|
+    def select_forum
+      if request.get?
+        @branch = Branch.find_by_id params[:id]
+        html = render_to_string :partial=>'select_forum', :formats=>["html"], :locals=>{:action=>'select'}
+        render :json=>{:html=>html},
+            :content_type=>"text", 
+            :layout=>false
+      else
+        @branch = Branch.find_by_id params[:id]
+        forum_name = params[:forum_name]
+        vs = VotingSession.find_me(forum_name, @branch)
+        @branch.voting_sessions.each do |v|
           if v.id != vs.id
-            v.update_attribute :is_active,false
+            v.update_attribute :current, false
           else
-            v.update_attribute :is_active,true
+            v.update_attribute :current, true
           end
         end
-        vs.branch.generate_forum_feed_xml
-        text="Forum : #{vs.name} is activated and forum_feed.xml is generated."
-      else
-        text = 'Forum Title Not Found'
+          
+        vs.update_attribute(:current, true) if vs
+        html="Forum : #{vs.name} is selected."
+        render :json=>{:html=>html},
+            :content_type=>"text", 
+            :layout=>false
       end
-      render :text=>text, :layout=>false,:content_type=>'application/text'
+    end
+    
+    def preview_forum
+      @branch= Branch.find_me(params[:id])
+      html = render_to_string :partial=>'shared/audio_player', :formats=>["html"]
+      render :json=>{:html=>html},
+            :content_type=>"text", 
+            :layout=>false
+    end
+  
+    def activate_forum
+      if request.get?
+        @branch = Branch.find_by_id params[:id]
+        html = render_to_string :partial=>'activate_forum', :formats=>["html"], :locals =>{:action=>'activate'}
+        render :json=>{:html=>html},
+            :content_type=>"text", 
+            :layout=>false
+      else
+        @branch = Branch.find_by_id params[:id]
+        forum_name = params[:forum_name]
+        vs = VotingSession.find_me(forum_name, @branch)
+        if !!vs
+          @branch.voting_sessions.each do |v|
+            if v.id != vs.id
+              v.update_attributes :is_active=>false
+            else
+              v.update_attributes :is_active=>true
+            end
+          end
+          html="Forum : #{vs.name} is activated."
+        else
+          html="Forum : #{forum_name } not found."
+        end
+        render :json=>{:html=>html},
+            :content_type=>"text", 
+            :layout=>false
+      end
+    end
+    
+    def syndicate_forum
+      @branch= Branch.find_me(params[:id])
+      @results=[]
+      html = render_to_string :partial=>'modals/search_rsults', :formats=>["html"]
+      render :json=>{:html=>html},
+            :content_type=>"text", 
+            :layout=>false
     end
     
     def sorted_entries
@@ -136,17 +174,18 @@ class BranchController < ApplicationController
       end
     end
     
-    def upload_report_audio
+    def upload_headline_audio
       branch=Branch.find_by_id params[:branch_id]
       temp = params[:branch] 
       sound_file = temp.delete(:sound)
-      identifier = temp.delete(:identifier)
-      vs = VotingSession.find_me identifier, branch
+      # identifier = temp.delete(:identifier)
+      vs = branch.current_forum_session # VotingSession.find_me identifier, branch
       if sound_file # from preview
-        headline = Report.create :branch_id=>branch.id,
-           :name=>'headline', :voting_session_id=>vs.id
+        headline = branch.reports.find_or_create(:branch_id=>branch.id,
+             :name=>'headline', :voting_session_id=>vs.id)
+                
            
-        uploaded = headline.upload_to_dropbox(sound_file)
+        uploaded = headline.upload_headline(sound_file)
         if uploaded
            text = "#{sound_file.original_filename} is uploaded"
            render :text=>text, :layout=>false,:content_type=>'application/text'

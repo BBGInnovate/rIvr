@@ -15,7 +15,6 @@
   <div id="new-branch" class="float-left helpPopUp"></div>
   <p id="return-msg" class="notice"></p>
 
-  
   <p>
   <a id="go-template" class="go-template" href="/templates">Edit Forum</a>
   <span id="go-template-hint" class="go-template-hint"></span>
@@ -43,27 +42,38 @@
         <a href="#"><%= Branch.forum_type_ui('bulletin') %></a>
       </li>
       <li class="vertical-line"></li>
-      <li id="active-forum" class="TabbedPanelsTab syndicate" tabindex="0" data-url="">
-        <a href="#">Activate Forum</a>
+      
+      <li id="select-forum" class="TabbedPanelsTab syndicate" tabindex="0" data-url="/branch/select_forum">
+        <a href="#">Select Forum</a>
       </li>
       
-      <li id="privew-voice-forum" class="TabbedPanelsTab syndicate" tabindex="0" data-url="/branch/preview_forum">
+      <li id="preview-forum" class="TabbedPanelsTab syndicate" tabindex="0" data-url="/branch/preview_forum">
         <a href="#">Privew Voice Forum</a>
       </li>
+      
+      <li id="activate-forum" class="TabbedPanelsTab syndicate" tabindex="0" data-url="/branch/activate_forum">
+        <a href="#">Activate Forum</a>
+      </li>
       <!--
-      <li id="syndicate-voice-forum" class="TabbedPanelsTab syndicate" tabindex="0" data-url="/branch/syndicate">
+      <li id="syndicate-forum" class="TabbedPanelsTab syndicate" tabindex="0" data-url="/branch/syndicate">
         <a href="#">Syndicate Voice Forum</a>
       </li>
       -->
     </ul>
   </div>
-  <div id="search-results" class="float-left helpPopUp"></div>
-  <div id="audio-player-div" class="float-left helpPopUp"></div>
-  <div id="forum-audio-upload" class="float-left forum-upload helpPopUp"></div>
-  <div id="forum-activate" class="float-left helpPopUp" style="display:none;">
-    <%= render :partial=>'activate_forum' %>
+  <div id="forum-select" class="float-left helpPopUp popup">
+    <%#= render :partial=>'select_forum' %>
   </div>
-  <div id="syndicate-forum-soundlcloud" class="float-left helpPopUp" style="display:none;"></div>
+  <div id="forum-preview" class="float-left helpPopUp popup">
+    <%#= render :partial=>'/shared/audio_player' %>
+  </div>
+  
+  <div id="forum-audio-upload" class="float-left forum-upload helpPopUp popup"></div>
+  <div id="forum-activate" class="float-left helpPopUp popup">
+    <%#= render :partial=>'activate_forum' %>
+  </div>
+  <div id="forum-syndicate" class="float-left helpPopUp popup"></div>
+ 
   <div>
   <%# @branch = Branch.find(13) if !@branch %>
      <%#= render :partial=>'/shared/sortable' if @branch %>

@@ -43,8 +43,62 @@ module ApplicationHelper
       super
     end
   end
-  
   def audio_players(branch)
+    audios = []
+    records = branch.send(branch.forum_type.pluralize).current
+    case branch.forum_type
+    when 'report'
+      intro = records.detect{|t| t.name=='introduction'}
+      intro = create_template(branch, 'introduction') if !intro
+      audios << ['Introduction', audio_tag(intro), edit_tag(intro)] 
+      headline = branch.reports.headline
+      if branch.feed_source != 'static_rss'
+        audio = audio_tag(headline)
+      else
+        audio = 'Static RSS'
+      end
+      audios << ['Headline News', audio, edit_tag(headline)]  
+      bye = records.detect{|t| t.name=='goodbye'}
+      bye = create_template(branch, 'goodbye') if !bye
+      audios << ['Goodbye', audio_tag(bye), edit_tag(bye)]  
+    when 'vote'
+      intro = records.detect{|t| t.name=='introduction'}
+      intro = create_template(branch, 'introduction') if !intro
+      audios << ['Introduction', audio_tag(intro), edit_tag(intro)] 
+      vote = records.detect{|t| t.name=='candidate'}
+      vote = create_template(branch, 'candidate') if !vote
+      audios << ['Participate', audio_tag(vote), edit_tag(vote)]
+      comment = records.detect{|t| t.name=='comment'}
+      comment = create_template(branch, 'comment') if !comment
+      audios << ['Leave Comment', audio_tag(comment), edit_tag(comment)]
+      
+      intro = records.detect{|t| t.name=='introduction_result'}
+      intro = create_template(branch, 'introduction_result') if !intro
+      audios << ['Introduction Result', audio_tag(intro), edit_tag(intro)] 
+      vote = records.detect{|t| t.name=='candidate_result'}
+      vote = create_template(branch, 'candidate_result') if !vote
+      audios << ['Vote Result', audio_tag(vote), edit_tag(vote)]
+      listen = records.detect{|t| t.name=='listen_result'}
+      listen = create_template(branch, 'listen_result') if !listen
+      audios << ['Opinion Board', audio_tag(listen), edit_tag(listen)] 
+    when 'bulletin' 
+      intro = records.detect{|t| t.name=='introduction'}
+      intro = create_template(branch, 'introduction') if !intro
+      audios << ['Introduction', audio_tag(intro), edit_tag(intro)] 
+      bulletin = records.detect{|t| t.name=='bulletin_question'}
+      bulletin = create_template(branch, 'bulletin_question') if !bulletin
+      audios << ['Ask the communite', audio_tag(bulletin), edit_tag(bulletin)]  
+      listen = records.detect{|t| t.name=='listen'}
+      listen = create_template(branch, 'listen') if !listen
+      audios << ['Listen Messages', audio_tag(listen), edit_tag(listen)] 
+    end
+  end
+  def create_template(branch, name)
+     tmp = branch.send(branch.forum_type.pluralize).create :name=>name,
+             :voting_session_id=>branch.current_forum_session.id
+  end
+  
+  def Oldaudio_players(branch)
     audios = []
     template = branch.forum_type.camelcase.constantize
      

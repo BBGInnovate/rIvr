@@ -40,13 +40,17 @@ TestIvr::Application.routes.draw do
   
   resources :branch do
     collection do
+      get :select_forum
+      post :select_forum
       get :activate_forum
+      post :activate_forum
       get :preview_forum
-      get :syndicate
-      post :syndicate
+      get :syndicate_forum
+      post :syndicate_forum
       get :sorted_entries
       post :sorted_entries
-      post :upload_report_audio
+      get :upload_headline_audio
+      post :upload_headline_audio
       get :exchange_token
     end
   end
@@ -55,6 +59,7 @@ TestIvr::Application.routes.draw do
       post :headline
       get :headline
       get :forum_feed
+      post :record
     end
   end
   resources :users do

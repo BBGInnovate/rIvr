@@ -6,7 +6,14 @@
    options.unshift ["--Select--","0"]
    id = 0
 %>
-<%= select_tag "activate[identifier]", options_for_select(options, id), :style=>'' %>
+<%= select_tag "forum[identifier]", options_for_select(options, id), :style=>'' %>
 <span><%= submit_tag 'Save', :id=>"save", :class=>"btnAction" %></span>
 <span><%= submit_tag 'Cancel', :id=>"cancel", :class=>"btnAction" %></span>
 </div>
+<script>
+  $(document).ready(function () { 
+    // jquery combobox for Voting Session Name 
+    // create or select
+    $("[id*='identifier']").combobox();
+  });
+</script>

@@ -3,12 +3,12 @@ require 'open-uri'
 require 'builder'
 
 class Report < Template
-
-   def upload_to_dropbox(file)
-    to = self.branch.entry_files_folder(self.voting_session.name)
-    remote_dir = DROPBOX.home+to
-    remote_file = remote_dir + "/" + file.original_filename
-    entry = Entry.create :branch_id=>self.branch_id, 
+   
+   def upload_headline(file)
+     to = self.branch.entry_files_folder(self.voting_session.name)
+     remote_dir = DROPBOX.home+to
+     remote_file = remote_dir + "/" + file.original_filename
+     entry = Entry.create :branch_id=>self.branch_id, 
             :forum_type=>'report',
             :dropbox_dir => to,
             :dropbox_file=>file.original_filename,
@@ -16,18 +16,7 @@ class Report < Template
             :forum_session_id=>self.voting_session_id,
             :is_private=>false,
             :is_active=>false
-       
-
-    # not use local dropbox     
-    if 1==0 && (Dir.exists? DROPBOX.home)
-      # dropbox client is installed
-      # have to be sure the dropbox client is running
-      if !Dir.exists?(remote_dir)
-         FileUtils.mkdir_p remote_dir
-      end
-      FileUtils.copy file.tempfile.path, remote_file
-      logger.info "Copied #{file.tempfile.path} to #{remote_file}"
-    else    
+          
       client = self.get_dropbox_session
       if !!client
         begin
@@ -48,10 +37,9 @@ class Report < Template
           return false
         end
       end
-    end
     add_sorted_entry(entry)
     return true
-  end
+   end
 
   def add_sorted_entry(item)
     ss = SortedEntry.where(:branch_id=>self.branch_id, :forum_session_id=>item.forum_session_id).

@@ -742,19 +742,23 @@ var reportUpload = {
 			$('#'+reportUpload.myId).addClass('square-clicked');
 		});
     
-		jQuery("#configure_feed_source").on('change', function(e) {
+		jQuery("#branch_feed_source").on('change', function(e) {
 			var feed_source = $(this).val();
 			// alert("line 747")
 			if (feed_source=='upload') {
-			  var branch_id = jQuery('#configure_branch_id').val();
-			  var url = '/templates/report';
+			  var branch_id = jQuery('#branch_branch_id').val();
+			  var url = '/templates/headline';
 			  var data = {
 				  feed_source : feed_source,
 				  branch_id : branch_id
 			  };
-			  // jQuery.get(url, data, reportUpload.update, 'html');
-			  Modal.open("report-upload", 'configure_feed_source', 200);
-			  $('#forum-audio-upload').hide();
+			  /*
+			  $.get(url, data, function(data) {
+			  	  $("#report-upload", 'branch', 200);
+			     Modal.open("report-upload", 'branch', 200);
+			  }, 'html'); */
+			  $("#report-upload").show();
+			  // $('#forum-audio-upload').hide();
 		   }
 		});
 		
@@ -777,7 +781,43 @@ var reportUpload = {
 			};
 			$('#frm-headline').ajaxForm(options);
 		});
-		
+		/*
+		$("#report-popup").on('click',"input[name='recording']:checked", function(e) {
+			if (this.value=='Record') {
+			   $('#recorder').show()
+			   $('.fileBrowseWrap').hide();
+			   var branch_id = $("[id*='_branch_id']").val();
+			   var identifier = $('.custom-combobox-input').val();
+			   var id = $("[id*='_id']").val();
+			   $.jRecorder = null;
+			   // "ZZZ" is a params separator, since jRecorder.swf allows only one parameter
+			   $.jRecorder({
+			   	  host:'/templates/record?record=' + branch_id  + "ZZZ"+ identifier + 'ZZZ'+id,
+              callback_started_recording : function() {
+                callback_started();
+              },
+              callback_stopped_recording : function() {
+                callback_stopped();
+              },
+              callback_activityLevel : function(level) {
+                callback_activityLevel(level);
+              },
+              callback_activityTime : function(time) {
+                callback_activityTime(time);
+              },
+              callback_finished_sending : function(time) {
+                // callback_finished_sending()
+                $('#status').html('Audio has been sent to Dropbox');
+              },
+              swf_path:'/inc/jRecorder.swf'
+            });
+
+	      } else {
+	         $('#recorder').hide()
+			   $('.fileBrowseWrap').show();
+	      }
+         
+		}); */
 		$("#report-popup").on('click', "#preview-report, #save-report", function(e) {
 			var url = $('#frm-upload-report').attr('action');
 		   var identifier = $('.custom-combobox-input').val();
@@ -800,12 +840,48 @@ var reportUpload = {
 			$('#frm-upload-report').ajaxForm(options);
 		});
 		
-		
+		$("#template-popup, #report-popup").on('click',"input[name='recording']:checked", function(e) {
+			if (this.value=='Record') {
+			   $('#recorder').show()
+			   $('#template-popup h3, #preview, .fileBrowseWrap').hide();
+			   var branch_id = $("[id*='_branch_id']").val();
+			   var identifier = $('.custom-combobox-input').val();
+			   var id = $("[id*='_id']").val();
+			   alert("id=" + id +"branch_id=" + branch_id + "identifier=" + identifier)
+			   // "ZZZ" is a params separator, since jRecorder.swf allows only one parameter
+			   
+			   $.jRecorder({
+			   	  host:'/templates/record?record=' + branch_id  + "ZZZ"+ identifier + 'ZZZ'+id,
+              callback_started_recording : function() {
+                callback_started();
+              },
+              callback_stopped_recording : function() {
+                callback_stopped();
+              },
+              callback_activityLevel : function(level) {
+                callback_activityLevel(level);
+              },
+              callback_activityTime : function(time) {
+                callback_activityTime(time);
+              },
+              callback_finished_sending : function(time) {
+                // callback_finished_sending()
+                $('#status').html('Audio has been sent to Dropbox');
+              },
+              swf_path:'/inc/jRecorder.swf'
+            });
+            
+	      } else {
+	         $('#recorder').hide()
+			   $('#template-popup h3, #preview, .fileBrowseWrap').show();
+	      }
+         
+		});
 		
 		jQuery("#template-popup").on('click', "#preview, #save", function(e) {
 			var url = '/templates';
 			jQuery(this).css("cursor", "progress");
-			var v = jQuery("[id*='_sound']").val();
+			var v = jQuery("#template-popup [id*='_sound']").val();
          if(v.length==0 && this.id=="preview") {
            alert("You must select a upload file first")
            return false;
@@ -813,8 +889,6 @@ var reportUpload = {
      
 	      jQuery("[name='todo']").val(this.id);
 	      // jquery combobox for Voting Session Name
-	   
-	      
 	      var identifier = $('.custom-combobox-input').val();
 	      $("[id*='_identifier']").append('<option value="'+identifier +'" selected="selected">'+identifier+'</option>');
          var temp_name = $("[id*='_name']").attr('value');
@@ -852,9 +926,10 @@ var reportUpload = {
 			$('#forum-upload, .forum-upload').show();
 		});
 		$(".template-popup").on('click', "#cancel", function(e) {
-			$('#forum-upload, .forum-upload, .helpPopUp').hide();
+			$('#forum-upload, .forum-upload').hide();
 			return false;
 		});
+		
 		$("#cancel-report").on('click', function(e) {
 			$('#report-upload').hide();
 			$('#report-upload style').html('');
@@ -867,6 +942,7 @@ var reportUpload = {
 	},
 	update : function(data) {
 		$("#forum-upload").html(data);
+		Modal.open("forum-upload", "branch", 300)
 		$(".square").css("cursor", "pointer");
 	}
 }
@@ -874,6 +950,7 @@ var reportUpload = {
 var branchManage = {
    branchAction : '',
    myId : '',
+   url : null,
    forumTypes: ["report", "bulletin", "vote"],
 	init : function() {
 	  var branch_id = $("#record_id").val();
@@ -1009,6 +1086,7 @@ var branchManage = {
 			jQuery.get(url, data, branchManage.updateForum, 'html');
 			return false;
 		});
+		/*
 		$("#activate-forum-div").on('click', "#save", function(e) {
 			branchManage.myId = this.id
 			var id = $('#activate_forum :selected').val();
@@ -1022,18 +1100,20 @@ var branchManage = {
 			   $('#return-msg').html(result);
 			}, 'html');
 			return false;
-		});
+		}); */
 		jQuery("#branch").on(
 				'click', ".TabbedPanelsTab, input[name='forum_type']",
 				function(e) {	
-				   var divMap = {"privew-voice-forum":{"id":"audio-player-div", "height":"400"}, 
-				               	  "active-forum":{"id":"forum-activate", "height":"140"},
-				               	  "syndicate-voice-forum":{"id":"search-results", "height":"400"}
+				   var divMap = {"preview-forum":{"id":"forum-preview", "height":"401"}, 
+				                 "select-forum":{"id":"forum-select", "height":"140"},
+				               	  "activate-forum":{"id":"forum-activate", "height":"140"},
+				               	  "syndicate-forum":{"id":"forum-syndicate", "height":"402"}
 				               };
 					branchManage.myId = this.id;
+					
 					var branch_id = $("#record_id").val();
 					if (branch_id == '0') {
-						$('#return-msg').html('Please select a branch')
+						$('#return-msg').removeClass('notice').addClass('error').html('Please select a branch')
 						$("*").css("cursor", "default");
 						return false;
 					}
@@ -1041,23 +1121,17 @@ var branchManage = {
 					var action_type = branchManage.forumTypes.indexOf(branchManage.myId); 
 					
 					if (action_type == -1 ) {
-					  if (branchManage.myId=='active-forum') {
-			           Modal.open(divMap[branchManage.myId].id,branchManage.myId, divMap[branchManage.myId].height);
-			           return false;
-					  } else {
-					    var url = $(this).attr('data-url');
-					    $("*").css("cursor", "progress");
-					    $.get(url,{"id":branch_id}, function(data) {
+					   branchManage.url = $(this).attr('data-url');
+					   $("*").css("cursor", "progress");
+					   $.get(branchManage.url,{"id":branch_id}, function(data) {
 						   $("*").css({
 						      "cursor" : "default"
 						   });
 						   var obj = jQuery.parseJSON(data);
-						   alert(divMap[branchManage.myId].id)
 					      $('#'+divMap[branchManage.myId].id).html(obj.html);
 						   Modal.open(divMap[branchManage.myId].id, "branch", divMap[branchManage.myId].height);
-					    }, 'html');
-					    return false;
-					  }
+					   }, 'html');
+					   return false;
 				   } else {
 					   
 					   // if the tab is already selected
@@ -1084,9 +1158,35 @@ var branchManage = {
 					}
 
 				});
-		jQuery("#cancel").on('click', function(e) {
-			jQuery('#new-branch,#forum-activate,#audio-player-div').removeClass('helpPopUp');
-			jQuery('#new-branch,#forum-activate,#audio-player-div').hide();
+		$("#forum-select").on('click',"#save", function(e) {
+			var forum_name = $(".custom-combobox-input").val();
+			var branch_id = $("#record_id").val();
+			$.post(branchManage.url, {"id":branch_id,"forum_name":forum_name}, function(data) {
+			    $("*").css({
+				   "cursor" : "default"
+				 });
+			    var obj = jQuery.parseJSON(data);
+			    $('#return-msg').addClass('notice')
+			    $('.notice').html(obj.html);
+			}, 'html');
+			return false;
+		});
+		$("#forum-activate").on('click',"#save", function(e) {
+			var forum_name = $('#activate_identifier :selected').val()
+			var branch_id = $("#record_id").val();
+			$.post(branchManage.url, {"id":branch_id,"forum_name":forum_name}, function(data) {
+			    $("*").css({
+				   "cursor" : "default"
+				 });
+			    var obj = jQuery.parseJSON(data);
+			    $('#return-msg').addClass('notice')
+			    $('.notice').html(obj.html);
+			}, 'html');
+			return false;
+		});
+		$("#branch").on('click',"#cancel", function(e) {
+		   $('.popup').removeClass('helpPopUp');
+	      $('.popup').hide();
 			return false;
 		});
 	},
@@ -1129,7 +1229,6 @@ var branchManage = {
 		});
 		$("#forum-audio-upload").html(data);
       Modal.open("forum-audio-upload", branchManage.myId, 220);
-		//jQuery("#forum-audio-upload").show().html(data);
 	},
 }
 
