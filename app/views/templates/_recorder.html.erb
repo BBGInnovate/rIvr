@@ -19,7 +19,35 @@
   <input type="button" id="stop" value="Stop/Preview" />
   <input type="button" id="send" value="Send Data" />
 </div>
+<script>
+var record = '<%= template.class.name.downcase%>';
+$(function() { 
+  $.jRecorder({
+	 host:"/templates/record?record=<%= branch.id%>ZZZ<%= template.id %>",
+      callback_started_recording : function() {
+        callback_started();
+      },
+      callback_stopped_recording : function() {
+        callback_stopped();
+      },
+      callback_activityLevel : function(level) {
+        callback_activityLevel(level);
+      },
+      callback_activityTime : function(time) {
+        callback_activityTime(time);
+      },
+      callback_finished_sending : function(time) {
+        // callback_finished_sending()
+        $('#status').html('Audio has been sent to Dropbox');
+      },
+      swf_path:'/inc/jRecorder.swf'
+  });
+});
+</script>
 <script type="text/javascript">
+
+  
+            
   $('#record').click(function() {
     // max recording 300 seconds
     $.jRecorder.record(300);

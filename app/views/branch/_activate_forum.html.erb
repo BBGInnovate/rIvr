@@ -1,7 +1,7 @@
 <style></style>
 <div style="width: 200px;">
 <div class="notice"></div>
-<div class="title">Select or Create Forum</div>		
+<div class="title">Select Forum</div>		
 <% options = @branch.voting_sessions.map{|b| [b.name, b.id]}
    options.unshift ["--Select--","0"]
    id = 0

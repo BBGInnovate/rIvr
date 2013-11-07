@@ -1,7 +1,7 @@
 <div id="branch" class="Amodule branch-configuration-body">
-  <h2>Branch Configuration</h2>
+  <h2>Configure Forum</h2>
   <div class="select-branch">
-    <h4>Select Branch</h4>
+    <h3>Step 1. Select Branch</h3>
     <form action="" method="get">
       <% options = Branch.where("is_active=1").map{|b| [b.name, b.id]}
          options.unshift ["--Select Branch--","0"] 
@@ -9,7 +9,7 @@
       %>
       <%= select_tag 'record[id]', options_for_select(options, id), :style=>'' %>
     </form>
-    <%= submit_tag 'Create Branch', :id=>"create", :class=>"create-branch ZbtnAction" %>&nbsp;&nbsp;
+    <%= submit_tag 'Create Branch', :id=>"create", :class=>"create-branch ZbtnAction" %>
     <%= submit_tag 'Delete Branch', :id=>"delete", :class=>"create-branch" %>
   </div>
   <div id="new-branch" class="float-left helpPopUp"></div>
@@ -24,7 +24,7 @@
   </p>
 
   
-  <h3>Select Forum Type</h3>
+  <h3>Step 2. Select Forum Type</h3>
   <div id="TabbedPanels1" class="TabbedPanels">
     <ul class="TabbedPanelsTabGroup">
       <li id="report" class="TabbedPanelsTab listen" tabindex="0">
@@ -41,19 +41,19 @@
       <li id="bulletin" class="TabbedPanelsTab syndicate" tabindex="0">
         <a href="#"><%= Branch.forum_type_ui('bulletin') %></a>
       </li>
-      <li class="vertical-line"></li>
       
+      <!--
+      <li class="vertical-line"></li>
       <li id="select-forum" class="TabbedPanelsTab syndicate" tabindex="0" data-url="/branch/select_forum">
         <a href="#">Select Forum</a>
       </li>
-      
       <li id="preview-forum" class="TabbedPanelsTab syndicate" tabindex="0" data-url="/branch/preview_forum">
         <a href="#">Privew Voice Forum</a>
       </li>
-      
       <li id="activate-forum" class="TabbedPanelsTab syndicate" tabindex="0" data-url="/branch/activate_forum">
         <a href="#">Activate Forum</a>
       </li>
+      -->
       <!--
       <li id="syndicate-forum" class="TabbedPanelsTab syndicate" tabindex="0" data-url="/branch/syndicate">
         <a href="#">Syndicate Voice Forum</a>
@@ -61,13 +61,53 @@
       -->
     </ul>
   </div>
+  <h3>Step 3. Select/Edit Forum </h3>
+  <div id="TabbedPanels2" class="TabbedPanels">
+    <ul class="TabbedPanelsTabGroup">
+      <li id="select-forum" class="TabbedPanelsTab syndicate" tabindex="0" data-url="/branch/select_forum">
+        <a href="#">Select Forum</a>
+      </li>
+      <span class="">
+        <div id="forum-select" class="float-left helpPopUp popup">
+          <%#= render :partial=>'select_forum' %>
+        </div>
+      </span>
+    </ul>
+  </div>
+  
+  <h3>Step 4. Preview Voice Forum </h3>
+  <div id="TabbedPanels2" class="TabbedPanels">
+    <ul class="TabbedPanelsTabGroup">
+      <li id="preview-forum" class="TabbedPanelsTab syndicate" tabindex="0" data-url="/branch/preview_forum">
+        <a href="#">Privew Voice Forum</a>
+      </li>
+    </ul>
+  </div>
+  
+  <h3>Step 5. Activate Forum </h3>
+  <div id="TabbedPanels2" class="TabbedPanels">
+    <ul class="TabbedPanelsTabGroup">
+      <li id="activate-forum" class="TabbedPanelsTab syndicate" tabindex="0" data-url="/branch/activate_forum">
+        <a href="#">Activate Forum</a>
+      </li>
+      <span class="">
+        <div id="forum-activate" class="float-left helpPopUp popup">
+          <%#= render :partial=>'activate_forum' %>
+        </div>
+      </span>
+    </ul>
+  </div>
+  
+  <!--
   <div id="forum-select" class="float-left helpPopUp popup">
     <%#= render :partial=>'select_forum' %>
   </div>
+  -->
+  <!--
   <div id="forum-preview" class="float-left helpPopUp popup">
     <%#= render :partial=>'/shared/audio_player' %>
   </div>
-  
+  -->
   <div id="forum-audio-upload" class="float-left forum-upload helpPopUp popup"></div>
   <div id="forum-activate" class="float-left helpPopUp popup">
     <%#= render :partial=>'activate_forum' %>

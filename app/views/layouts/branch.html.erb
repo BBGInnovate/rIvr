@@ -35,11 +35,12 @@
       <!-- End Module -->
     </div>
     <!-- End Wrapper -->
-		<%= yield :scripts %> <!-- (in your footer) -->
+    <%= render :partial=>'shared/footer' %>
+    <%#= yield :scripts %> <!-- (in your footer) -->
     <script>
       jQuery(document).ready(function(){
           homePage.init("content");
-       //   autoRefreshHeader.init();
+          autoRefreshHeader.init();
           blinkeffect('img.red-light');
       });
     </script>

@@ -1,5 +1,5 @@
 <style></style>
-<div style="width: 200px;">
+<div style="width: 200px; height: 140px;">
 <div class="notice"></div>
 <div class="title">Select or Create Forum</div>		
 <% options = @branch.voting_sessions.map{|b| [b.name, b.id]}
@@ -14,6 +14,6 @@
   $(document).ready(function () { 
     // jquery combobox for Voting Session Name 
     // create or select
-    $("[id*='identifier']").combobox();
+    $("[id*='forum_identifier']").combobox();
   });
 </script>

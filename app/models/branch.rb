@@ -285,6 +285,7 @@ class Branch< ActiveRecord::Base
       else
         items
       end
+      items + vote_result_items 
     end
     def latest(active=true)
       res = select("max(id) as id").group(:name).where(:is_active=>active).
@@ -626,7 +627,7 @@ class Branch< ActiveRecord::Base
     local_file = self.forum_feed_xml
     dropbox_branch = "#{DROPBOX.home}/bbg/#{self.friendly_name}"
     remote_file = "#{dropbox_branch}/#{File.basename(local_file)}"
-    remote_forum_file = "#{dropbox_branch}/#{forum.friendly_name}/#{File.basename(local_file)}"
+    remote_forum_file = "#{dropbox_branch}/#{self.forum_type}/#{forum.friendly_name}/#{File.basename(local_file)}"
     if !Branch.xml_equal?(remote_forum_file, local_file)    
       begin
         to = "bbg/#{self.friendly_name}/#{forum.friendly_name}"

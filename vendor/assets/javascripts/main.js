@@ -1,3 +1,60 @@
+var Modal2 = {
+	modalID:  null,
+		css : function(height) {
+			// height is the modal's min-height
+			height = height || 360;
+			var newRule = ".helpPopUp {z-index:10;background: none repeat scroll 0 0 #FFFFFF;border: 1px solid #CFE8F5;";
+			newRule = newRule +"border-radius: 11px 11px 11px 11px;padding: 20px;position: absolute;";
+			newRule = newRule +"position:absolute;text-align: left; min-height: " + (height) + "px;display: none}";
+			$(Modal2.modalID + " style").append(newRule);
+		},
+		open : function (modal_id, anchor_id, height) {
+			height = height || 360;
+	   // modal_id must have a child <style></style> for Modal.css to work
+	   // modal id must have a class helpPopUp for modal.css to work
+	   // Modal_id first child must define a width to Modal_id to figure out 
+	   // it's width
+      // modal_id modal window placeholder id
+      // anchor_id element id, click which trigers the modal window
+      Modal2.modalID = "#" + modal_id;
+      
+      Modal2.css(height);
+      var anchorID = "#" + anchor_id;
+      // get how many pixels that the calling link is from the top of the page -- to be used later.
+      // var anchorOffset = Math.floor(jQuery(anchorID).offset().top);
+      var mymodal = $(Modal2.modalID);
+      
+      // get the modal window's height + padding top + padding bottom
+      var modalHeight = Math.floor(mymodal.height());
+      var child = mymodal.children('div')[0];
+      var modalWidth = Math.floor($(child).width());
+      mymodal.css('width', modalWidth);
+      var windowWidth = $(window).width();
+      var newLeft = 400;
+      // set the new left
+      mymodal.css('left', newLeft);
+      // instead of using the top of the screen to determine where the modal goes, we're using the offset position of the link that calls the function
+      // for the user to see the pop-up they need to click the link
+      // so to ensure that the user sees the modal it will appear above the link.
+      // This is taking the offset position of the link - half the modal window's height.  So in theory, the modal window's center will be right above the calling link.
+      var newTop = 100;
+      // set the new top
+      mymodal.css('top', newTop);
+      // now set the height of the content div inserted into 
+      // the modal
+      
+      // $(child).css('height', modalHeight)
+      $(child).css({
+      	   'postion': 'relative',
+         'min-height': modalHeight,
+         'background-color': '#CCC',
+         'border': '1px solid #CCC'
+      });
+
+      // fade the modal window in
+      mymodal.fadeIn();
+    }
+};
 var Modal = {
 	modalID:  null,
 		css : function(height) {
@@ -65,7 +122,7 @@ var Modal = {
       // fade the modal window in
       mymodal.fadeIn();
     }
-}
+};
 var datepickerConfigure = {
   init : function() {
     $('#start_date, #end_date').datetimepicker({
@@ -729,6 +786,7 @@ var reportUpload = {
 		  }
 	     $('#moderate-div').hide();
 			reportUpload.myId = this.id;
+			alert(reportUpload.myId)
 			$(this).css("cursor", "progress");
 			var b = jQuery('#branch-name').val();
 			var data = {
@@ -781,43 +839,7 @@ var reportUpload = {
 			};
 			$('#frm-headline').ajaxForm(options);
 		});
-		/*
-		$("#report-popup").on('click',"input[name='recording']:checked", function(e) {
-			if (this.value=='Record') {
-			   $('#recorder').show()
-			   $('.fileBrowseWrap').hide();
-			   var branch_id = $("[id*='_branch_id']").val();
-			   var identifier = $('.custom-combobox-input').val();
-			   var id = $("[id*='_id']").val();
-			   $.jRecorder = null;
-			   // "ZZZ" is a params separator, since jRecorder.swf allows only one parameter
-			   $.jRecorder({
-			   	  host:'/templates/record?record=' + branch_id  + "ZZZ"+ identifier + 'ZZZ'+id,
-              callback_started_recording : function() {
-                callback_started();
-              },
-              callback_stopped_recording : function() {
-                callback_stopped();
-              },
-              callback_activityLevel : function(level) {
-                callback_activityLevel(level);
-              },
-              callback_activityTime : function(time) {
-                callback_activityTime(time);
-              },
-              callback_finished_sending : function(time) {
-                // callback_finished_sending()
-                $('#status').html('Audio has been sent to Dropbox');
-              },
-              swf_path:'/inc/jRecorder.swf'
-            });
-
-	      } else {
-	         $('#recorder').hide()
-			   $('.fileBrowseWrap').show();
-	      }
-         
-		}); */
+		
 		$("#report-popup").on('click', "#preview-report, #save-report", function(e) {
 			var url = $('#frm-upload-report').attr('action');
 		   var identifier = $('.custom-combobox-input').val();
@@ -846,30 +868,9 @@ var reportUpload = {
 			   $('#template-popup h3, #preview, .fileBrowseWrap').hide();
 			   var branch_id = $("[id*='_branch_id']").val();
 			   var identifier = $('.custom-combobox-input').val();
-			   var id = $("[id*='_id']").val();
-			   alert("id=" + id +"branch_id=" + branch_id + "identifier=" + identifier)
-			   // "ZZZ" is a params separator, since jRecorder.swf allows only one parameter
-			   
-			   $.jRecorder({
-			   	  host:'/templates/record?record=' + branch_id  + "ZZZ"+ identifier + 'ZZZ'+id,
-              callback_started_recording : function() {
-                callback_started();
-              },
-              callback_stopped_recording : function() {
-                callback_stopped();
-              },
-              callback_activityLevel : function(level) {
-                callback_activityLevel(level);
-              },
-              callback_activityTime : function(time) {
-                callback_activityTime(time);
-              },
-              callback_finished_sending : function(time) {
-                // callback_finished_sending()
-                $('#status').html('Audio has been sent to Dropbox');
-              },
-              swf_path:'/inc/jRecorder.swf'
-            });
+			   var id = $("[id*='_id']").val(); //id==template.id
+			   // alert("id=" + id +"branch_id=" + branch_id + "identifier=" + identifier)
+			   // "ZZZ" is a params separator, since jRecorder.swf allows only one parameter 
             
 	      } else {
 	         $('#recorder').hide()
@@ -1119,17 +1120,24 @@ var branchManage = {
 					}
 				
 					var action_type = branchManage.forumTypes.indexOf(branchManage.myId); 
-					
 					if (action_type == -1 ) {
 					   branchManage.url = $(this).attr('data-url');
 					   $("*").css("cursor", "progress");
+					   
 					   $.get(branchManage.url,{"id":branch_id}, function(data) {
 						   $("*").css({
 						      "cursor" : "default"
 						   });
+						   
 						   var obj = jQuery.parseJSON(data);
-					      $('#'+divMap[branchManage.myId].id).html(obj.html);
-						   Modal.open(divMap[branchManage.myId].id, "branch", divMap[branchManage.myId].height);
+						   if (branchManage.myId=='preview-forum') {
+						      branchManage.previewForum(obj.html);
+						   } else {
+						     $('#'+divMap[branchManage.myId].id).html(obj.html).show();
+						     if (branchManage.myId=='preview-forum') {
+						       Modal2.open(divMap[branchManage.myId].id, branchManage.myId, divMap[branchManage.myId].height);
+					        }
+					      };
 					   }, 'html');
 					   return false;
 				   } else {
@@ -1144,7 +1152,7 @@ var branchManage = {
 					   // for /branch/show
 					   var url = '/branch/' + branch_id;
 					   var data = {
-						   action_type : action_type
+						   action_type : branchManage.myId
 					   };
 					   $.get(url, data, function(data) {
 						   $("*").css({
@@ -1165,9 +1173,12 @@ var branchManage = {
 			    $("*").css({
 				   "cursor" : "default"
 				 });
+				 OpenWin('/templates/?branch='+branch_id);
+				 /*
 			    var obj = jQuery.parseJSON(data);
 			    $('#return-msg').addClass('notice')
 			    $('.notice').html(obj.html);
+			    */
 			}, 'html');
 			return false;
 		});
@@ -1230,6 +1241,35 @@ var branchManage = {
 		$("#forum-audio-upload").html(data);
       Modal.open("forum-audio-upload", branchManage.myId, 220);
 	},
+	previewForum : function(html) {
+	   $('<div></div>').appendTo('body')
+          .html(html)
+          .dialog({
+              modal: true, title: 'Preview Forum', zIndex: 10000, autoOpen: true,
+              width: 'auto', resizable: false,
+              buttons: {
+              	Activate: function () {
+              		var url = "/branch/activate_forum";
+              		branch_id = $(this).find('#branch-id').attr('data-url');
+
+              		$.post(url,{"id":branch_id}, function(data) {
+						   $("*").css({
+						      "cursor" : "default"
+						   });
+						   var obj = jQuery.parseJSON(data);
+						   $('#return-msg').html(obj.html);
+					   }, 'html');
+                  $(this).dialog("close");
+                },
+                Cancel: function () {
+                  $(this).dialog("close");
+                }
+              },
+              close: function (event, ui) {
+                  $(this).remove();
+              }
+          });
+	}
 }
 
 var submitReport = {

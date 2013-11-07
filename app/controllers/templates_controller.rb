@@ -34,7 +34,8 @@ class TemplatesController < ApplicationController
     flash[:notice] = nil
     @branch = Branch.find_me(params[:branch])
     # template created if not found
-    @template = @branch.forum_type.camelcase.constantize.find_me(@branch.id, params[:name])
+    @template = @branch.forum_type.camelcase.constantize.find_or_create(:branch_id=>@branch.id, 
+       :name=>params[:name], :voting_session_id=>@branch.current_forum_session.id)
     #    if params[:name] == 'introduction'
     #      Template.delete_all("is_active=0")
     #    end
@@ -47,7 +48,9 @@ class TemplatesController < ApplicationController
     #      " has been uploaded"
     #    end
     @preview = false
-    render :layout=>false # 'templates'
+    session[:branch_id] = @branch.id
+    session[:template_id] = @template.id
+    render :layout=>false
   end
 
   def create
@@ -59,8 +62,8 @@ class TemplatesController < ApplicationController
     # identifier = temp.delete(:identifier)
     # if identifier
     #  vs = VotingSession.find_me identifier,branch
-      @template.voting_session_id = branch.current_forum_session.id
-      @template.save
+    #  @template.voting_session_id = branch.current_forum_session.id
+    #  @template.save
     # end
    
     @preview = false
@@ -105,11 +108,11 @@ class TemplatesController < ApplicationController
     #    File.open(filename, 'wb') do |file|
     #      file.write(request.raw_post)
     #    end
-    branch_id = arr[0]
+    branch_id = arr[0]   # seesion[:branch_id]
     @branch = Branch.find_me(branch_id)
-    identifier = arr[1]
+    identifier = @branch.current_forum_session.id
     vs = VotingSession.find_me identifier
-    id = arr[2]
+    id = arr[1]
     @template = Template.find_by_id id
     @template.voting_session_id = vs.id
     @template.save_recording_to_dropbox(data, filename)

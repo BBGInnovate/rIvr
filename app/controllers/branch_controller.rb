@@ -134,8 +134,13 @@ class BranchController < ApplicationController
             :layout=>false
       else
         @branch = Branch.find_by_id params[:id]
-        forum_name = params[:forum_name]
-        vs = VotingSession.find_me(forum_name, @branch)
+        if params[:forum_name]
+          forum_name = params[:forum_name]
+          vs = VotingSession.find_me(forum_name, @branch)
+        else
+          forum_name = @branch.current_forum_session.name
+          vs = @branch.current_forum_session
+        end
         if !!vs
           @branch.voting_sessions.each do |v|
             if v.id != vs.id
@@ -145,6 +150,7 @@ class BranchController < ApplicationController
             end
           end
           html="Forum : #{vs.name} is activated."
+          @branch.generate_forum_feed_xml
         else
           html="Forum : #{forum_name } not found."
         end

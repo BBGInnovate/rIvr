@@ -20,12 +20,12 @@
   <%# if template.kind_of?(Vote)||template.kind_of?(Bulletin) %>
     <%#= render :partial=>'select_forum', :locals=>{:template=>@template} %>
   <%# end %>
-  <!--
+  
   <div style="margin: 10px;">
     <input type="radio" name="recording" value="Browse" checked> Browse </input>
     <input type="radio" name="recording" value="Record"> Record</input>
   </div>  
-  -->
+  
   <p></p>
   <h3><% 
       saved = template.is_active ? ' and saved' : ''
@@ -41,7 +41,7 @@
   </div>
   
   <div id="recorder" class='btnUploadWrap recorder'>
-    <%= render :partial=>'recorder' %>
+    <%#= render :partial=>'recorder',:locals=>{:template=>template} %>
   </div>
   
   <div class="btnUploadWrap">

@@ -6,11 +6,11 @@
    <% audios.each do |a| %>
      <span><b><%= a[0] %></b></span>
      <span><%= a[1] %></span>
-     <span><%= a[2] %></span>
+     <!-- <span><%= a[2] %></span> edit forum -->
      <br/></br/>
   <% end %>
-  <div>
-    <span><%= submit_tag 'Cancel',:id=>"cancel",:class=>"btnAction" %></span>
+  <div id="branch-id" data-url="<%= @branch.id%>">
+    <!-- span><%= submit_tag 'Cancel',:id=>"cancel",:class=>"btnAction" %></span -->
   </div>
 </div>
 
