@@ -1,0 +1,24 @@
+<div id="dialog-modal" title="Basic modal dialog" style="display: none;"></div>
+<%= yield :scripts %> <!-- (in your footer) -->
+<script>
+  $(document).ready(function(){
+     var ids = "#activate-forum, #select-forum,#preview-forum"
+     $(ids).on('click', "#cancel", function(){
+       $(this).closest(ids).hide();
+     })
+  });
+</script>
+<script>
+function showDialog(html)
+{
+  $("#dialog-modal").dialog(
+  {
+    width: 600,
+    height: 400,
+    open: function(event, ui)
+    {
+      $('#dialog-modal').html(html);
+    }
+  });
+}
+</script>
