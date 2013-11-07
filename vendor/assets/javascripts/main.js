@@ -771,7 +771,7 @@ var reportUpload = {
   myId : '',
 	init : function(forum_type) {
 		var ids = "#introduction,#goodbye,#bulletin_question, .square";
-		jQuery("#forum-template").on('click', ".square", function(e) {
+		$("#forum-template").on('click', ".square", function(e) {
 			var name = this.id; // this div id is used as template.name
 			var url;
 			if (name == 'headline') {
@@ -786,7 +786,6 @@ var reportUpload = {
 		  }
 	     $('#moderate-div').hide();
 			reportUpload.myId = this.id;
-			alert(reportUpload.myId)
 			$(this).css("cursor", "progress");
 			var b = jQuery('#branch-name').val();
 			var data = {

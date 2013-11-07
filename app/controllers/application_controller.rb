@@ -1,5 +1,7 @@
 class ApplicationController < ActionController::Base
-  protect_from_forgery
+  # You might be losing the session after POST because of the security reason.
+  # if protect_from_forgery enabled
+  # protect_from_forgery
   
 #  before_filter :authenticate_user!
   before_filter :init

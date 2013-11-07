@@ -48,7 +48,6 @@ class TemplatesController < ApplicationController
     #      " has been uploaded"
     #    end
     @preview = false
-    session[:branch_id] = @branch.id
     session[:template_id] = @template.id
     render :layout=>false
   end
@@ -101,18 +100,20 @@ class TemplatesController < ApplicationController
 
   # save recording after user clicked Send Data
   def record
-    arr = params[:record].split("ZZZ")
+    # arr = params[:record].split("ZZZ")
     filename = Time.now.strftime("%Y%m%d%H%M%S")+'.wav'
     data = request.raw_post
     # # TEST save recorded sound to file
     #    File.open(filename, 'wb') do |file|
     #      file.write(request.raw_post)
     #    end
-    branch_id = arr[0]   # seesion[:branch_id]
+    branch_id = params[:branch_id] # arr[0]
     @branch = Branch.find_me(branch_id)
-    identifier = @branch.current_forum_session.id
-    vs = VotingSession.find_me identifier
-    id = arr[1]
+    # identifier = @branch.current_forum_session.id
+    # vs = VotingSession.find_me identifier
+    # id = arr[1]
+    vs = @branch.current_forum_session
+    id = session[:template_id]
     @template = Template.find_by_id id
     @template.voting_session_id = vs.id
     @template.save_recording_to_dropbox(data, filename)
