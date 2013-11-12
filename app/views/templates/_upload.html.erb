@@ -1,5 +1,8 @@
 <style></style>
 <div id="template-popup" class="template-popup">
+<% if template.branch.forum_type=='vote'  %>
+<%= render :partial=>'/templates/vote_stats', :locals=>{:branch=>template.branch} %>
+<% end %>
 <%= form_for template, :url=> templates_path, :html => {:method=>'post',:multipart => true, :id=>"frm-upload-logo"} do |f| %>
 <div class="inputSpacing"> 
   <input type="hidden" name="todo" value="" />
@@ -41,7 +44,7 @@
   </div>
   
   <div id="recorder" class='btnUploadWrap recorder'>
-    <%= render :partial=>'recorder',:locals=>{:template=>template} %>
+    <%#= render :partial=>'recorder',:locals=>{:template=>template} %>
   </div>
   
   <div class="btnUploadWrap">

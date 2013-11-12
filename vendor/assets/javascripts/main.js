@@ -687,28 +687,30 @@ var sortTable = {
 	  sortTable.sort_id = "#"+table_id + " tbody";
 	  sortTable.player_class = "." + player_class;
 	  sortTable.toggle_id = "#"+toggle_id;
-	  $(sortTable.sort_id).sortable();
-     // $(sortTable.sort_id).sortable("disable");
      $(sortTable.sort_id).disableSelection();
      $(sortTable.sort_id).sortable({
        out: function( event, ui ) {
-       	/*
-       	$(sortTable.sort_id).sortable();
-         $(sortTable.sort_id).sortable("cancel");
-         $(sortTable.sort_id).sortable("enable");
-         $(sortTable.toggle_id).val("Disable Sorting"); */
-       }
+       },
+       cancel:"object",
+       containment: "#search-results",
+       cursor: "move"
      });
-     $(sortTable.sort_id).on("mousedown",".mbMiniPlayer",function(){
-     	 $(sortTable.sort_id).sortable();
-       $(sortTable.sort_id).sortable("Enable");
-       $(sortTable.toggle_id).val("Disable Sorting")
-     });
-     $(sortTable.sort_id).on("mouseup",".mbMiniPlayer",function(){
-     	 $(sortTable.sort_id).sortable();
+     
+     
+     /*
+     $("body").on("mousedown","#object-player", function(){
+     	// $(sortTable.sort_id).sortable();
        $(sortTable.sort_id).sortable("disable");
-       $(sortTable.toggle_id).val("Enable Sorting")
+       $(sortTable.toggle_id).val("Enable Sorting");
      });
+     
+     $("body").on("mouseup","#object-player",function(){
+     	// $(sortTable.sort_id).sortable();
+       $(sortTable.sort_id).sortable("disable");
+       $(sortTable.toggle_id).val("Enable Sorting");
+       
+     });
+     
      $(sortTable.player_class).mb_miniPlayer({
      	 //width:240,
        inLine:false,
@@ -720,24 +722,12 @@ var sortTable = {
        showRew:false,
        addShadow:false,
        onPlay:function() {
-         $(sortTable.sort_id).sortable("disable");
-         $(sortTable.toggle_id).val("Enable Sorting")
        },
        onEnd:function() {
-         $(sortTable.sort_id).sortable("enable");
-         $(sortTable.toggle_id).val("Disable Sorting")
        }
+       
      });
-     $(sortTable.sort_id).on("click","input[type='checkbox']",function(){
-     	/*
-       var op = $(this).prop('checked');
-       if (op==false)
-         $(this).removeProp('checked');
-       else 
-       	$(this).prop('checked', true);
-       	
-       	*/
-     });
+     */
 	},
 	
 	showIds : function() {
@@ -778,7 +768,7 @@ var reportUpload = {
 			  url = '/templates/headline';
 			} else if (name == 'moderate') {
 			  $('#moderate-div').show();
-			  Modal.open("moderate-div", 'moderate', 400);
+			  Modal.open("moderate-div", 'introduction_result', 400);
 			  $('#forum-upload').hide();
 			  return false;
 		  } else {

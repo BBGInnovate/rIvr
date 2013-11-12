@@ -1,4 +1,3 @@
-
 <p style="border-top: 1px solid #CCC">
 To reorder the rows, drag a row up or down.<br/>
 To save the order, click the checkbox of the items and click Save
@@ -23,7 +22,7 @@ To save the order, click the checkbox of the items and click Save
         <th>FTP</th>
         <th>Widget</th>
         <th>Action</th>
-        <th><a id="countries.name">Country/Location</a></th>
+        <th><a id="countries.name">Location</a></th>
         <th><a id="branches.contact">Contact</a></th>
       </tr>
 </thead>
@@ -65,15 +64,38 @@ To save the order, click the checkbox of the items and click Save
      <input type="checkbox" id="M<%= eid %>" value="" <%= 'checked' if entry.checked? %> />
    </td>
    <td>
-     <% if entry.dropbox_file_exists? %>
-      <a id='<%=eid%>' class="audio2 {ogg:'/entries/<%=eid%>/play',autoplay:false, downloadable:false,inLine:true}"
+     <% audio_link = entry.audio_link
+      if !!audio_link  %>
+      <% src= audio_link # "/entries/#{eid}/play" %>
+      <!--
+      <audio controls>
+         <source src="<%#= src %>" type="application/x-mplayer2">
+         Your browser does not support the audio tag.
+      </audio> 
+      -->
+      <object data="<%= src %>" type="application/x-mplayer2" width="180" height="50" autoplay="false">
+      <param name="filename" value="<%= src %>" />
+      <param name="controller" value="true" /> 
+      <param name="autoplay" value="false" />
+      <param name="autostart" value="0" />
+      </object>
+      
+      <a target="_blank" title="Download <%= entry.dropbox_file %>" href='/entries/<%=eid%>/play'>
+        Download
+      </a>
+     <% end %>
+     <!--
+     <% if 1==0 && entry.dropbox_file_exists? %>
+       <a id='<%=eid%>' class="audio2 {ogg:'/entries/<%=eid%>/play',autoplay:false, downloadable:false,inLine:true}"
        href='/entries/<%=eid%>/play'><%= entry.dropbox_file %></a>
        <a target="_blank" title="Download <%= entry.dropbox_file %>" href='/entries/<%=eid%>/play'>
         Download
        </a>
+       
      <% else %>
      <%= entry.dropbox_file %> missing
      <% end %>
+     -->
    </td>
    <td>
       <%= entry.branch.name %>
@@ -112,9 +134,16 @@ To save the order, click the checkbox of the items and click Save
 <% end %>
 </tbody>
 </table>
+<div id="pager" class="pager"></div>
 <script>
-jQuery(document).ready(function(){
-    sortTable.init("search-results-id","audio2", "enable");
+$(document).ready(function(){
+   // searchEntry.init();
+     $('#moderate-div #cancel').on('click', function(){
+       $('#moderate-div').hide();
+     })
+    sortTable.init("search-results-id","audio2", "enable"); //order table rows
+    $('#search-results-id').tablesorter(); // sort by table column
+   // $('#search-results-id').tablesorter({widthFixed: true, widgets: ['zebra']}).tablesorterPager({container: $("#pager")}); 
 });
 </script>
 <% else %>

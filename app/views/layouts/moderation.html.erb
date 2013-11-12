@@ -42,17 +42,18 @@
 <!--This is the script to make the tabs work. It must be included right before the end body tag.-->
 <script type="text/javascript">
     // var TabbedPanels1 = new Spry.Widget.TabbedPanels("TabbedPanels1");
-		jQuery(document).ready(function(){
-			 homePage.init("content");
-				loadSoundCloud.init();
-				// contact.init();
-			 searchEntry.init();
-    $(".audio").mb_miniPlayer({
+  jQuery(document).ready(function(){
+    homePage.init("content");
+    loadSoundCloud.init();
+// contact.init();
+     $(".audio").mb_miniPlayer({
        width:240,
        inLine:false,
        id3:false
-    });
-				$( "#start_date" ).datepicker({
+     });
+     searchEntry.init();
+     
+    $( "#start_date" ).datepicker({
       dateFormat: "yy-mm-dd",
       changeMonth: true,
       changeYear: true,

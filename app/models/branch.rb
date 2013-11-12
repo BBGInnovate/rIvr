@@ -362,10 +362,13 @@ class Branch< ActiveRecord::Base
          no = items.select {|a| a.result==-1}.size
          none = items.select {|a| a.result==0}.size
          total = yes+no+none
-         stat = {:total=>total, :yes=>yes,:no=>no,:none=>none,
-           :yes_per=>yes*100/total,:no_per=>no*100/total,:none_per=>none*100/total
-         }
+         if total > 0 
+           stat = {:total=>total, :yes=>yes,:no=>no,:none=>none,
+             :yes_per=>yes*100/total,:no_per=>no*100/total,:none_per=>none*100/total
+           }
+         end
       end
+      stat
     end
     
     # block to be removed
@@ -756,6 +759,24 @@ class Branch< ActiveRecord::Base
          se.update_attribute :rank, i+1
        end
      end
+  end
+  
+  # @reboot $HOME/.dropbox-dist/dropboxd
+  # @reboot mkdir /mnt/dropbox; mkdir -p /mnt/rails/log; mkdir -p /mnt/rails/system; chmod -R 777 /mnt/
+  # */5 * * * * /bin/bash -l -c 'cd /data/ivr/current && 
+  # /usr/local/bin/bundle exec rails runner -e staging  "Branch.create_audio_files"'  > /tmp/dashboard-cron.log 2>&1
+
+
+  def self.create_audio_files
+    Branch.where(:is_active=>true).each do |b|
+      b.entries.each do |t|
+        t.audio_link
+      end
+      
+      Template.where(:branch_id=>b.id).each do |t|
+        t.audio_link
+      end
+    end
   end
   
   def clean_prompt_files

@@ -3,5 +3,9 @@
   jQuery(document).ready(function () { 
   // pass forum type
     branchManage.init();
+    var ids = "#new-branch"
+     $(ids).on('click', "#cancel", function(){
+       $(this).closest(ids).hide();
+     })
   });
 </script>

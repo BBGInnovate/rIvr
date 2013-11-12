@@ -430,6 +430,31 @@ class Entry< ActiveRecord::Base
     ftp.close
     return self.ftp_url
   end
+  
+  def audio_link
+    link = nil
+    client = Branch.dropbox_session
+    if !!client && self.dropbox_file && self.voting_session
+      name = File.basename(self.dropbox_file)
+      forum_title = self.voting_session.friendly_name
+      link = "system/#{self.branch.friendly_name}/#{self.class.name.downcase}/#{forum_title}"
+      local="#{Rails.root}/public/#{link}"
+      FileUtils.mkdir_p local
+      local_file = "#{local}/#{name}"
+      begin
+        if !File.exists?(local_file)
+          feed = client.download("#{self.dropbox_dir}/#{self.dropbox_file}")
+          File.open(local_file, 'wb') {|f| f.write(feed) }
+        end
+        link = "#{link}/#{name}"
+      rescue
+        logger.info "DROPBOX download #{$!}"
+        self.destroy
+      end
+    end
+    link
+  end
+  
 protected
 
   def dropbox_file_content

@@ -105,7 +105,7 @@ class Template < ActiveRecord::Base
   # name = 'introduction','message'
   def audio_link
     link = nil
-    client = self.get_dropbox_session
+    client = Branch.dropbox_session # self.get_dropbox_session
     if !!client && self.dropbox_file && self.voting_session
       name = File.basename(self.dropbox_file)
       forum_title = self.voting_session.friendly_name
