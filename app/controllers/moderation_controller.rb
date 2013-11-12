@@ -167,20 +167,22 @@ class ModerationController < ApplicationController
       @entries_query = @entries_query.where(["entries.forum_session_id in (?)", forum_type])
     end
     # if forum title is selected then branch selection is ignored
-    @sorted = []
-    if !!branch && !forum_type
-       
-       # get for Report type when branch is specified
-       if branch.first.to_i != 0
-         @entries_query = @entries_query.where(["branches.id in (?) ", branch])
-         branches = Branch.where(["id in (?) ", branch])
-       else
-         branches = Branch.where(:is_active=>true)
+    
+    if !!branch
+       @sorted = []
+       if !forum_type
+         # get for Report type when branch is specified
+         if branch.first.to_i != 0
+           @entries_query = @entries_query.where(["branches.id in (?) ", branch])
+           branches = Branch.where(["id in (?) ", branch])
+         else
+           branches = Branch.where(:is_active=>true)
+         end
+         branches.all.each do |b|
+           @sorted << SortedEntry.get(b.id, b.active_forum_session.id)
+         end
+         @sorted.flatten!
        end
-       branches.all.each do |b|
-         @sorted << SortedEntry.get(b.id, b.active_forum_session.id)
-       end
-       @sorted.flatten!
     end
     if !!location
       @entries_query = @entries_query.where(["countries.name like ? ", location])

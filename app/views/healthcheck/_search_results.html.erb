@@ -7,6 +7,11 @@
            <%= branch.health_image.html_safe %>
         </td>
         <td>
+          <a class="branch-name" id="<%= branch.id %>" data-url="/healthcheck/<%= branch.id %>/edit">
+          Edit
+          </a>
+        </td>
+        <td>
           <%= branch.country.name%>
         </td>
         <td>
