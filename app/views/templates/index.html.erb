@@ -2,6 +2,9 @@
   <span class="back-button"><a href="/branch?branch=<%=@branch_name%>">Back To Branch Configure</a></span>
   <h2><%= forum_type(@branch) %></h3>
   <span style="font-size: 20px;"><%= @branch.current_forum_session.name %> for Branch <%= @branch.name %></span>
+ <!-- <br/><br/>
+  <span style="font-size: 20px;"><a href="/branch/validate_forum?id=<%=@branch.current_forum_session.id %>">Validate Forum</a><span>
+ --> 
   <br/><br/><input type="hidden" name="branch" id="branch-name" value="<%=@branch_name%>" />
   <%= render :partial => @temp_partial %>
 </div>
@@ -15,12 +18,14 @@
 <%# end %>
 -->
 
-<div id="moderate-div" class="helpPopUp float-left">
+<!--
+<div id="moderate-div" class="helpPopUp float-right">
   <div style="width: 780px" class="template-popup">
   <style></style>
-  <%= render :partial=>'/moderation/search_results' %>
+  <%#= render :partial=>'/moderation/search_results' %>
   </div>
 </div>
+-->
 <script>
   jQuery(document).ready(function () { 
     reportUpload.init("<%= @branch.forum_type %>");

@@ -143,6 +143,9 @@ class ModerationController < ApplicationController
     end_date = params[:end_date]
     forum_type = params[:forum_type]
     branch = params[:branch]
+    if branch.kind_of?(String)
+       branch = [branch]
+    end
     location = params[:location]
      
     p = params[:page] || 1
@@ -157,14 +160,23 @@ class ModerationController < ApplicationController
     if !!start_date && !!end_date
       @entries_query = @entries_query.where("entries.created_at"=>start_date..end_date)
     end
-    if !!forum_type
-      @entries_query = @entries_query.where(["entries.forum_type in (?)", forum_type])
+    
+    # is forum_title now
+    if !!forum_type && forum_type.first.to_i != 0
+      # @entries_query = @entries_query.where(["entries.forum_type in (?)", forum_type])
+      @entries_query = @entries_query.where(["entries.forum_session_id in (?)", forum_type])
     end
-    if !!branch
-       @entries_query = @entries_query.where(["branches.id in (?) ", branch])
-       @sorted = []
+    # if forum title is selected then branch selection is ignored
+    @sorted = []
+    if !!branch && !forum_type
+       
        # get for Report type when branch is specified
-       branches = Branch.where(["id in (?) ", branch])
+       if branch.first.to_i != 0
+         @entries_query = @entries_query.where(["branches.id in (?) ", branch])
+         branches = Branch.where(["id in (?) ", branch])
+       else
+         branches = Branch.where(:is_active=>true)
+       end
        branches.all.each do |b|
          @sorted << SortedEntry.get(b.id, b.active_forum_session.id)
        end
@@ -215,5 +227,24 @@ class ModerationController < ApplicationController
        session[o] = a.first
      end
      "#{o} #{session[o]}"
+  end
+  
+  def branch
+    
+  end
+  
+  def forums
+     id = params[:id].to_i
+     if id != 0
+       branches=[Branch.find_by_id(id)]
+     else
+       branches=Branch.where(:is_active=>true)
+     end
+     options = []
+     branches.each do |branch|
+       options = options | branch.voting_sessions.order("created_at desc").map{|b| [b.name,b.id]}
+     end
+     opt = view_context.options_for_select(options, id)
+     render :text=>opt, :layout=>false
   end
 end

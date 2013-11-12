@@ -12,7 +12,7 @@ version=$branch
 application='ivr'
 
 # staging host
-host=50.19.63.102
+host=23.21.141.169
 user=ubuntu
 keyfile=~/.ec2/BBGInstance.pem
 app_user=www-data

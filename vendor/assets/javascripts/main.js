@@ -275,6 +275,32 @@ var searchEntry = {
     parent_id : null,
     clicked: null,
     init : function() {
+      	$("#branch").on('change',function(e) {
+        	var branch = this.value;
+      		var select_id = "#forum_type";
+      		$(this).css({
+          "cursor":"wait"
+         });
+        url = 'moderation/forums';
+        jQuery.get(url, {id:branch}, function (data) {
+        	  $(select_id).html(data);
+        }, 'html');
+        return false
+      	});
+      	/*
+      	$("#forum_type").on('change',function(e) {
+        	var forum_title = this.value;
+      		var select_id = "#branch";
+      		$(this).css({
+          "cursor":"wait"
+         });
+        url = 'moderation/branch';
+        jQuery.get(url, {id:forum_title}, function (data) {
+        	  $(select_id).html(data);
+        }, 'html');
+        return false
+      	});
+      	*/
       	$("body").on('click', "#search-results-id th a", function(e) {
       		searchEntry.parent_id = $(this).closest("div").attr("id");
       		var order = this.id;
@@ -346,12 +372,15 @@ var searchEntry = {
         data.end_date = end_date;
       if (forum_type!=null && forum_type.length>0)
         data["forum_type[]"] = forum_type;
-      if (branches.length>0)
+      if ($.isArray(branches) && branches.length>0) {
         var val = [];
         for(var i=0; i< branches.length; i++) {
            val[i] = branches[i]
         }
         data["branch[]"] = val;
+      } else {
+        data["branch"] = branches;
+      }
       if (location.length>0)
         data.location = location;
       return data;

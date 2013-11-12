@@ -13,17 +13,20 @@ To save the order, click the checkbox of the items and click Save
 <%= paginate @results %>
 <thead>
       <tr>
-        <th>Order</th>
+        <th>IVR</th>
         <th>Message</th>
         <th><a id="branches.name">Branch</a></th>
+        <th><a id="branches.forum">Forum</a></th>
         <th><a id="entries.created_at">Date</a></th>
         <th>Dropbox</th>
         <th>SoundCloud</th>
         <th>FTP</th>
         <th>Widget</th>
         <th>Action</th>
+        <!--
         <th><a id="countries.name">Location</a></th>
         <th><a id="branches.contact">Contact</a></th>
+        -->
       </tr>
 </thead>
 <tbody>
@@ -34,6 +37,7 @@ To save the order, click the checkbox of the items and click Save
    else
      entry = e.entry
    end
+   next if !entry
    eid = entry.id
    if entry.public_url
      publish="<a href='#{entry.public_url}' onclick=\"OpenWin('#{entry.public_url}');return  false;\">Dropbox</a>".html_safe
@@ -73,7 +77,7 @@ To save the order, click the checkbox of the items and click Save
          Your browser does not support the audio tag.
       </audio> 
       -->
-      <object data="<%= src %>" type="application/x-mplayer2" width="180" height="50" autoplay="false">
+      <object data="<%= src %>" type="application/x-mplayer2" width="120" height="20" autoplay="false">
       <param name="filename" value="<%= src %>" />
       <param name="controller" value="true" /> 
       <param name="autoplay" value="false" />
@@ -101,6 +105,9 @@ To save the order, click the checkbox of the items and click Save
       <%= entry.branch.name %>
    </td>
    <td>
+      <%= entry.branch.active_forum_session.name %>
+   </td>
+   <td>
       <%= entry.created_at.to_s(:db) %>
    </td>
 	 <td title="<%= title1 %>" class="publish-syndicate">
@@ -124,12 +131,14 @@ To save the order, click the checkbox of the items and click Save
       <a id='D<%= eid %>' data-url="/moderation/<%= eid %>/edit/?undelete=1">Undelete</a>
    </td>
    <% end %>
+   <!--
    <td>
       <%= entry.branch.country.name %>
    </td>
    <td>
       <%= entry.branch.contact %>
    </td>
+   -->
 </tr>
 <% end %>
 </tbody>

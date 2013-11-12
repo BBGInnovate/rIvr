@@ -24,19 +24,22 @@
       Deleted
     </label>
     <hr/><h3>Filter by</h3>
-				<p><label for="start_date">From:</label>
-				  <input type="text" class="datepicker" id="start_date" name="start_date" />
-      <span for="end_date">&nbsp;To:</span>
-				  <input type="text" class="datepicker" id="end_date" name="end_date" />
-						<span for="forum_type">&nbsp;Forum Type:</span>
-				  <%= select_tag 'forum_type', options_for_select(forum_options, 0), :size=>4,:multiple=>'multiple' %>
+	 <p><label for="start_date">From:</label>
+	 <input type="text" class="datepicker" id="start_date" name="start_date" />
+    <span for="end_date">&nbsp;To:</span>
+	 <input type="text" class="datepicker" id="end_date" name="end_date" />
+    <span for="forum_type">&nbsp;Forum Title:</span>
+    <%= select_tag 'forum_type', options_for_select(forum_titles, 0), :size=>4,:multiple=>'multiple', :style=>"height:50px;" %>
+    
+    <%#= select_tag 'forum_type', options_for_select(forum_options, 0), :size=>4,:multiple=>'multiple' %>
     </p>
 				<h3>&nbsp;</h3>
 				<p>
 				<label for="branch">Branch:</label>
 				<% options = Branch.where(:is_active=>true).map{|b| [b.name,b.id]}
+				   options.unshift ["All Branches","0"]
 				   id = 0 %>
-				<%= select_tag "branch", options_for_select(options, id),:multiple=>'multiple', :style=>'' %>
+				<%= select_tag "branch", options_for_select(options, id), :style=>'' %>
 
 				<!-- input name="branch" type="text" placeholder="Branch" -->
 				

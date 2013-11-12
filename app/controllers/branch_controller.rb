@@ -206,6 +206,23 @@ class BranchController < ApplicationController
       
     end
     
+  def validate_forum
+    id = params[:id]
+    forum = VotingSession.find_by_id id
+    if !!forum
+       case forum.branch.forum_type
+       when 'report'
+      
+       when 'vote'
+       
+       when 'bulletin'
+        
+       else 
+          logger.info "Unknown Forum Type"
+       end
+    end
+  end
+  
   def exchange_token
     u = URI.parse request.original_url
     port = u.port=='80' ? '' : ":#{u.port}"
@@ -240,5 +257,11 @@ class BranchController < ApplicationController
     else
       logger.info "Error #{request.url}"
     end
+  end
+  
+  protected 
+  
+  def validate_report
+  
   end
 end

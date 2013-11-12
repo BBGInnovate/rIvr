@@ -15,6 +15,18 @@ module BranchesHelper
     end
     re
   end
+  
+  def forum_titles
+    re = [['All Forum','0']]
+    VotingSession.where(:is_active=>true).
+      order("created_at desc").each do |t|
+       if t.branch && t.branch.is_active
+         re << [t.name,t.id]
+       end
+    end
+    re
+  end
+  
   def forum_type_form_column(record, input_name)
     id = record.forum_type
     options = forum_options

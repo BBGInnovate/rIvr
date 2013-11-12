@@ -25,6 +25,7 @@ TestIvr::Application.routes.draw do
       collection do
         get :search
         get :branch
+        get :forums
       end
   end
 
@@ -40,6 +41,7 @@ TestIvr::Application.routes.draw do
   
   resources :branch do
     collection do
+      get :validate_forum
       get :select_forum
       post :select_forum
       get :activate_forum
