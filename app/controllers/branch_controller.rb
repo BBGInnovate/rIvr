@@ -208,19 +208,21 @@ class BranchController < ApplicationController
     
   def validate_forum
     id = params[:id]
-    forum = VotingSession.find_by_id id
-    if !!forum
-       case forum.branch.forum_type
+    @result = params[:result].to_i
+    @branch = Branch.find_by_id id
+    if !!@branch
+       case @branch.forum_type
        when 'report'
-      
+          @err = validate_report(@branch)
        when 'vote'
-       
+          @err = validate_vote(@branch, @result)
        when 'bulletin'
-        
+          @err = validate_bulletin(@branch)
        else 
           logger.info "Unknown Forum Type"
        end
     end
+    render :layout=>false
   end
   
   def exchange_token
@@ -261,7 +263,81 @@ class BranchController < ApplicationController
   
   protected 
   
-  def validate_report
-  
+  def validate_report(branch)
+     txt = []
+     temps = branch.reports.current
+     intro = temps.detect{|t| t.name=='introduction'}
+     goodbye = temps.detect{|t| t.name=='goodbye'}
+     feed = branch.branch_feeds.where(:forum_session_id=>branch.current_forum_session.id).last
+     if !feed
+       txt << "Branch <b>Feed Source</b> is not configured."
+     else
+       if feed.feed_source == 'static_rss'
+         if !feed.feed_url
+           txt << "Branch <b>Feed Source</b> is rss, but Feed URL is not configured."
+         end
+       end
+     end
+     if !intro
+       txt << "<b>Introduction</b> prompt audio is not uploaded."
+     end
+     if !goodbye 
+       txt << "<b>Goodbye</b> prompt audio is not uploaded."
+     end
+     txt
   end
+  
+  def validate_bulletin(branch)
+     txt = []
+     temps = branch.bulletins.current
+     intro = temps.detect{|t| t.name=='introduction'}
+     question = temps.detect{|t| t.name=='question'}
+     listen = temps.detect{|t| t.name=='listen'}
+     if !intro
+       txt << "<b>Introduction</b> prompt audio is not uploaded."
+     end
+     if !question
+       txt << "<b>Ask the community</b> prompt audio is not uploaded."
+     end
+     if !listen
+       txt << "<b>Listen Messages</b> prompt audio is not uploaded."
+     end
+     txt
+  end
+  
+  def validate_vote(branch, result)
+     txt = []
+     temps = branch.votes.current
+     intro = temps.detect{|t| t.name=='introduction'}
+     candidate = temps.detect{|t| t.name=='candidate'}
+     comment = temps.detect{|t| t.name=='comment'}
+     
+     intro_result = temps.detect{|t| t.name=='introduction_result'}
+     candidate_result = temps.detect{|t| t.name=='candidate_result'}
+     listen_result = temps.detect{|t| t.name=='listen_result'}
+     
+     if result==0
+       if !intro
+         txt << "<b>Introduction</b> prompt audio is not uploaded."
+       end
+       if !candidate
+         txt << "<b>Participate</b> prompt audio is not uploaded."
+       end
+       if !comment
+         txt << "<b>Leave Comment</b> prompt audio is not uploaded."
+       end
+     else
+       if !intro_result
+         txt << "<b>Introduction</b> prompt audio is not uploaded."
+       end
+       if !candidate_result
+         txt << "<b>Results</b> prompt audio is not uploaded."
+       end
+       if !listen_result
+         txt << "<b>Opinion Board</b> prompt audio is not uploaded."
+       end
+     end
+     txt
+  end
+  
 end

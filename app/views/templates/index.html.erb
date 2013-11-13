@@ -2,13 +2,20 @@
   <span class="back-button"><a href="/branch?branch=<%=@branch_name%>">Back To Branch Configure</a></span>
   <h2><%= forum_type(@branch) %></h3>
   <span style="font-size: 20px;"><%= @branch.current_forum_session.name %> for Branch <%= @branch.name %></span>
- <!-- <br/><br/>
-  <span style="font-size: 20px;"><a href="/branch/validate_forum?id=<%=@branch.current_forum_session.id %>">Validate Forum</a><span>
- --> 
+  <br/><br/>
+  <% if @temp_partial =~ /_result/
+       result=1
+     else
+       result = 0
+     end
+  %>
+  <span style="font-size: 20px;"><a id="validate" data-url="/branch/validate_forum?id=<%=@branch.id %>&result=<%=result%>">Validate Forum</a><span>
+
   <br/><br/><input type="hidden" name="branch" id="branch-name" value="<%=@branch_name%>" />
   <%= render :partial => @temp_partial %>
 </div>
 <div id="forum-upload" class="float-left"></div>
+<div id="validate-forum" class="helpPopUp"></div>
 
 <!--
 <%# if @branch.forum_type=="report" %>

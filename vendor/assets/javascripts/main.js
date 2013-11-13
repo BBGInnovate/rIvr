@@ -790,6 +790,24 @@ var reportUpload = {
   myId : '',
 	init : function(forum_type) {
 		var ids = "#introduction,#goodbye,#bulletin_question, .square";
+		$("#validate").on('click', function(e) {
+			var url = $(this).attr('data-url');
+		   $.get(url,{},function(data) {
+		      $('#validate-forum').html(data);
+		      Modal.open("validate-forum", "forum-template", 140);
+		      return false;
+		   }, 'html');
+		});
+		$("#validate-forum").on('click',"#activate-forum", function(e) {
+			var url = $(this).attr('data-url');
+		   $.post(url,{},function(data) {
+		      $('#validate-forum').html(data);
+		      Modal.open("validate-forum", "forum-template", 140);
+		      return false;
+		   }, 'html');
+		   return false;
+		});
+		
 		$("#forum-template").on('click', ".square", function(e) {
 			var name = this.id; // this div id is used as template.name
 			var url;
