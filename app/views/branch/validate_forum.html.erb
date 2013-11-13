@@ -1,0 +1,22 @@
+<style></style>
+<div style="width: 400px;">
+<h3>Current Forum: <%= @branch.current_forum_session.name %></h3>
+<% if @err.size == 0 %>
+  <span>Forum is valid. You may <a id="activate-forum" href="#" data-url="/branch/activate_forum?id=<%=@branch.id%>">Activate</a> it now</span>
+<% end %>
+
+<% @err.each do |e| %>
+   <div class="error"><%= e.html_safe %></div>
+<% end %>
+<br/>
+<br/>
+<span><%= submit_tag 'OK', :id=>"ok", :class=>"btnAction" %></span>
+<span><%= submit_tag 'Cancel', :id=>"cancel", :class=>"btnAction" %></span>
+</div>
+<script>
+  $(document).ready(function() {
+    $("#validate-forum").on('click',"#cancel, #ok", function(e) {
+		$('#validate-forum').hide();
+    });  
+  })
+</script>

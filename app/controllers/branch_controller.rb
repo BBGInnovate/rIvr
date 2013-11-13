@@ -278,10 +278,10 @@ class BranchController < ApplicationController
          end
        end
      end
-     if !intro
+     if !intro || !intro.dropbox_file
        txt << "<b>Introduction</b> prompt audio is not uploaded."
      end
-     if !goodbye 
+     if !goodbye || !goodby.dropbox_file
        txt << "<b>Goodbye</b> prompt audio is not uploaded."
      end
      txt
@@ -293,13 +293,13 @@ class BranchController < ApplicationController
      intro = temps.detect{|t| t.name=='introduction'}
      question = temps.detect{|t| t.name=='question'}
      listen = temps.detect{|t| t.name=='listen'}
-     if !intro
+     if !intro || !intro.dropbox_file
        txt << "<b>Introduction</b> prompt audio is not uploaded."
      end
-     if !question
+     if !question || !question.dropbox_file
        txt << "<b>Ask the community</b> prompt audio is not uploaded."
      end
-     if !listen
+     if !listen || !listen.dropbox_file
        txt << "<b>Listen Messages</b> prompt audio is not uploaded."
      end
      txt
@@ -317,23 +317,23 @@ class BranchController < ApplicationController
      listen_result = temps.detect{|t| t.name=='listen_result'}
      
      if result==0
-       if !intro
+       if !intro || !intro.dropbox_file
          txt << "<b>Introduction</b> prompt audio is not uploaded."
        end
-       if !candidate
+       if !candidate || !candidate.dropbox_file
          txt << "<b>Participate</b> prompt audio is not uploaded."
        end
-       if !comment
+       if !comment || !comment.dropbox_file
          txt << "<b>Leave Comment</b> prompt audio is not uploaded."
        end
      else
-       if !intro_result
+       if !intro_result || !intro_result.dropbox_file
          txt << "<b>Introduction</b> prompt audio is not uploaded."
        end
-       if !candidate_result
+       if !candidate_result || !candidate_result.dropbox_file
          txt << "<b>Results</b> prompt audio is not uploaded."
        end
-       if !listen_result
+       if !listen_result || !listen_result.dropbox_file
          txt << "<b>Opinion Board</b> prompt audio is not uploaded."
        end
      end
