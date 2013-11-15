@@ -47,16 +47,24 @@ class Stat
       numbers = AlertedMessage.
         where(["alerted_messages.branch_id in (?)", branch_ids]).
         where(:created_at=>started..ended).
-        select("branch_id, count(alerted_messages.id) AS total").
-        group(:branch_id)
-      hsh = set_hash(numbers)
+        select("alerted_messages.branch_id, count(alerted_messages.id) AS total").
+        group("alerted_messages.branch_id")
+       
+      new_numbers = []
+      numbers.each do |n|
+        branch=Branch.find n.branch_id
+        if branch.health.send_alarm
+          new_numbers << n
+        end
+      end 
+      hsh = set_hash(new_numbers)
     end
   # listened[:total] == total listening in seconds
   # listened[:average] == ave listening in seconds
   # listened[:number_of_calls] == number of calls for listening
   def listened
     hsh = {:total=>0}
-    my_events = Event.includes(:branch).where(["events.branch_id in (?)", branch_ids])
+    my_events = Event.includes(:branch).where(["evebranch_idsnts.branch_id in (?)", branch_ids])
     my_events = my_events.where("events.created_at"=>started..ended).
         where("action_id in (#{Action.begin_listen},#{Action.end_listen})").
         select("session_id, events.branch_id, events.action_id, events.created_at").all
@@ -202,6 +210,7 @@ class Stat
 
     def set_hash(input_array)
       hsh = {:unique=>0}
+      hsh[:unique_branches] = [] # branch which has alarm enabled
       total = 0
       @countries.each do |c|
         hsh[c.name] = {:total=>0, :rows=>0, :average=>0, :branches=>[]}
@@ -209,10 +218,10 @@ class Stat
       branches.each do |b|
         hsh[b.id] = {:total=>0}
       end
-      unique_branches = []
+      # unique_branches = []
       input_array.each do | n |
-        if !unique_branches.include?(n.branch_id)
-          unique_branches << n.branch_id
+        if !hsh[:unique_branches].include?(n.branch_id)
+          hsh[:unique_branches] << n.branch_id
         end
         hsh[country_name(n.branch.country_id)][:branches] << n.branch.name
         hsh[n.branch_id][:total] = n.total
@@ -220,7 +229,7 @@ class Stat
         total += n.total
         hsh[country_name(n.branch.country_id)][:rows] += 1
       end
-      hsh[:unique] = unique_branches.size
+      hsh[:unique] = hsh[:unique_branches].size
       hsh[:total] = total
       @countries.each do |c|
         hsh[c.name][:branches].uniq!
