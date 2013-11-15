@@ -134,7 +134,7 @@ class Branch< ActiveRecord::Base
   # order by 0,1
   def health?
     return 0 if (!self.health || !self.health.last_event)
-    if self.health.last_event.to_i > self.health.no_activity.hours.ago.to_i
+    if self.health.last_event.to_i > (self.health.no_activity.hours.ago.to_i rescue 0)
       1
     else
       0
@@ -143,7 +143,7 @@ class Branch< ActiveRecord::Base
     
   def unhealth?
     return true if (!self.health || !self.health.last_event)
-    self.health.last_event.to_i < self.health.no_activity.hours.to_i.ago.to_i
+    self.health.last_event.to_i < (self.health.no_activity.hours.ago.to_i rescue 100000)
   end
   def health_image
     if unhealth?
