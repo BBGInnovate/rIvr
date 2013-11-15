@@ -95,6 +95,8 @@ class ModerationController < ApplicationController
     elsif params[:delete].to_i == 1
       @entry.is_active = 0
       @entry.save!
+      @entry.sorted_entry.rank = 0
+      @entry.sorted_entry.save!
       txt="{\"error\":\"notice\",\"message\":\"Message deleted\"}"
       render :text=>txt,:layout=>false, :content_type=>'text' and return
     elsif params[:undelete].to_i == 1
