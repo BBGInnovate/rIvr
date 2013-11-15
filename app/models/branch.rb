@@ -17,6 +17,9 @@ class Branch< ActiveRecord::Base
   def update_friendly_name
     self.friendly_name=self.name.parameterize
   end
+  def last_alarm
+    alerted_messages.last.created_at.to_s(:db) rescue 'N/A'
+  end
   
   def last_activity
     events.where(["action_id != ?", Action.ping_server]).last.created_at.to_s(:db) rescue 'N/A'
@@ -25,6 +28,7 @@ class Branch< ActiveRecord::Base
     htm = "<span class=\"my-tooltip\"><b>#{self.name.titleize}</b> <br/>"
     htm << "<b>#{self.country.name}</b></span><br/>"
     htm << "<span class=\"my-tooltip\">Last Activity: #{last_activity} </span><br/>"
+    htm << "<span class=\"my-tooltip\">Last Alarm: #{last_alarm} </span><br/>"
     htm << "<span class=\"my-tooltip\">IVR #: #{self.ivr_call_number} </span><br/>"
     htm << "<span class=\"my-tooltip\">POC:  #{self.contact}</span><br/>"
     htm << "<span class=\"my-tooltip\">Health: #{health_image}</span> <br/>"
