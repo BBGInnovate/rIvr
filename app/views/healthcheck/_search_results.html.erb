@@ -8,7 +8,7 @@
         </td>
         <td>
           <a class="branch-name" id="<%= branch.id %>" data-url="/healthcheck/<%= branch.id %>/edit">
-          Edit
+          <%= !!branch.health.send_alarm ? 'On' : 'Off' %>
           </a>
         </td>
         <td>
@@ -21,8 +21,9 @@
 <% end %>
 <script>
    jQuery(document).ready(function(){
+     $('#search-results-id').tablesorter();
      $('.branch-name-tip').tooltip({
-      // this code make line break
+         // this code make line break
          content: function() {
            return $(this).attr('title');
          }
