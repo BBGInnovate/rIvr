@@ -4,7 +4,7 @@ class BranchController < ApplicationController
 
   def index
     if params[:branch]
-      @branch = Branch.find_by_name params[:branch]
+      @branch = Branch.find_me params[:branch]
     else
       @branch = nil
     end
@@ -171,7 +171,9 @@ class BranchController < ApplicationController
     def sorted_entries
       if request.post?
          SortedEntry.update(params[:ids], params[:sorted])
-         b = Branch.find_by_id params[:branch_id]
+         # b = Branch.find_by_id params[:branch_id]
+         sorted = SortedEntry.find_by_entry_id params[:sorted].first
+         b = !!sorted ? sorted.branch : nil
          b.generate_forum_feed_xml if b
          render :nothing=>true
       else
@@ -281,7 +283,7 @@ class BranchController < ApplicationController
      if !intro || !intro.dropbox_file
        txt << "<b>Introduction</b> prompt audio is not uploaded."
      end
-     if !goodbye || !goodby.dropbox_file
+     if !goodbye || !goodbye.dropbox_file
        txt << "<b>Goodbye</b> prompt audio is not uploaded."
      end
      txt

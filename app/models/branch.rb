@@ -143,7 +143,7 @@ class Branch< ActiveRecord::Base
     
   def unhealth?
     return true if (!self.health || !self.health.last_event)
-    self.health.last_event.to_i < self.health.no_activity.hours.ago.to_i
+    self.health.last_event.to_i < self.health.no_activity.hours.to_i.ago.to_i
   end
   def health_image
     if unhealth?

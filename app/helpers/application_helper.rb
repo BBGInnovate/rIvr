@@ -85,8 +85,8 @@ module ApplicationHelper
       intro = records.detect{|t| t.name=='introduction'}
       intro = create_template(branch, 'introduction') if !intro
       audios << ['Introduction', audio_tag(intro), edit_tag(intro)] 
-      bulletin = records.detect{|t| t.name=='bulletin_question'}
-      bulletin = create_template(branch, 'bulletin_question') if !bulletin
+      bulletin = records.detect{|t| t.name=='question'}
+      bulletin = create_template(branch, 'question') if !bulletin
       audios << ['Ask the communite', audio_tag(bulletin), edit_tag(bulletin)]  
       listen = records.detect{|t| t.name=='listen'}
       listen = create_template(branch, 'listen') if !listen

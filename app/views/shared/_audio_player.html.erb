@@ -1,7 +1,7 @@
 <% if @branch %>
 <style></style>
 <div style="width: 400px;">
-  <h2 title="/shared/_audio_player"><%= @branch.name %> : <%=@branch.current_forum_session.name%></h2>
+  <h3 title="/shared/_audio_player"><%= @branch.name %> : <%=@branch.current_forum_session.name%></h3>
   <% audios = audio_players(@branch) %>
    <% audios.each do |a| %>
      <span><b><%= a[0] %></b></span>

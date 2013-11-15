@@ -2,22 +2,26 @@
 <div class="search-results">
   <h3>Find Branch</h3>
   <form action="">
+    <!--
     <input name="branch[search]" type="radio" value="country" checked>
     <label>
       Country
     </label>
+    -->
     <input name="branch[search]" type="radio" value="name">
     <label>
       Branch Name
     </label>
+    <!--
     <input name="branch[search]" type="radio" value="status">
     <label>
       Status
     </label>
+    -->
     <input name="term" type="text" placeholder="Search Term">
 				<input name="search" type="button" value="Search">
   </form>
-  <table>
+  <table id="search-results-id">
     <thead>
       <tr>
         <th>
@@ -27,7 +31,7 @@
           Status
         </th>
         <th>
-          Edit
+          Notification
         </th>
         <th>
           Country/Location
@@ -37,7 +41,7 @@
         </th>
       </tr>
     </thead>
-    <tbody id="search-results-id">
+    <tbody>
     	<%= render :partial=>'search_results' %>
     </tbody>
   </table>
