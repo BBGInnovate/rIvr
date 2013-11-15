@@ -14,6 +14,10 @@ class HealthcheckController < ApplicationController
     if params[:branch_id]
       @branches = @branches.select{|b| b.unhealth? && (b.id == params[:branch_id].to_i)} 
     end
+    if params[:alarm].to_i == 1
+       @branches = @branches.select{|a| a if a.health.send_alarm }
+    end
+    
     @map_width = '100%' 
     @map_height = '250px'
   end
