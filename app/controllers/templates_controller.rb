@@ -100,29 +100,32 @@ class TemplatesController < ApplicationController
 
   # save recording after user clicked Send Data
   def record
-    # arr = params[:record].split("ZZZ")
-    filename = Time.now.strftime("%Y%m%d%H%M%S")+'.wav'
-    data = request.raw_post
+    branch_id = params[:branch_id]
+    @branch = Branch.find_me(branch_id)
+    if request.post?
+      # arr = params[:record].split("ZZZ")
+      filename = Time.now.strftime("%Y%m%d%H%M%S")+'.wav'
+      data = request.raw_post
     # # TEST save recorded sound to file
     #    File.open(filename, 'wb') do |file|
     #      file.write(request.raw_post)
     #    end
-    branch_id = params[:branch_id] # arr[0]
-    @branch = Branch.find_me(branch_id)
-    # identifier = @branch.current_forum_session.id
-    # vs = VotingSession.find_me identifier
     # id = arr[1]
-    vs = @branch.current_forum_session
-    id = session[:template_id]
-    @template = Template.find_by_id id
-    @template.voting_session_id = vs.id
-    @template.save_recording_to_dropbox(data, filename)
-    
-    @template.save :validate=>false
-    flash[:notice] = "#{@template.name_map(@template.name)} file " +
-    File.basename(@template.dropbox_file) +
-    " was saved to Dropbox"
-    render :action=>'new', :layout => false
+      vs = @branch.current_forum_session
+      id = session[:template_id]
+      @template = Template.find_by_id id
+      @template.voting_session_id = vs.id
+      @template.save_recording_to_dropbox(data, filename)
+      @template.save :validate=>false
+      flash[:notice] = "#{@template.name_map(@template.name)} file " +
+      File.basename(@template.dropbox_file) +
+          " was saved to Dropbox"
+      render :action=>'new', :layout => false
+    else
+      @template = Template.find_by_id params[:id]
+      render :layout=>false, :partial=>'recorder'
+      
+    end
   end
 
   # UI for selecting feed source from upload or static rss
@@ -145,6 +148,8 @@ class TemplatesController < ApplicationController
       render :layout => false
     else
       @branch = Branch.find_me(params[:branch])
+      @template = @branch.reports.headline
+      session[:template_id] = @template.id
       # @template = Template.find_me @branch.id, params[:name]
       @option = @branch # Configure.find_me(@branch, "feed_source")
       render :layout => false

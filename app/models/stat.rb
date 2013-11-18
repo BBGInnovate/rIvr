@@ -40,20 +40,23 @@ class Stat
    end
       
     # for active branches
+    # 1. Branch alarm is On, And
+    # 2. At least an Alarm sent in the past, And
+    # 3. And Branch currently is unhealth
     # alerted[:total] #=> total number of alerts for all
     # alerted[branch_id] #=> number of alerts for the branch
     # hsh[:unique] number of branches having alerts.
     def alerted
       numbers = AlertedMessage.
         where(["alerted_messages.branch_id in (?)", branch_ids]).
-        where(:created_at=>started..ended).
+        # where(:created_at=>started..ended).
         select("alerted_messages.branch_id, count(alerted_messages.id) AS total").
         group("alerted_messages.branch_id")
        
       new_numbers = []
       numbers.each do |n|
         branch=Branch.find n.branch_id
-        if branch.health.send_alarm
+        if branch.health.send_alarm && branch.unhealth?
           new_numbers << n
         end
       end 

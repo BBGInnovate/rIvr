@@ -96,24 +96,24 @@ class EntriesController < ApplicationController
     e = Entry.find_by_id params[:id]
     return '' if !e
     ds = DropboxSession.last
+    f = "#{e.dropbox_dir}/#{e.dropbox_file}"
+    options = {:filename=>e.dropbox_file,
+               :disposition=>'inline',
+               :type=>e.mime_type}
     if !!ds
-      dropbox_session = Dropbox::Session.new(DROPBOX.consumer_key, DROPBOX.consumer_secret)
-      dropbox_session.set_access_token ds.token, ds.secret
-      dropbox_session.mode = :dropbox
-      # mime_type posted by IVR system may not be correct
-      f = "#{e.dropbox_dir}/#{e.dropbox_file}"
-      meta = dropbox_session.metadata(f)
-      e.mime_type = meta.mime_type
-      e.size = meta.bytes
-      options = {:filename=>e.dropbox_file,
-                 :disposition=>'inline',
-                 :type=>e.mime_type}
-      
       if File.exists? "#{DROPBOX.home}/#{f}"
-        send_file "#{DROPBOX.home}/#{f}", options
+         send_file "#{DROPBOX.home}/#{f}", options
       else
-        # download from dropbox service
-        content = dropbox_session.download(f)
+         dropbox_session = Dropbox::Session.new(DROPBOX.consumer_key, DROPBOX.consumer_secret)
+         dropbox_session.set_access_token ds.token, ds.secret
+         dropbox_session.mode = :dropbox
+         # mime_type posted by IVR system may not be correct 
+         meta = dropbox_session.metadata(f)
+         e.mime_type = meta.mime_type
+         e.size = meta.bytes
+         e.save
+         # download from dropbox service
+         content = dropbox_session.download(f)
         send_data content,options      
       end
     end

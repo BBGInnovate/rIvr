@@ -50,6 +50,7 @@ class HealthcheckController < ApplicationController
     when 'name'
       @branches = Branch.includes(:country).where(:is_active=>true).
         where("branches.name like '%#{term}%'").all
+      @branches = @branches.sort_by!{|a| a.health?}
     when 'status'
       @branches = Branch.includes(:country).where(:is_active=>true).all
       if ['bad','error','no activity'].include?(term)
@@ -57,10 +58,11 @@ class HealthcheckController < ApplicationController
       else
         @branches = @branches.select{|b| !b.unhealth?}
       end
-#      @branches = Branch.includes(:country).where(:is_active=>true).
-#        where("branches.status like '%#{term}%'").all   
+    else
+      @branches = Branch.includes(:country).where(:is_active=>true).all
+      @branches = @branches.sort_by!{|a| a.health?}
     end
-    render :partial=>'search_results', :layout=>false, :content_type=>'text'
+    render :partial=>'search', :layout=>false, :content_type=>'text'
   end
   
   def branch

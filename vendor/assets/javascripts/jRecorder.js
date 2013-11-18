@@ -233,10 +233,10 @@ Added seperate function sendData to trigger to send data to server (it won't sen
 		jRecorderSettings['callback_activityTime'](time);
 		
 	}
-	
-		
-					
-	
+        // below  by lliu	
+        $.jRecorder.host = function(host) {
+          var v = $('#flashrecarea param[name="movie"]');
+        }
 	//function to return flash object from name
 	function getFlashMovie(movieName) {
        var isIE = navigator.appName.indexOf("Microsoft") != -1;

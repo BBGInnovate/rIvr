@@ -6,7 +6,7 @@
       <img src="<%=e.branch.country_flag_url %>" width="35" height="34" alt="Tanzania flag">
     </td>
     <td class="country">
-      <%= e.branch.country.name %>
+      <%= e.branch.name %>
     </td>
     <td class="phone left-nav-bar" data-id="<%= e.branch_id%>" data-url="/analytics">
       <%= @calls[e.branch.id][:total] || 0 %>

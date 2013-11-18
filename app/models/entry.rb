@@ -433,8 +433,7 @@ class Entry< ActiveRecord::Base
   
   def audio_link
     link = nil
-    client = Branch.dropbox_session
-    if !!client && self.dropbox_file && self.voting_session
+    if self.dropbox_file && self.voting_session
       name = File.basename(self.dropbox_file)
       forum_title = self.voting_session.friendly_name
       link = "system/#{self.branch.friendly_name}/#{self.class.name.downcase}/#{forum_title}"
@@ -443,6 +442,7 @@ class Entry< ActiveRecord::Base
       local_file = "#{local}/#{name}"
       begin
         if !File.exists?(local_file)
+          client = Branch.dropbox_session
           feed = client.download("#{self.dropbox_dir}/#{self.dropbox_file}")
           File.open(local_file, 'wb') {|f| f.write(feed) }
         end

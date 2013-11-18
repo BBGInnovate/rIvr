@@ -2,51 +2,32 @@
 <div id="report-popup" class="template-popup" style="width: 255px;">
   <p id="notice"></p>
   <%= form_for @branch, :url=> "/branch/upload_headline_audio", :html => {:method=>'post',:multipart => true, :id=>"frm-upload-report"} do |f| %>
+  <input type="hidden" name="template_id" value="<%= @branch.reports.headline.id %>" />  
   <input type="hidden" name="branch_id" value="<%= @branch.id %>" />
   
-  <!--
-  <div class="title">Enter/Select title for this Report</div>          
-  <%# options = VotingSession.where(:branch_id=>@branch.id).map{|b| [b.name, b.name]}
-     options.unshift ["None","None"]
-     id = @branch.active_forum_session.id
-  %>
-  <%#= select_tag "branch[identifier]", options_for_select(options, id), :class=>'custom-combobox-input' %>
-
   <div style="margin: 10px;">
     <input type="radio" name="recording" value="Browse" checked> Browse </input>
     <input type="radio" name="recording" value="Record"> Record</input>
   </div>
-  -->
   
   <h3>Select your audio file to upload</h3>
   <div class='fileBrowseWrap'>
     <%= f.file_field :sound %>
   </div>
-  
+  <!--
   <div id="recorder" class='btnUploadWrap recorder'>
     <%#= render :partial=>'recorder' %>
   </div>
-  
+  -->
   <div class="btnUploadWrap">
     <span><%= submit_tag 'Preview', :id=>"preview-report", :value=>"Upload",:class=>"btnAction" %></span>
     <span><%= submit_tag 'Cancel', :id=>"cancel-report", :class=>"btnAction" %></span>
   </div>
    <div class="clear"> 
-    <% 
-       [@branch.reports.headline].each do |e|
-       src = e.audio_link %>
-       <object data="<%= src %>" type="application/x-mplayer2" width="260" height="30" autoplay="false">
-         <param name="filename" value="<%= src %>" />
-         <param name="controller" value="true" /> 
-         <param name="autoplay" value="false" />
-         <param name="autostart" value="0" />
-       </object>
+    <% [@branch.reports.headline].each do |e| %>
+       <%= player(e, false) %>
     <% end %>
    </div>
   <% end %>
 </div>
-<script>
-$(function() { 
-  
-});
-</script>
+

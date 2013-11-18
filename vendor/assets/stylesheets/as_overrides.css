@@ -262,6 +262,8 @@ a.ui-button-icon-only {
   background-color: #CCCCCC;
   border: 1px dotted #CCCCCC;
   width: 255px;
+  padding: 5px;
+  
   /* padding: 0px 30px 5px; */
   /*    background-color: #FFFFFF;
       border: 1px solid #9CD5F8;
@@ -534,8 +536,8 @@ img.red-light, img.green-light {
     color: #1F252A;
     float: left;
     font-size: 13px;
-    margin-left: 10px;
-    padding: 12px;
+    /* margin-left: 10px; */
+    padding: 12px 0 0 0;
     text-align: center;
     text-decoration: none;
 }

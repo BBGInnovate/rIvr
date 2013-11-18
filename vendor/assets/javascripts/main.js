@@ -256,7 +256,7 @@ var search = {
       });
     },
     update : function(data) {
-      $('#search-results-id').html(data);
+      $('#search').html(data);
     },
     remoteDesktop : function(data) {
       var radios = $("input[name='remote-desktop']");
@@ -330,7 +330,7 @@ var searchEntry = {
       }); 
       // for search click radio buttons
       $("body").on('click', "input:radio[name='moderation']", function(e) {
-         searchEntry.parent_id = "search-results-id";
+         searchEntry.parent_id = "search-results";
          data = searchEntry.getData();
          var url = "/moderation/search"
          jQuery.get(url, data, searchEntry.update, 'html');
@@ -720,43 +720,22 @@ var sortTable = {
      $(sortTable.sort_id).sortable({
        out: function( event, ui ) {
        },
-       cancel:"object",
+       cancel:"object, .map_play",
        containment: "#search-results",
        cursor: "move"
      });
      
-     
-     /*
-     $("body").on("mousedown","#object-player", function(){
-     	// $(sortTable.sort_id).sortable();
-       $(sortTable.sort_id).sortable("disable");
-       $(sortTable.toggle_id).val("Enable Sorting");
-     });
-     
-     $("body").on("mouseup","#object-player",function(){
-     	// $(sortTable.sort_id).sortable();
-       $(sortTable.sort_id).sortable("disable");
-       $(sortTable.toggle_id).val("Enable Sorting");
-       
-     });
-     
      $(sortTable.player_class).mb_miniPlayer({
-     	 //width:240,
+       width:240,
        inLine:false,
        id3:false,
-       showControls:false,
-       animate:false,
-       showVolumeLevel:false,
-       showTime:true,
-       showRew:false,
-       addShadow:false,
        onPlay:function() {
+         $("#"+sortTable.table_id).sortable("disable");
        },
        onEnd:function() {
+         $("#"+sortTable.table_id).sortable("enable");
        }
-       
      });
-     */
 	},
 	
 	showIds : function() {
@@ -900,16 +879,23 @@ var reportUpload = {
 		
 		$("#template-popup, #report-popup").on('click',"input[name='recording']:checked", function(e) {
 			if (this.value=='Record') {
-			   $('#recorder').show()
-			   $('#template-popup h3, #preview, .fileBrowseWrap').hide();
 			   var branch_id = $("[id*='_branch_id']").val();
-			   var identifier = $('.custom-combobox-input').val();
+			   // var identifier = $('.custom-combobox-input').val();
 			   var id = $("[id*='_id']").val(); //id==template.id
+			   var test = $("[name='template_id']");
 			   // alert("id=" + id +"branch_id=" + branch_id + "identifier=" + identifier)
 			   // "ZZZ" is a params separator, since jRecorder.swf allows only one parameter 
+			   var url = "/templates/record";
+			   // $('#flashrecarea').remove(); to reset the recorder, s $.jRecorder can define again
+			   $.get(url, {branch_id:branch_id,id:id}, function(data){
+			   	  $.jRecorder.host('');
+			     $('#recorder').html(data).show();
+			     $('#template-popup h3, #preview, .fileBrowseWrap').hide();
+			   }, 'html') ;
+			   
             
 	      } else {
-	         $('#recorder').hide()
+	         $('#recorder').html('').hide()
 			   $('#template-popup h3, #preview, .fileBrowseWrap').show();
 	      }
          
@@ -1310,7 +1296,7 @@ var branchManage = {
 
 var submitReport = {
 	init : function() {
-		jQuery("#report-logout").on('click', "#report-submit", function(e) {
+		$("#report-submit").on('click', function(e) {
 			var branch_id=$('#branch_id').val();
 			var url = '/reports';
 			var data = {
@@ -1318,10 +1304,11 @@ var submitReport = {
 				start_date: $('#start_date').val(),
 				end_date: $('#end_date').val(),
 			};
-			jQuery.post(url, data, function(data) {
+			$.post(url, data, function(data) {
 				$('#report-detail').show();
 				$('#report-detail').html(data)
 			});
+			return false;
 		});
 	}
 }

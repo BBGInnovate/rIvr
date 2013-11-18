@@ -68,38 +68,11 @@ To save the order, click the checkbox of the items and click Save
      <input type="checkbox" id="M<%= eid %>" value="" <%= 'checked' if entry.checked? %> />
    </td>
    <td>
-     <% audio_link = entry.audio_link
-      if !!audio_link  %>
-      <% src= audio_link # "/entries/#{eid}/play" %>
-      <!--
-      <audio controls>
-         <source src="<%#= src %>" type="application/x-mplayer2">
-         Your browser does not support the audio tag.
-      </audio> 
-      -->
-      <object data="<%= src %>" type="application/x-mplayer2" width="120" height="20" autoplay="false">
-      <param name="filename" value="<%= src %>" />
-      <param name="controller" value="true" /> 
-      <param name="autoplay" value="false" />
-      <param name="autostart" value="0" />
-      </object>
-      
-      <a target="_blank" title="Download <%= entry.dropbox_file %>" href='/entries/<%=eid%>/play'>
-        Download
-      </a>
-     <% end %>
-     <!--
-     <% if 1==0 && entry.dropbox_file_exists? %>
-       <a id='<%=eid%>' class="audio2 {ogg:'/entries/<%=eid%>/play',autoplay:false, downloadable:false,inLine:true}"
-       href='/entries/<%=eid%>/play'><%= entry.dropbox_file %></a>
-       <a target="_blank" title="Download <%= entry.dropbox_file %>" href='/entries/<%=eid%>/play'>
-        Download
-       </a>
-       
+     <% if entry.dropbox_file_exists? %>
+       <%= player(entry) %>
      <% else %>
-     <%= entry.dropbox_file %> missing
+       <%= entry.dropbox_file %> missing
      <% end %>
-     -->
    </td>
    <td>
       <%= entry.branch.name %>
@@ -133,10 +106,10 @@ To save the order, click the checkbox of the items and click Save
    <% end %>
    <!--
    <td>
-      <%= entry.branch.country.name %>
+      <%#= entry.branch.country.name %>
    </td>
    <td>
-      <%= entry.branch.contact %>
+      <%#= entry.branch.contact %>
    </td>
    -->
 </tr>
@@ -146,11 +119,10 @@ To save the order, click the checkbox of the items and click Save
 <div id="pager" class="pager"></div>
 <script>
 $(document).ready(function(){
-   // searchEntry.init();
-     $('#moderate-div #cancel').on('click', function(){
+    $('#moderate-div #cancel').on('click', function(){
        $('#moderate-div').hide();
-     })
-    sortTable.init("search-results-id","audio2", "enable"); //order table rows
+    })
+    sortTable.init("search-results-id","audio2", "enable"); //re order table rows
     $('#search-results-id').tablesorter(); // sort by table column
    // $('#search-results-id').tablesorter({widthFixed: true, widgets: ['zebra']}).tablesorterPager({container: $("#pager")}); 
 });

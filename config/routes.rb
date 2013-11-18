@@ -61,6 +61,7 @@ TestIvr::Application.routes.draw do
       post :headline
       get :headline
       get :forum_feed
+      get :record
       post :record
     end
   end

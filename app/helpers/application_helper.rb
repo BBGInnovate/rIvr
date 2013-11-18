@@ -10,7 +10,23 @@ module ApplicationHelper
     html << "</div>"
     html.html_safe
   end
-  
+  def player(audio, download=true)
+    eid = audio.id
+    # /entries/<%=eid%>/play
+    html = %{<a id='#{eid}' class="audio2 {ogg:'#{audio.audio_link}',autoplay:false, downloadable:false,inLine:true}"
+       href='#{audio.audio_link}'>#{File.basename(audio.dropbox_file)}</a>}
+    if download
+      html << "<a target='_blank' title='Download #{audio.dropbox_file}' href='#{audio.audio_link}'>Download</a>"
+    end
+    #
+    #  <object data="#{audio.audio_link}" type="application/x-mplayer2" width="245" height="30" autoplay="false">
+    #     <param name="filename" value="#{audio.audio_link}" />
+    #     <param name="controller" value="true" /> 
+    #     <param name="autoplay" value="false" />
+    #     <param name="autostart" value="0" />
+    #  </object>
+    html.html_safe  
+  end
   def format_seconds(total_seconds)
     seconds = total_seconds % 60
     minutes = (total_seconds / 60) % 60
