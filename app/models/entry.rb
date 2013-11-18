@@ -436,7 +436,7 @@ class Entry< ActiveRecord::Base
     if self.dropbox_file && self.voting_session
       name = File.basename(self.dropbox_file)
       forum_title = self.voting_session.friendly_name
-      link = "system/#{self.branch.friendly_name}/#{self.class.name.downcase}/#{forum_title}"
+      link = "/system/#{self.branch.friendly_name}/#{self.class.name.downcase}/#{forum_title}"
       local="#{Rails.root}/public/#{link}"
       FileUtils.mkdir_p local
       local_file = "#{local}/#{name}"

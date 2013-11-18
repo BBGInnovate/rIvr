@@ -194,7 +194,7 @@ class TemplatesController < ApplicationController
     elsif @branch.forum_type == 'bulletin'
       @question="Ask the community"
       @listen="Listen Messages"
-      @record="Record Message"
+      @record="Leave Message"
     elsif @branch.forum_type == 'vote'
       if params[:result].to_i == 1
         @question="Results"
