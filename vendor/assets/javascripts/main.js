@@ -468,10 +468,18 @@ var editHealth = {
     },
     change : function(data) {
       	var obj = jQuery.parseJSON(data);
-    	  $('#error').addClass(obj.error).html(obj.msg);
+    	$('#error').addClass(obj.error).html(obj.msg);
       $('body').css({
         "cursor" : "pointer"
       });
+      location.href = '/healthcheck?klass=health-on'      
+      /*
+      if ( obj.id ) {
+      	  var td = $('td [id="t_'+obj.id+'"]');
+      	  td.attr('title',obj.title);
+      	  td.html(obj.status);
+        $('a #'+ obj.id).html(obj.alarm);
+      } */
     },
     updated : function(data) {
       $('.branch-name').css({

@@ -29,7 +29,10 @@ class HealthcheckController < ApplicationController
       @record.attributes = record
       if @record.valid?
         @record.save
-        txt = "{\"error\":\"success\", \"msg\":\"Record updated\"}"
+        on_off = @record.send_alarm ? 'On' : 'Off'
+        title = @record.branch.title_infowindow
+        status = @record.branch.health_image.html_safe
+        txt = "{\"error\":\"success\", \"msg\":\"Record updated\",\"title\":\"title\",\"status\":\"#{status}\",\"alarm\":\"#{on_off}\", \"id\":\"#{@record.branch_id}\"}"
         render :text=>txt,:layout=>false, :content_type=>'text'
       else
         msg = @record.errors.full_messages.first

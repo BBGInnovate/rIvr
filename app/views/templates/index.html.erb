@@ -1,7 +1,15 @@
 <div id="forum-template" class="float-left">
   <span class="back-button"><a href="/branch?branch=<%=@branch_name%>">Back To Branch Configure</a></span>
   <h2><%= forum_type(@branch) %></h3>
-  <span style="font-size: 20px;"><%= @branch.current_forum_session.name %> for Branch <%= @branch.name %></span>
+  <span style="font-size: 20px;">
+  <% if @branch.current_forum_session
+       msg = "#{@branch.current_forum_session.name} for Branch #{@branch.name}"
+     else
+       msg = "<span class='error'>No Forum Selected. Select a Forum First</span>"
+     end
+   %>
+  <%= msg.html_safe %>
+  </span>
   <br/><br/>
   <% if @temp_partial =~ /_result/
        result=1
@@ -41,9 +49,9 @@
 </script>
 <script src="/assets/jRecorder.js"></script>
 <script>
-$(function() { 
+$(function() {
   $.jRecorder({
-	 host:"/templates/record?branch_id=<%= @branch.id%>",
+	   host:"/templates/record?branch_id=<%= @branch.id%>",
       callback_started_recording : function() {
         callback_started();
       },
@@ -64,3 +72,5 @@ $(function() {
   });
 });
 </script>
+
+

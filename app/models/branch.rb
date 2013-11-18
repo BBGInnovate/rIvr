@@ -137,7 +137,7 @@ class Branch< ActiveRecord::Base
   # for array sort_by so that not health items come first
   # order by 0,1
   def health?
-    return 0 if (!self.health || !self.health.last_event)
+    # return 0 if (!self.health || !self.health.last_event)
     if !self.health.send_alarm || (self.health.last_event.to_i > (self.health.no_activity.hours.ago.to_i rescue 0))
       1
     else
@@ -152,9 +152,9 @@ class Branch< ActiveRecord::Base
   end
   def health_image
     if unhealth?
-      %{<img class="red-light" width="15" height="15" src="/assets/red.png" />}
+      %{<img class='red-light' width='15' height='15' src='/assets/red.png' />}
     else
-      %{<img src="/assets/images/icon-analytics.png" width="23" height="21" alt="radio signal" />}
+      %{<img src='/assets/images/icon-analytics.png' width='23' height='21' alt='radio signal' />}
     end  
   end
   def gmap_marker
