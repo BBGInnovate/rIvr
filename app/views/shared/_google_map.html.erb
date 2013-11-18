@@ -66,12 +66,17 @@ jQuery(document).ready(function() {
            });
         var image = {
         url: "<%= b.gmap_marker%>",
-        // This marker is 20 pixels wide by 20 pixels tall.
-        size: new google.maps.Size(40,35),
-        // The origin for this image is 0,0.
+        // The origin for this image is top-left of the image .
         origin: new google.maps.Point(0,0),
         // The anchor for this image is the base of the flagpole at 0,32.
-        anchor: new google.maps.Point(0,0)
+        <% if b.gmap_marker =~/radio-wave/ %>
+           size: new google.maps.Size(45,35),
+           // positive number goes down or right
+           anchor: new google.maps.Point(20,30),
+        <% else %>
+           size: new google.maps.Size(20,20),
+           anchor: new google.maps.Point(10,10)
+        <% end %>
         };
 
         var myLatlng = new google.maps.LatLng(<%= b.latitude %>, <%= b.longitude %>);

@@ -152,17 +152,17 @@ class Branch< ActiveRecord::Base
   end
   def health_image
     if unhealth?
-      %{<img class='red-light' width='15' height='15' src='/assets/red.png' />}
+      %{<img class="red-light" width="15" height="15" src="/assets/red.png" />}
     else
-      %{<img src='/assets/images/icon-analytics.png' width='23' height='21' alt='radio signal' />}
-    end  
+      %{<img src="/assets/images/icon-analytics.png" width="23" height="21" alt="radio signal" />}
+    end
   end
   def gmap_marker
     if unhealth?
       "/assets/red.png"
     else
       "/assets/radio-wave.png"
-    end  
+    end
   end
   has_many :alerted_messages 
   
