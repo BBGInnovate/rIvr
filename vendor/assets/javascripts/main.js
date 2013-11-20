@@ -301,7 +301,7 @@ var searchEntry = {
         return false
       	});
       	*/
-      	$("body").on('click', "#search-results-id th a", function(e) {
+      	$("body").on('click', "#AAsearch-results-id th a", function(e) {
       		searchEntry.parent_id = $(this).closest("div").attr("id");
       		var order = this.id;
       		searchEntry.clicked = this;
@@ -325,6 +325,9 @@ var searchEntry = {
         } else if (searchEntry.parent_id=='syndicate') {
            data = {"partial":"syndtcate", "ajax":1};
         }
+        $(this).css({
+          "cursor":"wait"
+        });
         jQuery.get(url, data, searchEntry.update, 'html');
         return false
       }); 
@@ -333,6 +336,9 @@ var searchEntry = {
          searchEntry.parent_id = "search-results";
          data = searchEntry.getData();
          var url = "/moderation/search"
+         $(this).css({
+          "cursor":"wait"
+         });
          jQuery.get(url, data, searchEntry.update, 'html');
          return true
       });
