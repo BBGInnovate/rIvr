@@ -216,6 +216,10 @@ class Entry< ActiveRecord::Base
       delete_from_dropbox
       delete_from_soundcloud
       delete_from_ftp
+      if self.sorted_entry
+        self.sorted_entry.rank = 0
+        self.sorted_entry.save
+      end
     end
   end
   

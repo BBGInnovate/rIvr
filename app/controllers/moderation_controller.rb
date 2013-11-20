@@ -150,7 +150,7 @@ class ModerationController < ApplicationController
     recents = []
     olds = []
     if branch.kind_of?(String)
-       branch_id = branch
+       branch_id = branch.to_i if branch.to_i != 0
        branch = [branch]
     end
     location = params[:location]
@@ -160,10 +160,8 @@ class ModerationController < ApplicationController
     # not get for Report type where forum_session_id == 0
     @sorted = SortedEntry.where("rank>0 AND forum_session_id > 0 ").all
     @entries_query = Entry.includes([:branch=>:country]).
-      where("branches.is_active=1").
-      where("forum_session_id > 0 ")
+      where("branches.is_active=1")
       
-
     if !!start_date && !!end_date
       @entries_query = @entries_query.where("entries.created_at"=>start_date..end_date)
     end
@@ -199,11 +197,14 @@ class ModerationController < ApplicationController
     when 'incoming'
       @entries_query = @entries_query.
          where("entries.is_private=1").
+         where("entries.is_active=1").
+         where("forum_session_id > 0 ").
          order("entries.id desc")
       if !!branch_id
-         max_id = SortedEntry.select("max(entry_id) id").where(:branch_id=>branch_id).first
-         recents = @entries_query.where("entries.id > #{max_id.id}")
-         olds = @entries_query.where("entries.id < #{max_id.id}")
+         max_id = SortedEntry.select("max(entry_id) entry_id").where(:branch_id=>branch_id).first
+         id = !!max_id ? max_id.entry_id : 0
+         recents = @entries_query.where("entries.id > #{id}")
+         olds = @entries_query.where("entries.id < #{id}")
          @results = recents + @sorted + olds
       else
          @results = @entries_query.all
@@ -211,7 +212,8 @@ class ModerationController < ApplicationController
       
     when 'published'
       @results = @entries_query.
-         where("entries.is_private=0")
+         where("entries.is_private=0").
+         where("forum_session_id > 0 ")
     when 'syndicated'
       @results = @entries_query.joins(:soundkloud).page(p)
     when 'deleted'
