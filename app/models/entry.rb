@@ -227,7 +227,7 @@ class Entry< ActiveRecord::Base
   def delete_from_dropbox
     s = get_dropbox_session
     begin
-      self.update_attribute public_url, nil
+      self.update_attributes :public_url=>nil,:is_private=>true
       to = "Public#{self.dropbox_dir}/#{self.dropbox_file}"
       s.delete(to)
     rescue Exception => msg
