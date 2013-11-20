@@ -32,11 +32,11 @@ class Stat
       branch_ids = Branch.where("branches.is_active=1").all.map{|a| a.id}
     end
     query = Entry.includes(:branch).
-         where("entries.is_active=1").
-         where("entries.is_private=1").
          where(["entries.branch_id in (?) ", branch_ids]).
          where("entries.forum_session_id > 0 ").
          where("entries.created_at"=>started..ended)
+         # where("entries.is_active=1").
+         # where("entries.is_private=1")
   end
   
   # number of branches no activities in started..ended

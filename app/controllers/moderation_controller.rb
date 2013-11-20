@@ -31,13 +31,14 @@ class ModerationController < ApplicationController
     # this is for initial search_results content corresponding to Incoming radio
     # button is checked
     start_date = Branch.message_time_span.days.ago.beginning_of_day.to_s(:db)
-    end_date = Time.now.beginning_of_day.to_s(:db)
+    end_date = Time.now.end_of_day.to_s(:db)
     
     # not get for Report type where forum_session_id == 0
     @sorted = SortedEntry.where("rank>0 AND forum_session_id>0").
         where("created_at"=>start_date..end_date)
     
-    @results = Stat.ivr_message_query(nil, start_date, end_date)
+    @results = Stat.ivr_message_query(nil, start_date, end_date).
+               where("entries.is_private=1 AND entries.is_active=1")
     #
     #   Entry.where("entries.is_private=1 AND entries.is_active=1").
     #   joins(:branch).where("branches.is_active=1").
@@ -145,8 +146,8 @@ class ModerationController < ApplicationController
   
   def search
     search_for = params[:search_for] || 'incoming'
-    start_date = params[:start_date]
-    end_date = params[:end_date]
+    start_date = DateTime.parse(params[:start_date]).beginning_of_day.to_s(:db) rescue Branch.message_time_span.days.ago.beginning_of_day.to_s(:db)
+    end_date = DateTime.parse(params[:end_date]).end_of_day.to_s(:db) rescue Time.now.end_of_day.to_s(:db)
     forum_type = params[:forum_type]
     branch = params[:branch]
     branch_id = nil
@@ -164,11 +165,8 @@ class ModerationController < ApplicationController
     @sorted = SortedEntry.where("rank>0 AND forum_session_id > 0 ").all
     @entries_query = Entry.includes([:branch=>:country]).
       where("branches.is_active=1")
-      
-    if !!start_date && !!end_date
-      @entries_query = @entries_query.where("entries.created_at"=>start_date..end_date)
-    end
     
+    @entries_query = @entries_query.where("entries.created_at"=>start_date..end_date)
     # is forum_title now
     if !!forum_type && forum_type.first.to_i != 0
       # @entries_query = @entries_query.where(["entries.forum_type in (?)", forum_type])
