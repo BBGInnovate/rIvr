@@ -30,25 +30,28 @@ class ModerationController < ApplicationController
         
     # this is for initial search_results content corresponding to Incoming radio
     # button is checked
-    start_date = 1.month.ago.to_s(:db) # Branch.message_time_span.days.ago.to_s(:db)
-    end_date = Time.now.to_s(:db)
+    start_date = Branch.message_time_span.days.ago.beginning_of_day.to_s(:db)
+    end_date = Time.now.beginning_of_day.to_s(:db)
     
     # not get for Report type where forum_session_id == 0
     @sorted = SortedEntry.where("rank>0 AND forum_session_id>0").
         where("created_at"=>start_date..end_date)
     
-    @results = Entry.where("entries.is_private=1 AND entries.is_active=1").
-       joins(:branch).where("branches.is_active=1").
-       where("forum_session_id > 0 ").
-       where("entries.created_at"=>start_date..end_date)
+    @results = Stat.ivr_message_query(nil, start_date, end_date)
+    #
+    #   Entry.where("entries.is_private=1 AND entries.is_active=1").
+    #   joins(:branch).where("branches.is_active=1").
+    #   where("forum_session_id > 0 ").
+    #   where("entries.created_at"=>start_date..end_date)
  
     if (params[:branch_id])
       @results = @results.where(["entries.branch_id = ?", params[:branch_id]])
     end
     @results = @results.order("entries.id desc")
 
+    @results = @results.select{|a| a if a.dropbox_file_exists? }.compact
     sorted_ids = @sorted.map{|s| s.entry_id}
-    @results = @sorted + @results.map{|r| r if !sorted_ids.include?(r.id) }.compact
+    @results = @sorted + @results.select{|r| r if !sorted_ids.include?(r.id) }.compact
     unless @results.kind_of?(Array)
       @results = @results.page(p)
     else
@@ -98,7 +101,7 @@ class ModerationController < ApplicationController
         @entry.sorted_entry.rank = 0
         @entry.sorted_entry.save!
       end
-      txt="{\"error\":\"notice\",\"message\":\"Message deleted\"}"
+      txt="{\"error\":\"notice\", \"id\": #{@entry.id},\"message\":\"Message deleted\"}"
       render :text=>txt,:layout=>false, :content_type=>'text' and return
     elsif params[:undelete].to_i == 1
       @entry.is_active = 1
@@ -215,7 +218,15 @@ class ModerationController < ApplicationController
          where("entries.is_private=0").
          where("forum_session_id > 0 ")
     when 'syndicated'
-      @results = @entries_query.joins(:soundkloud).page(p)
+      @published = @entries_query.
+         where("entries.public_url is not null").
+         where("forum_session_id > 0 ").all
+      @published_ids = @published.map{|p| p.id} 
+      if @published_ids.size == 0
+         @published_ids = [0]
+      end
+      @results = @published + @entries_query.joins(:soundkloud).
+         where(["entries.id not in (?)", @published_ids]).page(p)
     when 'deleted'
       @results = @entries_query.
          where("entries.is_active=0")

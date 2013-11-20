@@ -63,16 +63,13 @@ To save the order, click the checkbox of the items and click Save
    title2 = !!entry.soundkloud ? 'Message is in SoundCloud' : 'Syndicate Dropbox file to SoundCloud' 
    title3 = entry.ftp_url ? 'Message is in FTP server' : 'FTP upload' 
 %>
+<% if entry.dropbox_file_exists? %>
 <tr id="<%= eid %>">
    <td>
      <input type="checkbox" id="M<%= eid %>" value="" <%= 'checked' if entry.checked? %> />
    </td>
    <td>
-     <% if entry.dropbox_file_exists? %>
        <%= player(entry) %>
-     <% else %>
-       <%= entry.dropbox_file %> missing
-     <% end %>
    </td>
    <td>
       <%= entry.branch.name %>
@@ -113,6 +110,7 @@ To save the order, click the checkbox of the items and click Save
    </td>
    -->
 </tr>
+<% end %>
 <% end %>
 </tbody>
 </table>

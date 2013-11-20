@@ -27,6 +27,18 @@ class Stat
       @countries = @branches.map{|b| b.country }.uniq
     end
     
+  def self.ivr_message_query(branch_ids=nil, started, ended)
+    if !branch_ids
+      branch_ids = Branch.where("branches.is_active=1").all.map{|a| a.id}
+    end
+    query = Entry.includes(:branch).
+         where("entries.is_active=1").
+         where("entries.is_private=1").
+         where(["entries.branch_id in (?) ", branch_ids]).
+         where("entries.forum_session_id > 0 ").
+         where("entries.created_at"=>started..ended)
+  end
+  
   # number of branches no activities in started..ended
   def no_activity
     activities = Health.
@@ -190,11 +202,21 @@ class Stat
     # messages[branch_id] #=> message number for the branch
     def messages
     #  numbers = Entry.joins(:branch).where("branches.is_active=1").
-      numbers = Entry.includes(:branch).where(["entries.branch_id in (?) ", branch_ids]).
-      where("entries.created_at"=>started..ended).
-      select("branch_id, count(entries.id) AS total").
-      group(:branch_id)
+      query = Stat.ivr_message_query(branch_ids, started, ended)
+         #
+         # Entry.includes(:branch).
+         # where("entries.is_active=1").
+         # where("entries.is_private=1").
+         # where(["entries.branch_id in (?) ", branch_ids]).
+         # where("entries.forum_session_id > 0 ").
+         # where("entries.created_at"=>started..ended)
+
+      numbers = query.select("branch_id, count(entries.id) AS total").
+         group(:branch_id)
       hsh = set_hash(numbers)
+      
+      sorted = SortedEntry.where(["entry_id in (?) AND rank>0", query.all.map{|a| a.id}])
+      hsh[:new] = hsh[:total] - sorted.size
       hsh
     end
     # not moderated messages
