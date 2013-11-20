@@ -30,7 +30,7 @@ class ModerationController < ApplicationController
         
     # this is for initial search_results content corresponding to Incoming radio
     # button is checked
-    start_date = Branch.message_time_span.days.ago.to_s(:db)
+    start_date = 1.month.ago.to_s(:db) # Branch.message_time_span.days.ago.to_s(:db)
     end_date = Time.now.to_s(:db)
     
     # not get for Report type where forum_session_id == 0
@@ -41,12 +41,11 @@ class ModerationController < ApplicationController
        joins(:branch).where("branches.is_active=1").
        where("forum_session_id > 0 ").
        where("entries.created_at"=>start_date..end_date)
-    #   order("entries.id desc").page(p)
-       
+ 
     if (params[:branch_id])
       @results = @results.where(["entries.branch_id = ?", params[:branch_id]])
     end
-    @results = @results.order("entries.id desc") #.page(p)
+    @results = @results.order("entries.id desc")
 
     sorted_ids = @sorted.map{|s| s.entry_id}
     @results = @sorted + @results.map{|r| r if !sorted_ids.include?(r.id) }.compact
@@ -147,7 +146,11 @@ class ModerationController < ApplicationController
     end_date = params[:end_date]
     forum_type = params[:forum_type]
     branch = params[:branch]
+    branch_id = nil
+    recents = []
+    olds = []
     if branch.kind_of?(String)
+       branch_id = branch
        branch = [branch]
     end
     location = params[:location]
@@ -158,8 +161,8 @@ class ModerationController < ApplicationController
     @sorted = SortedEntry.where("rank>0 AND forum_session_id > 0 ").all
     @entries_query = Entry.includes([:branch=>:country]).
       where("branches.is_active=1").
-      where("forum_session_id > 0 ").
-      order(order_by)
+      where("forum_session_id > 0 ")
+      
 
     if !!start_date && !!end_date
       @entries_query = @entries_query.where("entries.created_at"=>start_date..end_date)
@@ -194,24 +197,33 @@ class ModerationController < ApplicationController
     
     case search_for
     when 'incoming'
-      @results = @entries_query.
-         where("entries.is_private=1").page(p)
+      @entries_query = @entries_query.
+         where("entries.is_private=1").
+         order("entries.id desc")
+      if !!branch_id
+         max_id = SortedEntry.select("max(entry_id) id").where(:branch_id=>branch_id).first
+         recents = @entries_query.where("entries.id > #{max_id.id}")
+         olds = @entries_query.where("entries.id < #{max_id.id}")
+         @results = recents + @sorted + olds
+      else
+         @results = @entries_query.all
+      end
+      
     when 'published'
       @results = @entries_query.
-         where("entries.is_private=0").page(p)
+         where("entries.is_private=0")
     when 'syndicated'
       @results = @entries_query.joins(:soundkloud).page(p)
     when 'deleted'
       @results = @entries_query.
-         where("entries.is_active=0").page(p)
+         where("entries.is_active=0")
     end
-#    unless @sorted.kind_of?(Array)
-#      @sorted = @sorted.page(p)
-#    else
-#      @sorted = Kaminari.paginate_array(@sorted).page(p)
-#    end
-    sorted_ids = @sorted.map{|s| s.entry_id}
-    @results = @sorted + @results.map{|r| r if !sorted_ids.include?(r.id) }.compact
+    # if search by single branch id for incoming messages, @results are got from 
+    # case searc_for
+    unless !!branch_id && search_for == 'incoming'
+       sorted_ids = @sorted.map{|s| s.entry_id}
+       @results = @sorted + @results.map{|r| r if !sorted_ids.include?(r.id) }.compact
+    end
     unless @results.kind_of?(Array)
       @results = @results.page(p)
     else

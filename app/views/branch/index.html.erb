@@ -3,7 +3,7 @@
   <div class="select-branch">
     <h3>Step 1. Select Branch</h3>
     <form action="" method="get">
-      <% options = Branch.where("is_active=1").map{|b| [b.name, b.id]}
+      <% options = Branch.all.map{|b| [b.name, b.id]}
          options.unshift ["--Select Branch--","0"] 
          id = !!@branch ? @branch.id : 0
       %>

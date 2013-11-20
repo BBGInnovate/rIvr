@@ -67,7 +67,7 @@ class Stat
   # listened[:number_of_calls] == number of calls for listening
   def listened
     hsh = {:total=>0}
-    my_events = Event.includes(:branch).where(["evebranch_idsnts.branch_id in (?)", branch_ids])
+    my_events = Event.includes(:branch).where(["events.branch_id in (?)", branch_ids])
     my_events = my_events.where("events.created_at"=>started..ended).
         where("action_id in (#{Action.begin_listen},#{Action.end_listen})").
         select("session_id, events.branch_id, events.action_id, events.created_at").all

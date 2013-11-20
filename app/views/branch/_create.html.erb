@@ -84,8 +84,10 @@
   <%= f.select :country_id, options_for_select(options, id), :style=>'' %>
   <p></p>
 		<label for="branch_is_active">Is Active? </label>
-  <% options = [['False', 0], ['True', 1]] %>
-  <%= f.select :is_active, options_for_select(options, 1), :style=>'' %>
+  <% options = [['False', 0], ['True', 1]] 
+     id = @branch.is_active ? 1 : 0
+   %>
+  <%= f.select :is_active, options_for_select(options, id), :style=>'' %>
   <p></p>
   <label for="branch_description">Description</label>
   <%= f.text_area :description %>
