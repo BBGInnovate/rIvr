@@ -213,13 +213,9 @@ class Entry< ActiveRecord::Base
   
   def remove_properties
     if !self.is_active
-      delete_from_dropbox
-      delete_from_soundcloud
-      delete_from_ftp
-      if self.sorted_entry
-        self.sorted_entry.rank = 0
-        self.sorted_entry.save
-      end
+     # delete_from_dropbox
+     # delete_from_soundcloud
+     # delete_from_ftp
     end
   end
   
@@ -229,7 +225,9 @@ class Entry< ActiveRecord::Base
     begin
       self.update_attributes :public_url=>nil,:is_private=>true
       to = "Public#{self.dropbox_dir}/#{self.dropbox_file}"
-      s.delete(to)
+      if File.exists?("#{DROPBOX.home}/#{to}")
+        s.delete(to)
+      end
     rescue Exception => msg
       logger.info "#{msg}"
     end

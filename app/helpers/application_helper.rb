@@ -11,6 +11,7 @@ module ApplicationHelper
     html.html_safe
   end
   def player(audio, download=true)
+    return '' unless !!audio.dropbox_file
     eid = audio.id
     # /entries/<%=eid%>/play
     html = %{<a id='#{eid}' class="audio2 {ogg:'#{audio.audio_link}',autoplay:false, downloadable:false,inLine:true}"
@@ -107,6 +108,9 @@ module ApplicationHelper
       listen = records.detect{|t| t.name=='listen'}
       listen = create_template(branch, 'listen') if !listen
       audios << ['Listen Messages', audio_tag(listen), edit_tag(listen)] 
+      record = records.detect{|t| t.name=='record_message'}
+      record = create_template(branch, 'record_message') if !record
+      audios << ['Leave Messages', audio_tag(record), edit_tag(record)] 
     end
   end
   def create_template(branch, name)

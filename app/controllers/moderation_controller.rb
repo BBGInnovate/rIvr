@@ -96,18 +96,22 @@ class ModerationController < ApplicationController
       end
       render :text=>txt,:layout=>false, :content_type=>'text' and return
     elsif params[:delete].to_i == 1
-      @entry.is_active = 0
-      @entry.save!
-      if @entry.sorted_entry
-        @entry.sorted_entry.rank = 0
-        @entry.sorted_entry.save!
+      begin
+        @entry.is_active = 0
+        @entry.save!
+        if @entry.sorted_entry
+          se = SortedEntry.find_by_id @entry.sorted_entry.id
+          se.update_attribute(:rank, 0) if se
+          txt="{\"error\":\"notice\",\"id\":\"#{id}\",\"message\":\"Message deleted\"}"
+        end
+      rescue
+        txt="{\"error\":\"error\",\"id\":\"0\",\"message\":\"delete error\"}"
       end
-      txt="{\"error\":\"notice\", \"id\": #{@entry.id},\"message\":\"Message deleted\"}"
       render :text=>txt,:layout=>false, :content_type=>'text' and return
     elsif params[:undelete].to_i == 1
       @entry.is_active = 1
       @entry.save!
-      txt="{\"error\":\"notice\",\"message\":\"Message undeleted\"}"
+      txt="{\"error\":\"notice\",\"id\":\"#{id}\",\"message\":\"Message undeleted\"}"
       render :text=>txt,:layout=>false, :content_type=>'text' and return 
     else
       txt="{\"error\":\"error\",\"message\":\"Not know what to do \"}"

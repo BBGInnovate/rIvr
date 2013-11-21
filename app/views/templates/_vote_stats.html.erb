@@ -1,4 +1,7 @@
-<% stat = branch.vote_results.stats %>
+<% 
+   voting_session_id = branch.current_forum_session.id
+   stat = branch.vote_results.stats(voting_session_id) 
+%>
 <br /><br />
 <table border=1>
   <thead>

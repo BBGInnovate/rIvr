@@ -499,6 +499,7 @@ var loadSoundCloud = {
     entry_id : 0,
     modalId : 'modal-window',
     modalHeight : 350,
+    act : '',
     init : function() {
       $("body").on('click','.publish-syndicate a', function(e) {
         loadSoundCloud.entry_id=this.id;
@@ -508,6 +509,7 @@ var loadSoundCloud = {
         var url= $(this).attr("data-url");
         var myRe = /\?(\w+)=/;
         var myArr = myRe.exec(url);
+        loadSoundCloud.act  = myArr[1];
         if (myArr[1] == 'playlist') {
            loadSoundCloud.modalHeight = 250;
         } else {
@@ -571,6 +573,9 @@ var loadSoundCloud = {
         "cursor" : "pointer"
       });
       var obj = jQuery.parseJSON(data);
+      if (loadSoundCloud.act=='delete' || loadSoundCloud.act=='undelete') {
+        $('#'+obj.id).remove();
+      }
       my = jQuery("."+obj.error);
       my.html(obj.message);
       my.fadeIn("fast").delay(5000).fadeOut("slow");

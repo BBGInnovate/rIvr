@@ -147,7 +147,7 @@ class Branch< ActiveRecord::Base
     
   def unhealth?
     return false if !self.health || !self.health.send_alarm
-    return true if (self.health || !self.health.last_event)
+    return true if (!!self.health && !self.health.last_event)
     self.health.last_event.to_i < (self.health.no_activity.hours.ago.to_i rescue 100000)
   end
   def health_image
