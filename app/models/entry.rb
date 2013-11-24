@@ -117,7 +117,12 @@ class Entry< ActiveRecord::Base
   
   def to_soundcloud(soundcloud)
     # return if !self.public_url
-    client = Soundcloud.new(:access_token => (self.branch.soundcloud_access_token || SOUNDCLOUD.access_token))
+    if !self.branch.soundcloud_access_token || self.branch.soundcloud_access_token.empty?
+       access_token = SOUNDCLOUD.access_token
+    else
+       access_token = self.branch.soundcloud_access_token 
+    end
+    client = Soundcloud.new(:access_token => access_token)
     begin
       raw_content = dropbox_file_content
       f = File.open('/tmp/'+self.dropbox_file, 'wb') {|f| f.write(raw_content) }
