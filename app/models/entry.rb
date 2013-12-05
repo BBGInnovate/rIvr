@@ -26,6 +26,7 @@ class Entry< ActiveRecord::Base
   end
 
   def dropbox_file_exists?
+    return false if !self.branch
     filename = "#{self.dropbox_dir}/#{self.dropbox_file}"
     f = "#{DROPBOX.home}#{filename}"
     res = File.exists?(f)
