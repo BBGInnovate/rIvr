@@ -7,7 +7,7 @@
   Level: <span id="level"></span>
 </div>
 <div id="levelbase"
-  style="width: 200px; height: 20px; background-color: #ffff00">
+  style="width: 255px; height: 20px; background-color: #ffff00">
   <div id="levelbar"
      style="height: 19px; width: 2px; background-color: red"></div>
   </div>
@@ -16,14 +16,25 @@
 </div>
 <div>
   <input type="button" id="record" value="Record" style="color: red" />
-  <input type="button" id="stop" value="Stop/Preview" />
-  <input type="button" id="send" value="Send Data" />
+  <input type="button" id="stop-preview" value="Stop Play" style="display:none;"/>
+  <input type="button" id="send" value="Save" />
 </div>
 
 <script type="text/javascript">   
   $('#record').click(function() {
-    // max recording 300 seconds
-    $.jRecorder.record(300);
+    if (this.value=='Record') {
+       // max recording 300 seconds
+       $(this).val('Stop');
+       $.jRecorder.record(300);
+       $('#stop-preview').hide();
+    } else {
+       $.jRecorder.stop();
+       $(this).val('Record');
+       $('#stop-preview').show();
+    }
+  })
+  $('#stop-preview').click(function() {
+    $.jRecorder.stopPreview();
   })
   $('#stop').click(function() {
     $.jRecorder.stop();

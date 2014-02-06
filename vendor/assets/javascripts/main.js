@@ -993,7 +993,7 @@ var branchManage = {
    branchAction : '',
    myId : '',
    url : null,
-   forumTypes: ["report", "bulletin", "vote"],
+   forumTypes: ["report", "bulletin", "vote", "simple"],
 	init : function() {
 	  var branch_id = $("#record_id").val();
 	  if (branch_id > 0 ) {

@@ -60,7 +60,6 @@ Added seperate function sendData to trigger to send data to server (it won't sen
 			
 		//default settings
 						var settings = {
-		
 						'rec_width': '300',
 						'rec_height': '200',
 						'rec_top': '0px',
@@ -78,11 +77,6 @@ Added seperate function sendData to trigger to send data to server (it won't sen
 						'callback_error_recording' : function(){},
 						'callback_activityTime': function(time){},
 						'callback_activityLevel' : function(level){}
-						
-						
-						
-		
-		
 						};
 	
 	
@@ -92,9 +86,6 @@ Added seperate function sendData to trigger to send data to server (it won't sen
 					     }
 		
 						jRecorderSettings = settings;
-						
-						
-						
 							if($.browser.msie && Number($.browser.version) <= 8) {
 							var objStr = '<object  name="'+ settings['recorder_name'] +'" id="' + settings['recorder_id'] + '" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="'+ settings['rec_width'] +'" height="'+ settings['rec_height']+'"></object>';
 
@@ -135,10 +126,7 @@ Added seperate function sendData to trigger to send data to server (it won't sen
 							createParam(htmlObj, "allowscriptaccess", "always");
 							createParam(htmlObj, "bgcolor", settings['bgcolor']);
 							createParam(htmlObj, "wmode", settings['wmode'] );
-							
-							
-							
-							
+
 						}
 
 
@@ -146,19 +134,9 @@ Added seperate function sendData to trigger to send data to server (it won't sen
 						
 						divObj.setAttribute("id", settings['recorderlayout_id']);
 						divObj.setAttribute("style", "position:absolute;top:"+ settings['rec_top'] +";left:"+ settings['rec_left'] +";z-index:-1");
-						
 						divObj.appendChild(htmlObj);
-						
-						
 						element.append(divObj);
-						
-		
-		
-		
-		
-		
-		
-		
+
 	};
 	
 	//function call to start a recording
@@ -174,12 +152,13 @@ Added seperate function sendData to trigger to send data to server (it won't sen
 						} 
 
 	//function call to stop recording					
-	$.jRecorder.stop = function(){
-					
-		getFlashMovie(jRecorderSettings['recorder_name']).jStopRecording();
-							
+	$.jRecorder.stop = function(){				
+		getFlashMovie(jRecorderSettings['recorder_name']).jStopRecording();				
 	} 
-		
+	$.jRecorder.stopPreview = function(){		
+		getFlashMovie(jRecorderSettings['recorder_name']).jStopPreview();				
+	} 
+	
 	//function call to send wav data to server url from the init configuration					
 	$.jRecorder.sendData = function(){
 					

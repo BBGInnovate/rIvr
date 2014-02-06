@@ -105,7 +105,7 @@ class Branch< ActiveRecord::Base
   end
   
   def self.forum_types
-    ['report','bulletin','vote']
+    ['report','bulletin','vote', 'simple']
   end
   
   def self.forum_type_ui(forum_type)
@@ -116,6 +116,8 @@ class Branch< ActiveRecord::Base
         'Ask the community (Connect)'
       when 'report'
         'News Report (inform)'
+      when 'simple'
+        'Simplified Voice Forum'
       else
         ''
       end
@@ -128,6 +130,8 @@ class Branch< ActiveRecord::Base
         'Ask the community (Connect)'
       when 'report'
         'News Report (inform)'
+      when 'simple'
+        'Simplified Voice Forum'
       else
         ''
       end
@@ -235,6 +239,21 @@ class Branch< ActiveRecord::Base
     end
   end
 #  has_many :healths
+  
+  # for simple prompts
+  has_many :simples do
+    def current()
+      res = select("max(id) as id").group(:name).
+            where(:voting_session_id=>proxy_association.owner.current_forum_session.id)
+      select("id, name, branch_id, dropbox_file, voting_session_id").where(["id in (?)", res.map{|t| t.id}])
+    end
+    def latest(active=true)
+      res = select("max(id) as id").group(:name).where(:is_active=>active).
+            where(:voting_session_id=>proxy_association.owner.active_forum_session.id)
+      select("id, name, branch_id,dropbox_file, voting_session_id").where(["id in (?)", res.map{|t| t.id}])
+    end
+    
+  end
   
   # for report prompts
   has_many :reports do

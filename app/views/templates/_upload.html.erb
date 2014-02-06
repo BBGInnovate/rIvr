@@ -22,7 +22,9 @@
   
   <div style="margin: 10px;">
     <input type="radio" name="recording" value="Browse" checked> Browse </input>
+    <!--
     <input type="radio" name="recording" value="Record"> Record</input>
+    -->
   </div>  
   
   <p></p>
@@ -36,9 +38,11 @@
   <div class='fileBrowseWrap'>
     <%= f.file_field :sound %>
   </div>
-  <!--
-     recorder here
-  -->
+  <!-- recorder here -->
+  <div id="recorder" style="display:none;">
+  <%= render :partial=>'recorder' %>
+  </div>
+  
   <div class="btnUploadWrap">
     <span><%= submit_tag 'Preview', :id=>"preview", :value=>"Upload",:class=>"btnAction" %></span>
     <% if (template.name=~/_result/) && !!template.audio_link %>
