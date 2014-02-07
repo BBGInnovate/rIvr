@@ -27,16 +27,17 @@ dest=$root/shared/releases/$name
 tarfile=${application}.tar
 
 tarfile=${name}_${application}.tar 
-branchcode=`git ls-remote git@ivr_git:/home/git/dashboard.git $branch`
+branchcode=`git ls-remote git@github.com:BBGInnovate/rIvr.git $branch`
 branchcode=(`echo $branchcode | tr ' ' ' '`)
 branch=${branchcode[0]}
 
 mkdir -p /tmp
 cd /tmp
-rm -rf dashboard
+rm -rf rIvr
 
-git clone git@ivr_git:/home/git/dashboard.git
-cd dashboard
+# git clone git@ivr_git:/home/git/dashboard.git
+git clone git@github.com:BBGInnovate/rIvr.git
+cd rIvr
 git checkout -f $branch
 tar cvf $tarfile --exclude '*.tar' --exclude 'tmp' --exclude '*.git' *
 
