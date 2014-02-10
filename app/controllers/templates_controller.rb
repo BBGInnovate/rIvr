@@ -174,6 +174,34 @@ class TemplatesController < ApplicationController
     end
   end
 
+  def schedule
+     startdate = DateTime.parse params[:start_date]
+     enddate =  DateTime.parse params[:end_date]
+
+     branch_id= params[:branch_id]
+     branch = Branch.find branch_id
+     txt = '<span class="error">Schedule failed for unknown reason</span>'
+     if branch
+       is_active = branch.current_forum_session.is_active
+       now = Time.now
+       if (startdate < now) && (enddate < now)
+          is_active=true
+       end
+       
+       begin
+          branch.current_forum_session.update_attributes :start_date=>startdate,
+             :end_date=>enddate, :is_active=>is_active
+          txt = '<span class="notice">Schedule successful</span>'
+       rescue
+          txt = '<span class="error">Schedule failed</span>'
+       end
+     end
+     if is_active
+        branch.generate_forum_feed_xml
+     end
+     render :text=>txt, :layout=>false
+  end
+  
   def forum_type(branch)
     branch.forum_type_ui
   end

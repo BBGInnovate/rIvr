@@ -63,6 +63,7 @@ TestIvr::Application.routes.draw do
       get :forum_feed
       get :record
       post :record
+      post :schedule
     end
   end
   resources :users do
@@ -95,6 +96,9 @@ TestIvr::Application.routes.draw do
      end
   end
     
+  resources :forum_sessions do
+      as_routes
+  end
   resources :actions do
       as_routes
   end

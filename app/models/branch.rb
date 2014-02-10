@@ -789,8 +789,6 @@ class Branch< ActiveRecord::Base
   # @reboot mkdir /mnt/dropbox; mkdir -p /mnt/rails/log; mkdir -p /mnt/rails/system; chmod -R 777 /mnt/
   # */5 * * * * /bin/bash -l -c 'cd /data/ivr/current && 
   # /usr/local/bin/bundle exec rails runner -e staging  "Branch.create_audio_files"'  > /tmp/dashboard-cron.log 2>&1
-
-
   def self.create_audio_files
     Branch.where(:is_active=>true).each do |b|
       b.entries.each do |t|
@@ -801,6 +799,21 @@ class Branch< ActiveRecord::Base
         t.audio_link
       end
     end
+  end
+  
+  # place it in ubuntu crontab
+  # 7 * * * * /bin/bash -l -c 'cd /data/ivr/current && /usr/local/bin/bundle exec rails runner -e staging  "Branch.generate_forum_feeds"'  > /tmp/dashboard-cron.log 2>&1
+  def self.generate_forum_feeds
+     now = Time.now.to_i
+     where(:is_active=>true).all.each do |b|
+       current_forum = b.current_forum_session
+       if current_forum && 
+            (current_forum.start_date.to_i < now &&
+             current_forum.end_date.to_i > now)
+          current_forum.update_attribute :is_active, true
+          b.generate_forum_feed_xml
+       end
+     end
   end
   
   def clean_prompt_files

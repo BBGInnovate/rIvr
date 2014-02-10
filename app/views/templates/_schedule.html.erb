@@ -1,0 +1,75 @@
+<script>
+   $(function() {
+      $("#start-date, #end-date").datetimepicker({
+         //showOn: both - datepicker will come clicking the input box as well as the calendar icon
+         //showOn: button - datepicker will come only clicking the calendar icon
+         controlType: 'select',         
+         showOn: 'button',
+         buttonImage: '/assets/calendar.gif',
+         buttonImageOnly: true,
+         changeMonth: true,
+         changeYear: true,
+         showAnim: 'slideDown',
+         duration: 'fast',
+         dateFormat: 'yy-mm-dd'
+       });      
+       // hack
+       $('#startdate-div .ui-datepicker-trigger').last().hide();
+       $('#enddate-div .ui-datepicker-trigger').last().hide();
+       
+       $("#submit-datetime").on('click', function () {
+       var startdate = $('#start-date').val();
+       var enddate = $('#end-date').val();
+       var branchid = $('#branch-name').val();
+       var url = "/templates/schedule";
+       var data = {start_date: startdate, end_date: enddate, branch_id: branchid};
+       $.post(url, data, function(response) {
+          $('#status').text(response);
+       });
+     
+     return false;
+   });
+   });
+   
+</script>
+<div class="date-div">
+   &nbsp;
+</div>
+<div class="date-div">
+   Schedule your forum to be active in:
+</div>
+<div id="startdate-div" class="date-div">
+<span class="date-label">Start Date:</span><input type="text" id="start-date" />
+</div>
+<div id="enddate-div" class="date-div">
+<span class="date-label">End Date:</span><input type="text" id="end-date" />
+</div>
+<p>
+<input type="submit" value="Schedule" id="submit-datetime" />
+</p>
+<div id="status" class="date-div"></div>
+
+<style>
+.date-label {
+   display: inline-block;
+   width: 100px;
+}
+.date-div {
+   line-height: 15px;
+   margin: 0 0 10px 0;
+}
+/* css for timepicker */
+.ui-datepicker-trigger {
+}
+.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
+.ui-timepicker-div dl { text-align: left; }
+.ui-timepicker-div dl dt { float: left; clear:left; padding: 0 0 0 5px; }
+.ui-timepicker-div dl dd { margin: 0 10px 10px 45%; }
+.ui-timepicker-div td { font-size: 90%; }
+.ui-tpicker-grid-label { background: none; border: none; margin: 0; padding: 0; }
+
+.ui-timepicker-rtl{ direction: rtl; }
+.ui-timepicker-rtl dl { text-align: right; padding: 0 5px 0 0; }
+.ui-timepicker-rtl dl dt{ float: right; clear: right; }
+.ui-timepicker-rtl dl dd { margin: 0 45% 10px 10px; }
+</style>

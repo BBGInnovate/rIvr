@@ -60,6 +60,28 @@ module ApplicationHelper
       super
     end
   end
+  
+  def branch_column(record, input_name)
+    if record.kind_of? VotingSession
+      !!record.branch ? record.branch.name : nil
+    else
+      super
+    end
+  end
+  def start_date_column(record, input_name)
+    if record.kind_of? VotingSession
+       record.start_date ? record.start_date.to_s(:db) : 'N/A'
+    else
+      super
+    end
+  end
+  def end_date_column(record, input_name)
+    if record.kind_of? VotingSession
+      record.end_date ? record.end_date.to_s(:db) : 'N/A'
+    else
+      super
+    end
+  end
   def audio_players(branch)
     audios = []
     records = branch.send(branch.forum_type.pluralize).current
