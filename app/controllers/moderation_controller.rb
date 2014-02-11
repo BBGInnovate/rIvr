@@ -34,11 +34,14 @@ class ModerationController < ApplicationController
     end_date = Time.now.end_of_day.to_s(:db)
     
     # not get for Report type where forum_session_id == 0
-    @sorted = SortedEntry.where("rank>0 AND forum_session_id>0").
+    @sorted = SortedEntry.
+        includes([:branch, {:entry=>[:branch,:soundkloud,:voting_session]}]).
+        where("rank>0 AND forum_session_id>0").
         where("created_at"=>start_date..end_date)
     
     @results = Stat.ivr_message_query(nil, start_date, end_date).
-               where("entries.is_private=1 AND entries.is_active=1")
+               where("entries.is_private=1 AND entries.is_active=1").
+               includes([:branch,:soundkloud, :voting_session])
     #
     #   Entry.where("entries.is_private=1 AND entries.is_active=1").
     #   joins(:branch).where("branches.is_active=1").

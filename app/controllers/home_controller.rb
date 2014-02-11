@@ -12,7 +12,6 @@ class HomeController < ApplicationController
 
   def header
     activity = render_to_string :partial=>'shared/activity_ajax', :formats=>["html"]
-#    puts "AAAAA #{activity.inspect}"
 #    render :text=>"{\"activity\":\"#{activity}\",\"alerts\":\"#{@alerts[:unique]}\",\"calls\":\"#{@calls[:total]}\",\"messages\":\"#{@messages[:total]}\"}", :content_type=>"text" and return
     render :json=>{:activity=>activity,
       :alerts=>@alerts[:unique],

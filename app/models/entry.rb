@@ -34,12 +34,17 @@ class Entry< ActiveRecord::Base
   end
 
   def dropbox_file_exists?
-    return false if !self.branch
+    if !self.branch || !self.is_active || !self.forum_session_id
+       return false
+    else
+       return true
+    end
+=begin
     filename = "#{self.dropbox_dir}/#{self.dropbox_file}"
     f = "#{DROPBOX.home}#{filename}"
     res = File.exists?(f)
     if !res
-      client = self.get_dropbox_session
+      client = Entry.dropbox_session
       begin
         res = client.metadata filename
       rescue
@@ -47,6 +52,7 @@ class Entry< ActiveRecord::Base
       end
     end
     return res
+=end
   end
   
   # return hash table key=branch_id, value=number of messages
@@ -80,7 +86,7 @@ class Entry< ActiveRecord::Base
   
   def shared_link
     if !self.is_private && !self.public_url
-      token = get_dropbox_session.access_token
+      token = Entry.dropbox_session.access_token
       res = token.post "https://api.dropbox.com/1/shares/dropbox/#{dropbox_dir}/#{dropbox_file}"
       json = JSON.parse res.body
       self.public_url = json['url']
@@ -103,7 +109,7 @@ class Entry< ActiveRecord::Base
     # Public/#{self.branch} folder will be created if not exixts
     ds = DropboxSession.last
     if !!ds
-      client = get_dropbox_session
+      client = Entry.dropbox_session
       to = "Public#{self.dropbox_dir}/#{self.dropbox_file}"
       file_url = DROPBOX.public_dir + "#{self.dropbox_dir}/#{self.dropbox_file}"
       from = self.dropbox_dir
@@ -194,7 +200,7 @@ class Entry< ActiveRecord::Base
   def Xcopy_to_public
     ds = DropboxSession.last
     if !!ds
-      client = get_dropbox_session
+      client = Entry.dropbox_session
       to = "Public#{self.dropbox_dir}/#{self.dropbox_file}"
       file_url = DROPBOX.public_dir + "#{self.dropbox_dir}/#{self.dropbox_file}"
       from = file_path
@@ -235,7 +241,7 @@ class Entry< ActiveRecord::Base
   
   # only delete public entry
   def delete_from_dropbox
-    s = get_dropbox_session
+    s = Entry.dropbox_session
     begin
       self.update_attributes :public_url=>nil,:is_private=>true
       to = "Public#{self.dropbox_dir}/#{self.dropbox_file}"
@@ -286,7 +292,7 @@ class Entry< ActiveRecord::Base
   end
 
   def self.sync_dropbox
-    client = Entry.new.send "get_dropbox_session"
+    client = Entry.dropbox_session
     self.all.each do | e |
       begin
         client.metadata e.file_path
@@ -298,7 +304,7 @@ class Entry< ActiveRecord::Base
   end
   
   def self.populate
-    client = Entry.new.send "get_dropbox_session"
+    client = Entry.dropbox_session
     client.list('bbg').each do |d|
       if d.is_dir
         # path="/bbg/Addis" 

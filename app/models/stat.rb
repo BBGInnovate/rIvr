@@ -21,7 +21,7 @@ class Stat
       if mybranches.size>0
         @branches = mybranches
       else
-        @branches = Branch.where("branches.is_active=1").all
+        @branches = Branch.where("branches.is_active=1").includes(:country).all
       end
       @branch_ids = @branches.map{|b| b.id}
       @countries = @branches.map{|b| b.country }.uniq
@@ -60,6 +60,7 @@ class Stat
     # hsh[:unique] number of branches having alerts.
     def alerted
       numbers = AlertedMessage.
+        includes({:branch=>:health}).
         where(["alerted_messages.branch_id in (?)", branch_ids]).
         # where(:created_at=>started..ended).
         select("alerted_messages.branch_id, count(alerted_messages.id) AS total").
@@ -67,8 +68,8 @@ class Stat
        
       new_numbers = []
       numbers.each do |n|
-        branch=Branch.find n.branch_id
-        if branch.health.send_alarm && branch.unhealth?
+        # branch=Branch.find n.branch_id
+        if n.branch.health.send_alarm && n.branch.unhealth?
           new_numbers << n
         end
       end 
@@ -133,6 +134,7 @@ class Stat
      
   def number_of_calls
     numbers = Event.where(:created_at=>started..ended).
+       includes(:branch).
        where(["events.branch_id in (?)",branch_ids]).
        select("branch_id, count(distinct session_id) as total").
        group(:branch_id)
@@ -201,10 +203,7 @@ class Stat
     # messages[:total] #=> total message number for all
     # messages[branch_id] #=> message number for the branch
     def messages
-    #  numbers = Entry.joins(:branch).where("branches.is_active=1").
       query = Stat.ivr_message_query(branch_ids, started, ended)
-         #
-         # Entry.includes(:branch).
          # where("entries.is_active=1").
          # where("entries.is_private=1").
          # where(["entries.branch_id in (?) ", branch_ids]).
@@ -215,7 +214,8 @@ class Stat
          group(:branch_id)
       hsh = set_hash(numbers)
       
-      sorted = SortedEntry.where(["entry_id in (?) AND rank>0", query.all.map{|a| a.id}])
+      sorted = SortedEntry.includes(:branch).
+         where(["entry_id in (?) AND rank>0", query.all.map{|a| a.id}])
       hsh[:new] = hsh[:total] - sorted.size
       hsh
     end

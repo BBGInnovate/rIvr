@@ -18,7 +18,7 @@ module BranchesHelper
   
   def forum_titles
     re = [['All Forum','0']]
-    VotingSession.where(:is_active=>true).
+    VotingSession.includes(:branch).where(:is_active=>true).
       order("created_at desc").each do |t|
        if t.branch && t.branch.is_active
          re << [t.name,t.id]
