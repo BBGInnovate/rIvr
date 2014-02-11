@@ -6,6 +6,6 @@ class AddStartdateVotingSessions < ActiveRecord::Migration
 
   def down
      remove_column :voting_sessions, :start_date
-     remove_column :voting_sessions, :end_date,
+     remove_column :voting_sessions, :end_date
   end
 end
