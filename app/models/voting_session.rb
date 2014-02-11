@@ -5,6 +5,8 @@ class VotingSession< ActiveRecord::Base
   
   before_save :update_friendly_name
   after_save :activate_templates
+  after_save :generate_forum_feed_xml
+  
   
   def update_friendly_name
     self.friendly_name=self.name.parameterize
@@ -14,14 +16,14 @@ class VotingSession< ActiveRecord::Base
     if self.is_active == true
       templates.where("description != 'result'").update_all :is_active=>true
       entries.update_all :is_active=>true
-      # generate_forum_feed_xml moved to BranchCotroller#activate_forum
+      # generate_forum_feed_xml moved to BranchController#activate_forum
     end
   end
   
   def activate_result_templates
     if self.is_active == true
       self.branch.votes.result_templates.update_all :is_active=>true
-      generate_forum_feed_xml
+      # generate_forum_feed_xml
     end
   end
   

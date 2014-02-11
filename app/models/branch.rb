@@ -802,8 +802,8 @@ class Branch< ActiveRecord::Base
   end
   
   # place it in ubuntu crontab
-  # 7 * * * * /bin/bash -l -c 'cd /data/ivr/current && /usr/local/bin/bundle exec rails runner -e staging  "Branch.generate_forum_feeds"'  > /tmp/dashboard-cron.log 2>&1
-  def self.generate_forum_feeds
+  # */10 * * * * /bin/bash -l -c 'cd /data/ivr/current && /usr/local/bin/bundle exec rails runner -e staging  "Branch.start_current_forum"'  > /tmp/dashboard-cron.log 2>&1
+  def self.start_current_forum
      now = Time.now.to_i
      where(:is_active=>true).all.each do |b|
        current_forum = b.current_forum_session
@@ -811,7 +811,7 @@ class Branch< ActiveRecord::Base
             (current_forum.start_date.to_i < now &&
              current_forum.end_date.to_i > now)
           current_forum.update_attribute :is_active, true
-          b.generate_forum_feed_xml
+          
        end
      end
   end

@@ -9,6 +9,7 @@ class Entry< ActiveRecord::Base
    
   before_create :add_properties
   before_save :remove_properties
+  after_save :generate_forum_feed
   
   # before_save :copy_to_public
   
@@ -20,6 +21,13 @@ class Entry< ActiveRecord::Base
   
   HUMANIZED_COLUMNS = {:size=>"Size (bytes)"}
 
+  def generate_forum_feed
+    
+    if !!branch && self.is_active==true
+      branch.generate_forum_feed_xml  # let cron job do the work
+    end
+  end
+  
   def self.human_attribute_name(attribute, options = {})
     HUMANIZED_COLUMNS[attribute.to_sym] ||
     attribute.to_s.gsub(/_id$/, "").gsub(/_/, " ").capitalize

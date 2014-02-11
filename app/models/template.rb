@@ -1,7 +1,7 @@
 class Template < ActiveRecord::Base
   belongs_to :branch
   belongs_to :voting_session
-#  after_save :generate_forum_feed
+  after_save :generate_forum_feed
 
   self.inheritance_column = "temp_type"
   #  has_attached_file :sound,
@@ -23,7 +23,7 @@ class Template < ActiveRecord::Base
   end
     
   def generate_forum_feed
-    if self.is_active==true
+    if !!branch && self.is_active==true
       branch.generate_forum_feed_xml  # let cron job do the work
     end
   end
