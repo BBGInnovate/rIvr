@@ -10,10 +10,10 @@ class EventsController < ApplicationController
     config.label = 'Event Log'
     config.actions.exclude :create
     config.list.sorting = {:id => 'DESC'}
-    config.columns = [:branch, :session_id, :caller_id, :page, :actions, :identifier, :created_at]
-    config.update.columns.exclude [:branch]
+    config.columns = [:branch_id, :session_id, :caller_id, :page, :actions, :identifier, :created_at]
+    config.update.columns.exclude [:branch_id]
     config.search.text_search = :start
-    config.search.columns = [:branch, :caller_id]
+    config.search.columns = [:branch_id, :caller_id]
     # config.list.columns.exclude [:identifier]
     config.columns[:actions].label = 'Action'
     config.actions.exclude :update
