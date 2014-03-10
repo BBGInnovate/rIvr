@@ -186,6 +186,8 @@ class TemplatesController < ApplicationController
        now = Time.now
        if (startdate < now) && (enddate < now)
           is_active=true
+       else
+          is_active=false
        end
        
        begin
@@ -199,7 +201,7 @@ class TemplatesController < ApplicationController
      if is_active
         branch.generate_forum_feed_xml
      end
-     render :text=>txt, :layout=>false
+     render :inline=>txt.html_safe, :layout=>false, :content_type=>'application/html'
   end
   
   def forum_type(branch)

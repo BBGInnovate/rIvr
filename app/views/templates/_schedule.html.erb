@@ -24,7 +24,7 @@
        var url = "/templates/schedule";
        var data = {start_date: startdate, end_date: enddate, branch_id: branchid};
        $.post(url, data, function(response) {
-          $('#status').text(response);
+          $('#status').html(response);
        });
      
      return false;
@@ -39,10 +39,10 @@
    Schedule your forum to be active in:
 </div>
 <div id="startdate-div" class="date-div">
-<span class="date-label">Start Date:</span><input type="text" id="start-date" />
+<span class="date-label">Start Date:</span><input type="text" id="start-date" value="<%= @branch.current_forum_session.start_date%>" />
 </div>
 <div id="enddate-div" class="date-div">
-<span class="date-label">End Date:</span><input type="text" id="end-date" />
+<span class="date-label">End Date:</span><input type="text" id="end-date" value="<%= @branch.current_forum_session.end_date%>" />
 </div>
 <p>
 <input type="submit" value="Schedule" id="submit-datetime" />

@@ -810,8 +810,9 @@ class Branch< ActiveRecord::Base
        if current_forum && 
             (current_forum.start_date.to_i < now &&
              current_forum.end_date.to_i > now)
-          current_forum.update_attribute :is_active, true
-          
+          if !current_forum.is_active
+             current_forum.update_attribute :is_active, true
+          end
        end
      end
   end

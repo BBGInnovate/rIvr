@@ -40,7 +40,8 @@
     <script>
       jQuery(document).ready(function(){
           homePage.init("content");
-          autoRefreshHeader.init();
+          <% run_me = Rails.env.to_s!='development' ? 1 : 0 %>
+          autoRefreshHeader.init(<%= run_me %>);
           blinkeffect('img.red-light');
       });
     </script>

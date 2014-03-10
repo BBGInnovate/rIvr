@@ -45,7 +45,8 @@
   jQuery(document).ready(function(){
     homePage.init("content");
     loadSoundCloud.init();
-    autoRefreshHeader.init();
+    <% run_me = Rails.env.to_s!='development' ? 1 : 0 %>
+    autoRefreshHeader.init(<%= run_me %>);
 // contact.init();
      $(".audio").mb_miniPlayer({
        width:240,

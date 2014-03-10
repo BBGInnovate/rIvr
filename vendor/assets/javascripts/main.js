@@ -144,11 +144,14 @@ var datepickerConfigure = {
   }, 
 }
 var autoRefreshHeader = {
-    init : function() {
-      var header_refresh = setInterval(
+    init : function(run_me) {
+    	if (typeof run_me !== 'undefined' && run_me === 1) {
+    		alert(run_me)
+        var header_refresh = setInterval(
         function(){
            jQuery.get("/home/header",{ajax: 1}, autoRefreshHeader.update, 'html');
         }, 30000); // refresh every 30000 milliseconds
+      }
     },
     update : function(data) {
       var obj = jQuery.parseJSON(data);
